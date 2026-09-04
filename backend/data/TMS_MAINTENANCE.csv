@@ -1,0 +1,251 @@
+task_id,asset_id,corridor_id,location_km,defect_type,maintenance_type,criticality,urgency,safety_risk,due_date,overdue_days,estimated_duration_min,crew_required,status
+TMS0001,TRK_058,COR_01,133.5,Ballast Deficiency,Preventive,2,1,5,2026-09-19,0,30,6,Pending
+TMS0002,TRK_048,COR_07,41.9,Rail Wear,Corrective,5,2,5,2026-08-30,5,90,3,Pending
+TMS0003,TRK_004,COR_06,125.7,Track Geometry Fault,Predictive,2,2,3,2026-09-07,0,30,2,Pending
+TMS0004,TRK_177,COR_20,47.6,Rail Crack,Emergency,5,1,4,2026-09-10,0,30,6,Pending
+TMS0005,TRK_186,COR_19,34.6,Rail Crack,Corrective,2,3,1,2026-09-19,0,180,3,In Progress
+TMS0006,TRK_143,COR_15,114.4,Track Geometry Fault,Preventive,3,3,2,2026-09-11,0,150,4,Scheduled
+TMS0007,TRK_037,COR_20,114.3,Rail Wear,Preventive,2,4,4,2026-09-19,0,60,7,Scheduled
+TMS0008,TRK_167,COR_02,41.2,Rail Crack,Predictive,4,3,1,2026-09-06,0,45,6,In Progress
+TMS0009,TRK_109,COR_16,71.2,Weld Failure,Preventive,3,2,2,2026-09-09,0,150,6,Scheduled
+TMS0010,TRK_220,COR_19,71.9,Ballast Deficiency,Preventive,5,4,1,2026-09-17,0,180,2,In Progress
+TMS0011,TRK_082,COR_14,107.4,Weld Failure,Emergency,5,4,5,2026-09-03,1,60,6,In Progress
+TMS0012,TRK_059,COR_18,135.2,Track Geometry Fault,Corrective,3,4,2,2026-08-30,5,90,2,Completed
+TMS0013,TRK_257,COR_06,91.4,Rail Crack,Predictive,5,5,2,2026-09-07,0,45,4,In Progress
+TMS0014,TRK_272,COR_01,107.8,Weld Failure,Corrective,1,3,3,2026-09-16,0,45,2,Pending
+TMS0015,TRK_041,COR_03,131.7,Rail Crack,Preventive,2,4,5,2026-09-17,0,45,4,Scheduled
+TMS0016,TRK_217,COR_07,167.2,Ballast Deficiency,Predictive,4,3,4,2026-09-18,0,120,5,Pending
+TMS0017,TRK_033,COR_11,3.8,Rail Wear,Preventive,5,2,1,2026-09-06,0,30,7,Scheduled
+TMS0018,TRK_035,COR_02,154.7,Rail Crack,Preventive,3,4,2,2026-09-06,0,120,3,Scheduled
+TMS0019,TRK_296,COR_16,43.7,Weld Failure,Emergency,2,1,1,2026-09-17,0,150,5,Pending
+TMS0020,TRK_240,COR_02,121.2,Rail Crack,Corrective,4,3,1,2026-09-12,0,45,3,Pending
+TMS0021,TRK_072,COR_14,33.0,Weld Failure,Preventive,1,4,5,2026-09-13,0,30,2,Scheduled
+TMS0022,TRK_008,COR_03,166.7,Ballast Deficiency,Preventive,4,4,4,2026-09-16,0,45,8,Pending
+TMS0023,TRK_085,COR_13,0.4,Weld Failure,Predictive,4,3,4,2026-08-31,4,150,7,Completed
+TMS0024,TRK_250,COR_05,34.2,Ballast Deficiency,Corrective,5,5,1,2026-09-16,0,150,4,Pending
+TMS0025,TRK_245,COR_17,165.5,Rail Wear,Preventive,1,5,1,2026-09-17,0,180,3,Pending
+TMS0026,TRK_121,COR_13,21.6,Rail Wear,Preventive,5,5,1,2026-09-01,3,120,2,Pending
+TMS0027,TRK_290,COR_17,56.9,Track Geometry Fault,Preventive,3,2,3,2026-09-17,0,90,3,Scheduled
+TMS0028,TRK_235,COR_11,167.2,Rail Crack,Corrective,4,5,5,2026-09-08,0,30,2,Scheduled
+TMS0029,TRK_136,COR_05,168.0,Rail Crack,Preventive,3,3,2,2026-09-15,0,90,8,Scheduled
+TMS0030,TRK_271,COR_01,120.2,Rail Wear,Predictive,1,2,3,2026-09-08,0,30,2,Scheduled
+TMS0031,TRK_140,COR_10,108.9,Track Geometry Fault,Preventive,3,5,4,2026-09-03,1,60,8,Pending
+TMS0032,TRK_217,COR_09,7.9,Track Geometry Fault,Preventive,3,2,4,2026-09-19,0,120,7,Pending
+TMS0033,TRK_058,COR_03,170.1,Ballast Deficiency,Corrective,3,5,5,2026-08-30,5,45,5,Pending
+TMS0034,TRK_187,COR_02,161.8,Ballast Deficiency,Preventive,1,3,5,2026-09-08,0,180,5,Completed
+TMS0035,TRK_122,COR_06,175.7,Ballast Deficiency,Emergency,1,2,3,2026-09-03,1,180,5,In Progress
+TMS0036,TRK_137,COR_06,141.7,Rail Crack,Emergency,1,4,2,2026-09-06,0,45,8,Completed
+TMS0037,TRK_157,COR_08,40.1,Ballast Deficiency,Emergency,3,3,1,2026-09-10,0,180,4,Pending
+TMS0038,TRK_205,COR_18,59.6,Rail Crack,Corrective,3,2,5,2026-09-15,0,60,2,Pending
+TMS0039,TRK_177,COR_11,78.6,Rail Wear,Corrective,4,5,2,2026-09-12,0,60,2,Scheduled
+TMS0040,TRK_267,COR_18,123.6,Ballast Deficiency,Predictive,4,1,3,2026-08-30,5,120,4,Scheduled
+TMS0041,TRK_154,COR_17,55.7,Weld Failure,Predictive,4,3,5,2026-09-02,2,45,3,Pending
+TMS0042,TRK_090,COR_20,102.4,Weld Failure,Corrective,3,3,2,2026-09-11,0,90,8,Scheduled
+TMS0043,TRK_165,COR_15,79.5,Ballast Deficiency,Emergency,2,1,3,2026-09-19,0,120,7,Scheduled
+TMS0044,TRK_048,COR_08,121.1,Ballast Deficiency,Preventive,2,1,1,2026-09-09,0,45,5,Scheduled
+TMS0045,TRK_234,COR_14,159.5,Rail Wear,Preventive,4,4,4,2026-09-01,3,45,3,Scheduled
+TMS0046,TRK_055,COR_14,39.4,Rail Wear,Emergency,1,5,2,2026-08-30,5,180,2,Pending
+TMS0047,TRK_272,COR_18,107.2,Weld Failure,Emergency,5,4,2,2026-09-13,0,150,8,Pending
+TMS0048,TRK_127,COR_09,137.8,Rail Wear,Emergency,2,3,4,2026-09-07,0,30,7,Pending
+TMS0049,TRK_172,COR_11,160.7,Rail Crack,Preventive,2,2,4,2026-09-07,0,150,3,Scheduled
+TMS0050,TRK_213,COR_14,59.6,Weld Failure,Emergency,1,2,4,2026-09-01,3,90,8,Scheduled
+TMS0051,TRK_295,COR_13,85.9,Track Geometry Fault,Predictive,4,4,5,2026-08-30,5,150,7,Scheduled
+TMS0052,TRK_113,COR_16,39.5,Weld Failure,Emergency,1,4,3,2026-09-18,0,150,7,In Progress
+TMS0053,TRK_240,COR_05,176.5,Rail Wear,Corrective,4,5,5,2026-09-04,0,150,2,Pending
+TMS0054,TRK_070,COR_15,32.7,Track Geometry Fault,Emergency,3,2,4,2026-09-12,0,60,4,In Progress
+TMS0055,TRK_143,COR_14,45.4,Rail Crack,Emergency,1,5,1,2026-09-11,0,60,3,Scheduled
+TMS0056,TRK_021,COR_01,170.9,Ballast Deficiency,Corrective,5,2,2,2026-09-19,0,45,5,Scheduled
+TMS0057,TRK_112,COR_15,125.9,Track Geometry Fault,Preventive,5,5,1,2026-09-17,0,180,8,Pending
+TMS0058,TRK_056,COR_19,4.6,Track Geometry Fault,Emergency,4,2,1,2026-09-08,0,120,7,In Progress
+TMS0059,TRK_053,COR_10,153.1,Rail Wear,Corrective,5,1,3,2026-09-06,0,120,5,Scheduled
+TMS0060,TRK_260,COR_11,2.3,Weld Failure,Emergency,1,4,3,2026-09-01,3,150,8,Pending
+TMS0061,TRK_223,COR_06,132.1,Track Geometry Fault,Emergency,4,4,5,2026-09-03,1,60,4,In Progress
+TMS0062,TRK_143,COR_15,43.9,Weld Failure,Emergency,3,1,4,2026-09-01,3,180,4,Pending
+TMS0063,TRK_182,COR_09,61.3,Rail Wear,Predictive,5,1,5,2026-09-05,0,45,2,Pending
+TMS0064,TRK_251,COR_18,136.5,Weld Failure,Emergency,4,1,1,2026-09-12,0,60,3,Pending
+TMS0065,TRK_157,COR_19,66.4,Rail Wear,Predictive,4,5,3,2026-09-06,0,60,7,Pending
+TMS0066,TRK_129,COR_08,21.7,Ballast Deficiency,Predictive,1,5,2,2026-09-08,0,45,3,Scheduled
+TMS0067,TRK_269,COR_20,50.9,Rail Crack,Preventive,3,2,3,2026-09-07,0,45,4,Pending
+TMS0068,TRK_065,COR_09,8.2,Rail Crack,Predictive,2,4,1,2026-09-16,0,180,2,Scheduled
+TMS0069,TRK_246,COR_15,61.3,Rail Crack,Predictive,4,1,1,2026-09-14,0,90,5,Pending
+TMS0070,TRK_028,COR_05,26.9,Rail Wear,Predictive,1,2,1,2026-09-19,0,120,8,Pending
+TMS0071,TRK_116,COR_17,68.5,Weld Failure,Predictive,5,4,3,2026-09-18,0,120,6,Pending
+TMS0072,TRK_107,COR_07,47.6,Rail Crack,Preventive,2,2,5,2026-09-02,2,30,3,Pending
+TMS0073,TRK_241,COR_10,5.9,Track Geometry Fault,Predictive,4,1,2,2026-09-13,0,60,8,In Progress
+TMS0074,TRK_102,COR_14,20.7,Ballast Deficiency,Preventive,3,2,1,2026-09-17,0,30,3,In Progress
+TMS0075,TRK_292,COR_10,79.0,Weld Failure,Predictive,4,3,5,2026-09-18,0,120,5,Pending
+TMS0076,TRK_021,COR_14,132.2,Rail Wear,Predictive,1,1,2,2026-09-18,0,150,8,In Progress
+TMS0077,TRK_011,COR_09,103.7,Ballast Deficiency,Emergency,5,4,3,2026-09-17,0,45,6,Pending
+TMS0078,TRK_047,COR_16,62.6,Track Geometry Fault,Predictive,1,2,3,2026-09-14,0,90,7,Pending
+TMS0079,TRK_282,COR_02,81.9,Track Geometry Fault,Predictive,3,1,4,2026-09-11,0,180,6,In Progress
+TMS0080,TRK_278,COR_15,74.4,Ballast Deficiency,Predictive,5,4,4,2026-08-30,5,180,2,Pending
+TMS0081,TRK_068,COR_10,78.9,Weld Failure,Corrective,1,5,2,2026-09-16,0,150,3,Pending
+TMS0082,TRK_283,COR_14,16.8,Rail Crack,Emergency,1,2,4,2026-08-30,5,150,4,Scheduled
+TMS0083,TRK_213,COR_16,176.4,Ballast Deficiency,Emergency,5,2,4,2026-09-07,0,45,6,Scheduled
+TMS0084,TRK_036,COR_09,139.1,Weld Failure,Predictive,5,3,1,2026-09-03,1,60,7,Pending
+TMS0085,TRK_297,COR_16,155.7,Weld Failure,Emergency,3,3,5,2026-09-17,0,180,6,Pending
+TMS0086,TRK_097,COR_08,102.9,Ballast Deficiency,Emergency,1,3,4,2026-09-09,0,150,8,Pending
+TMS0087,TRK_078,COR_16,173.7,Ballast Deficiency,Predictive,1,4,1,2026-09-19,0,120,5,Pending
+TMS0088,TRK_210,COR_05,13.5,Track Geometry Fault,Predictive,5,4,1,2026-09-03,1,180,4,In Progress
+TMS0089,TRK_195,COR_11,112.8,Weld Failure,Corrective,5,1,2,2026-09-16,0,150,7,Completed
+TMS0090,TRK_047,COR_14,176.1,Rail Crack,Emergency,2,3,1,2026-09-06,0,30,4,In Progress
+TMS0091,TRK_184,COR_12,77.5,Ballast Deficiency,Emergency,5,2,2,2026-09-08,0,45,2,Scheduled
+TMS0092,TRK_124,COR_16,164.3,Ballast Deficiency,Preventive,4,3,4,2026-09-11,0,60,7,Pending
+TMS0093,TRK_148,COR_18,28.4,Weld Failure,Predictive,5,3,4,2026-09-13,0,150,4,Pending
+TMS0094,TRK_102,COR_13,153.6,Rail Crack,Preventive,4,5,3,2026-09-08,0,120,4,Completed
+TMS0095,TRK_012,COR_13,49.4,Rail Wear,Corrective,5,4,3,2026-09-08,0,180,8,Pending
+TMS0096,TRK_113,COR_07,111.8,Ballast Deficiency,Corrective,1,3,4,2026-09-10,0,30,6,Pending
+TMS0097,TRK_047,COR_10,58.8,Weld Failure,Preventive,2,2,5,2026-09-03,1,60,6,Scheduled
+TMS0098,TRK_085,COR_09,164.5,Weld Failure,Predictive,3,1,4,2026-09-07,0,30,3,In Progress
+TMS0099,TRK_204,COR_18,65.8,Weld Failure,Corrective,3,5,1,2026-09-06,0,90,4,Scheduled
+TMS0100,TRK_300,COR_13,148.0,Track Geometry Fault,Corrective,2,4,1,2026-09-07,0,120,6,Pending
+TMS0101,TRK_114,COR_03,114.4,Weld Failure,Predictive,4,1,2,2026-09-18,0,30,2,Pending
+TMS0102,TRK_060,COR_04,42.3,Rail Wear,Preventive,4,4,3,2026-09-14,0,150,7,Scheduled
+TMS0103,TRK_215,COR_19,133.6,Ballast Deficiency,Emergency,1,4,5,2026-09-16,0,90,4,Pending
+TMS0104,TRK_112,COR_15,80.0,Ballast Deficiency,Predictive,1,3,5,2026-09-10,0,150,4,Pending
+TMS0105,TRK_098,COR_04,170.8,Weld Failure,Corrective,2,5,1,2026-09-07,0,30,8,Pending
+TMS0106,TRK_290,COR_07,12.3,Rail Wear,Preventive,5,2,2,2026-09-03,1,60,8,Pending
+TMS0107,TRK_002,COR_09,154.5,Ballast Deficiency,Preventive,5,3,2,2026-09-18,0,30,7,In Progress
+TMS0108,TRK_008,COR_12,142.2,Ballast Deficiency,Predictive,1,2,3,2026-09-03,1,30,3,Scheduled
+TMS0109,TRK_059,COR_03,85.7,Track Geometry Fault,Corrective,4,5,2,2026-09-15,0,120,2,Scheduled
+TMS0110,TRK_155,COR_15,115.8,Rail Crack,Corrective,4,4,4,2026-09-15,0,150,2,Pending
+TMS0111,TRK_038,COR_03,58.0,Ballast Deficiency,Corrective,2,3,5,2026-09-13,0,150,6,Scheduled
+TMS0112,TRK_196,COR_20,95.5,Weld Failure,Emergency,1,1,5,2026-09-09,0,150,8,Pending
+TMS0113,TRK_117,COR_14,61.0,Weld Failure,Emergency,4,1,3,2026-09-13,0,90,4,Scheduled
+TMS0114,TRK_079,COR_16,12.1,Rail Crack,Corrective,4,1,3,2026-09-10,0,180,3,Scheduled
+TMS0115,TRK_288,COR_18,59.3,Rail Crack,Emergency,3,4,1,2026-09-17,0,60,6,Pending
+TMS0116,TRK_296,COR_17,38.3,Weld Failure,Preventive,1,3,5,2026-09-02,2,60,2,In Progress
+TMS0117,TRK_116,COR_14,152.1,Rail Wear,Corrective,5,3,1,2026-09-17,0,45,4,Scheduled
+TMS0118,TRK_174,COR_12,1.1,Ballast Deficiency,Emergency,1,2,1,2026-09-08,0,30,7,Scheduled
+TMS0119,TRK_215,COR_15,61.4,Track Geometry Fault,Predictive,3,5,5,2026-09-11,0,30,2,Pending
+TMS0120,TRK_026,COR_03,49.0,Weld Failure,Emergency,5,4,4,2026-09-18,0,60,3,In Progress
+TMS0121,TRK_177,COR_14,20.0,Rail Wear,Emergency,5,3,1,2026-09-02,2,45,5,Completed
+TMS0122,TRK_004,COR_07,54.3,Ballast Deficiency,Preventive,3,3,3,2026-08-31,4,30,2,Pending
+TMS0123,TRK_090,COR_05,68.4,Ballast Deficiency,Predictive,1,4,1,2026-09-12,0,90,2,Pending
+TMS0124,TRK_161,COR_19,77.3,Weld Failure,Emergency,3,1,4,2026-09-01,3,30,4,Pending
+TMS0125,TRK_236,COR_12,15.9,Rail Crack,Preventive,4,5,4,2026-09-18,0,120,2,Pending
+TMS0126,TRK_174,COR_08,60.0,Ballast Deficiency,Corrective,5,1,5,2026-09-08,0,120,3,Completed
+TMS0127,TRK_180,COR_05,42.5,Ballast Deficiency,Predictive,2,2,5,2026-09-10,0,45,8,In Progress
+TMS0128,TRK_091,COR_16,83.5,Rail Wear,Emergency,5,5,3,2026-09-01,3,180,7,Pending
+TMS0129,TRK_035,COR_16,79.6,Track Geometry Fault,Predictive,5,1,3,2026-09-13,0,120,2,Pending
+TMS0130,TRK_020,COR_02,66.4,Track Geometry Fault,Corrective,1,5,5,2026-09-13,0,120,5,Pending
+TMS0131,TRK_022,COR_15,163.6,Rail Wear,Preventive,3,5,4,2026-09-16,0,120,3,Completed
+TMS0132,TRK_053,COR_11,176.8,Rail Crack,Preventive,1,2,4,2026-09-13,0,90,6,Scheduled
+TMS0133,TRK_187,COR_12,165.2,Weld Failure,Emergency,3,5,1,2026-09-04,0,180,7,Scheduled
+TMS0134,TRK_169,COR_04,100.4,Weld Failure,Predictive,3,5,2,2026-09-01,3,60,2,Scheduled
+TMS0135,TRK_180,COR_10,174.2,Weld Failure,Preventive,5,1,3,2026-09-03,1,120,5,Scheduled
+TMS0136,TRK_066,COR_17,16.8,Weld Failure,Predictive,1,3,3,2026-09-09,0,45,3,Pending
+TMS0137,TRK_099,COR_08,180.0,Ballast Deficiency,Corrective,3,1,5,2026-09-14,0,180,6,In Progress
+TMS0138,TRK_020,COR_11,157.8,Rail Wear,Preventive,5,4,2,2026-09-15,0,45,3,In Progress
+TMS0139,TRK_085,COR_15,7.9,Track Geometry Fault,Preventive,4,5,3,2026-09-18,0,180,7,In Progress
+TMS0140,TRK_274,COR_08,55.7,Weld Failure,Preventive,3,5,4,2026-09-06,0,90,8,Pending
+TMS0141,TRK_258,COR_17,75.4,Ballast Deficiency,Preventive,5,2,3,2026-09-11,0,30,7,Pending
+TMS0142,TRK_284,COR_04,128.1,Rail Wear,Corrective,3,1,2,2026-09-10,0,60,5,Completed
+TMS0143,TRK_224,COR_03,170.4,Ballast Deficiency,Emergency,3,1,4,2026-09-03,1,30,5,Scheduled
+TMS0144,TRK_198,COR_03,67.5,Rail Crack,Predictive,1,3,2,2026-09-06,0,45,2,Pending
+TMS0145,TRK_072,COR_16,80.7,Rail Crack,Corrective,1,3,2,2026-09-14,0,180,3,Scheduled
+TMS0146,TRK_271,COR_14,20.0,Track Geometry Fault,Preventive,3,1,1,2026-09-18,0,45,5,Scheduled
+TMS0147,TRK_235,COR_03,20.0,Weld Failure,Corrective,5,5,2,2026-09-18,0,150,3,Pending
+TMS0148,TRK_181,COR_08,102.7,Ballast Deficiency,Corrective,5,3,1,2026-08-30,5,120,6,Scheduled
+TMS0149,TRK_284,COR_01,70.3,Weld Failure,Corrective,4,3,3,2026-09-15,0,150,2,Pending
+TMS0150,TRK_177,COR_08,131.9,Rail Crack,Predictive,2,1,3,2026-09-01,3,120,4,In Progress
+TMS0151,TRK_238,COR_16,113.7,Ballast Deficiency,Corrective,4,1,3,2026-09-04,0,45,2,In Progress
+TMS0152,TRK_162,COR_10,92.8,Rail Wear,Emergency,3,1,2,2026-08-31,4,60,4,In Progress
+TMS0153,TRK_170,COR_09,22.4,Track Geometry Fault,Emergency,4,4,4,2026-08-31,4,60,3,Pending
+TMS0154,TRK_189,COR_17,48.0,Rail Crack,Emergency,1,4,5,2026-09-14,0,180,3,Scheduled
+TMS0155,TRK_053,COR_03,59.0,Track Geometry Fault,Predictive,4,5,4,2026-09-09,0,45,7,Pending
+TMS0156,TRK_022,COR_12,110.7,Weld Failure,Predictive,1,1,4,2026-09-13,0,60,6,In Progress
+TMS0157,TRK_016,COR_05,152.8,Weld Failure,Corrective,2,1,2,2026-09-04,0,180,7,Pending
+TMS0158,TRK_291,COR_02,108.9,Weld Failure,Predictive,3,4,1,2026-09-11,0,120,3,Scheduled
+TMS0159,TRK_161,COR_09,44.9,Rail Crack,Corrective,2,4,5,2026-09-11,0,90,6,Pending
+TMS0160,TRK_229,COR_07,179.3,Track Geometry Fault,Emergency,2,1,2,2026-09-07,0,180,2,Pending
+TMS0161,TRK_045,COR_11,120.2,Rail Crack,Predictive,3,2,2,2026-09-13,0,180,4,Scheduled
+TMS0162,TRK_103,COR_05,42.6,Weld Failure,Corrective,3,5,5,2026-09-02,2,60,5,In Progress
+TMS0163,TRK_067,COR_20,159.2,Rail Crack,Predictive,4,4,5,2026-09-16,0,90,8,Pending
+TMS0164,TRK_038,COR_05,175.0,Rail Crack,Emergency,4,5,3,2026-09-17,0,45,8,In Progress
+TMS0165,TRK_094,COR_05,77.9,Rail Crack,Corrective,5,2,3,2026-09-19,0,45,3,Pending
+TMS0166,TRK_178,COR_17,161.1,Rail Crack,Predictive,2,5,3,2026-09-06,0,45,7,Pending
+TMS0167,TRK_048,COR_17,115.4,Rail Wear,Preventive,2,5,5,2026-09-16,0,60,8,Completed
+TMS0168,TRK_015,COR_03,8.2,Rail Wear,Predictive,2,5,4,2026-08-31,4,120,7,Pending
+TMS0169,TRK_280,COR_10,115.5,Track Geometry Fault,Emergency,2,4,3,2026-09-19,0,90,2,Scheduled
+TMS0170,TRK_226,COR_14,87.2,Ballast Deficiency,Predictive,5,2,3,2026-09-04,0,180,7,Pending
+TMS0171,TRK_205,COR_05,136.9,Rail Wear,Corrective,3,2,4,2026-09-10,0,30,4,Pending
+TMS0172,TRK_050,COR_02,52.2,Weld Failure,Emergency,2,2,3,2026-09-03,1,120,7,Pending
+TMS0173,TRK_256,COR_17,84.0,Track Geometry Fault,Emergency,1,1,4,2026-09-04,0,120,5,Completed
+TMS0174,TRK_299,COR_12,8.8,Track Geometry Fault,Emergency,5,4,3,2026-09-05,0,120,2,In Progress
+TMS0175,TRK_069,COR_09,131.0,Weld Failure,Predictive,1,4,1,2026-09-12,0,120,6,Pending
+TMS0176,TRK_148,COR_03,69.5,Weld Failure,Predictive,5,5,1,2026-09-16,0,45,2,Pending
+TMS0177,TRK_286,COR_12,135.9,Ballast Deficiency,Emergency,5,1,1,2026-09-09,0,30,3,Scheduled
+TMS0178,TRK_266,COR_15,26.8,Rail Wear,Preventive,3,5,3,2026-09-14,0,45,5,Completed
+TMS0179,TRK_173,COR_17,149.1,Rail Wear,Emergency,5,3,4,2026-09-08,0,180,2,Pending
+TMS0180,TRK_214,COR_19,55.4,Rail Crack,Emergency,3,5,5,2026-09-02,2,45,7,Pending
+TMS0181,TRK_088,COR_17,113.2,Rail Wear,Emergency,2,2,1,2026-09-14,0,120,7,Pending
+TMS0182,TRK_226,COR_11,75.4,Weld Failure,Preventive,4,5,5,2026-08-30,5,90,8,In Progress
+TMS0183,TRK_071,COR_17,37.3,Track Geometry Fault,Emergency,5,4,3,2026-08-31,4,45,5,Completed
+TMS0184,TRK_280,COR_12,121.7,Track Geometry Fault,Emergency,2,2,3,2026-09-09,0,120,4,Pending
+TMS0185,TRK_148,COR_07,124.2,Weld Failure,Predictive,4,3,5,2026-09-08,0,180,7,Pending
+TMS0186,TRK_294,COR_18,68.3,Weld Failure,Predictive,2,3,1,2026-09-02,2,60,7,Pending
+TMS0187,TRK_132,COR_16,38.5,Rail Wear,Predictive,5,3,2,2026-09-13,0,30,6,Scheduled
+TMS0188,TRK_125,COR_02,120.6,Rail Wear,Preventive,2,1,1,2026-09-06,0,90,4,Scheduled
+TMS0189,TRK_071,COR_01,173.6,Ballast Deficiency,Emergency,4,4,2,2026-09-02,2,180,4,Pending
+TMS0190,TRK_031,COR_03,117.4,Ballast Deficiency,Corrective,2,4,2,2026-09-19,0,30,8,Pending
+TMS0191,TRK_096,COR_10,157.8,Rail Crack,Predictive,5,5,1,2026-09-14,0,60,4,Pending
+TMS0192,TRK_279,COR_17,88.9,Ballast Deficiency,Emergency,3,2,1,2026-09-19,0,60,3,Scheduled
+TMS0193,TRK_132,COR_06,2.5,Track Geometry Fault,Predictive,5,2,2,2026-09-19,0,120,8,Scheduled
+TMS0194,TRK_219,COR_17,59.0,Weld Failure,Corrective,2,2,4,2026-09-11,0,60,3,Pending
+TMS0195,TRK_121,COR_15,135.7,Track Geometry Fault,Predictive,5,5,1,2026-09-11,0,60,7,Pending
+TMS0196,TRK_032,COR_04,83.8,Ballast Deficiency,Emergency,5,3,1,2026-09-06,0,150,4,Pending
+TMS0197,TRK_113,COR_05,86.1,Weld Failure,Predictive,4,5,4,2026-09-06,0,180,6,In Progress
+TMS0198,TRK_127,COR_20,157.2,Rail Crack,Emergency,5,3,1,2026-09-05,0,120,2,Pending
+TMS0199,TRK_259,COR_07,103.1,Ballast Deficiency,Preventive,3,5,4,2026-09-16,0,30,7,Pending
+TMS0200,TRK_251,COR_03,161.8,Weld Failure,Corrective,4,2,5,2026-09-17,0,90,5,Scheduled
+TMS0201,TRK_237,COR_10,130.2,Weld Failure,Predictive,1,2,5,2026-09-16,0,30,2,Pending
+TMS0202,TRK_278,COR_02,168.2,Rail Crack,Emergency,1,3,4,2026-09-01,3,45,8,Pending
+TMS0203,TRK_216,COR_12,178.7,Weld Failure,Emergency,4,4,1,2026-09-19,0,150,7,In Progress
+TMS0204,TRK_179,COR_04,32.1,Rail Wear,Emergency,5,2,2,2026-09-03,1,180,2,In Progress
+TMS0205,TRK_238,COR_18,76.3,Weld Failure,Preventive,2,4,3,2026-09-08,0,45,4,Pending
+TMS0206,TRK_017,COR_14,110.7,Rail Crack,Preventive,2,1,1,2026-09-02,2,120,2,Pending
+TMS0207,TRK_126,COR_02,72.4,Ballast Deficiency,Preventive,1,2,5,2026-08-31,4,60,3,In Progress
+TMS0208,TRK_164,COR_19,107.6,Track Geometry Fault,Preventive,3,2,5,2026-09-17,0,45,5,Pending
+TMS0209,TRK_286,COR_19,158.3,Ballast Deficiency,Emergency,5,4,1,2026-08-31,4,60,7,Scheduled
+TMS0210,TRK_164,COR_14,73.5,Track Geometry Fault,Emergency,2,5,4,2026-09-15,0,45,8,Pending
+TMS0211,TRK_238,COR_02,101.2,Weld Failure,Preventive,4,2,3,2026-09-03,1,45,4,Scheduled
+TMS0212,TRK_190,COR_03,96.4,Ballast Deficiency,Corrective,3,4,5,2026-09-13,0,120,2,In Progress
+TMS0213,TRK_287,COR_07,86.3,Track Geometry Fault,Predictive,1,2,2,2026-09-05,0,150,2,Scheduled
+TMS0214,TRK_125,COR_20,126.7,Weld Failure,Preventive,5,3,3,2026-09-14,0,90,5,Scheduled
+TMS0215,TRK_158,COR_09,64.7,Weld Failure,Emergency,1,4,3,2026-09-10,0,45,4,Pending
+TMS0216,TRK_289,COR_08,133.4,Rail Crack,Predictive,5,5,5,2026-08-31,4,150,5,Pending
+TMS0217,TRK_169,COR_08,68.4,Ballast Deficiency,Emergency,5,3,3,2026-09-05,0,180,8,Pending
+TMS0218,TRK_252,COR_15,30.3,Track Geometry Fault,Preventive,2,5,4,2026-09-19,0,45,6,Completed
+TMS0219,TRK_269,COR_02,151.0,Rail Crack,Corrective,1,4,2,2026-08-31,4,180,7,Pending
+TMS0220,TRK_005,COR_07,91.0,Track Geometry Fault,Corrective,5,5,4,2026-09-03,1,150,5,Pending
+TMS0221,TRK_283,COR_14,2.1,Rail Wear,Predictive,5,3,1,2026-09-16,0,120,8,Scheduled
+TMS0222,TRK_092,COR_04,165.2,Rail Wear,Preventive,2,2,5,2026-09-12,0,120,4,In Progress
+TMS0223,TRK_204,COR_03,67.1,Weld Failure,Emergency,5,2,2,2026-09-07,0,60,7,In Progress
+TMS0224,TRK_017,COR_03,73.0,Weld Failure,Emergency,1,1,2,2026-09-01,3,30,5,In Progress
+TMS0225,TRK_170,COR_19,175.9,Rail Crack,Corrective,2,2,5,2026-09-19,0,90,4,Pending
+TMS0226,TRK_144,COR_18,101.4,Rail Crack,Preventive,3,1,2,2026-09-01,3,120,3,In Progress
+TMS0227,TRK_040,COR_10,29.2,Ballast Deficiency,Emergency,5,3,4,2026-09-11,0,180,7,Pending
+TMS0228,TRK_257,COR_12,9.7,Weld Failure,Preventive,1,3,5,2026-09-01,3,180,6,Completed
+TMS0229,TRK_168,COR_01,114.1,Weld Failure,Emergency,2,3,5,2026-09-11,0,90,5,Pending
+TMS0230,TRK_195,COR_03,139.0,Track Geometry Fault,Preventive,1,1,3,2026-09-17,0,45,5,Scheduled
+TMS0231,TRK_079,COR_13,57.0,Rail Crack,Corrective,1,3,4,2026-09-19,0,60,8,Pending
+TMS0232,TRK_045,COR_06,77.6,Rail Wear,Emergency,1,1,1,2026-09-03,1,60,6,Pending
+TMS0233,TRK_167,COR_13,2.2,Weld Failure,Emergency,1,5,2,2026-09-18,0,120,6,Pending
+TMS0234,TRK_087,COR_05,48.4,Track Geometry Fault,Emergency,2,1,2,2026-09-11,0,90,4,Pending
+TMS0235,TRK_040,COR_12,45.3,Ballast Deficiency,Emergency,5,5,2,2026-09-14,0,90,2,Pending
+TMS0236,TRK_203,COR_11,151.5,Weld Failure,Predictive,4,3,4,2026-08-30,5,180,8,In Progress
+TMS0237,TRK_070,COR_10,57.7,Ballast Deficiency,Emergency,3,2,4,2026-09-18,0,60,4,Scheduled
+TMS0238,TRK_252,COR_19,140.8,Track Geometry Fault,Emergency,3,4,3,2026-09-19,0,30,6,Pending
+TMS0239,TRK_093,COR_18,4.8,Weld Failure,Preventive,4,3,1,2026-09-16,0,180,8,In Progress
+TMS0240,TRK_256,COR_05,114.0,Ballast Deficiency,Predictive,2,4,4,2026-09-12,0,30,5,Completed
+TMS0241,TRK_299,COR_13,96.2,Weld Failure,Corrective,3,5,5,2026-09-14,0,150,2,Pending
+TMS0242,TRK_182,COR_06,116.5,Rail Crack,Emergency,3,4,1,2026-09-06,0,30,2,Pending
+TMS0243,TRK_266,COR_18,104.5,Rail Wear,Preventive,4,3,4,2026-09-15,0,90,8,Scheduled
+TMS0244,TRK_078,COR_12,179.6,Weld Failure,Corrective,3,4,1,2026-09-15,0,30,8,Completed
+TMS0245,TRK_179,COR_10,61.8,Ballast Deficiency,Emergency,3,4,1,2026-09-03,1,90,7,Scheduled
+TMS0246,TRK_035,COR_10,8.0,Rail Crack,Corrective,3,1,2,2026-09-09,0,150,3,Scheduled
+TMS0247,TRK_082,COR_11,100.8,Weld Failure,Preventive,4,2,2,2026-09-16,0,150,7,Pending
+TMS0248,TRK_102,COR_15,106.6,Weld Failure,Corrective,2,2,3,2026-08-30,5,180,7,In Progress
+TMS0249,TRK_296,COR_04,143.9,Rail Wear,Preventive,3,3,2,2026-09-01,3,90,2,Pending
+TMS0250,TRK_271,COR_11,107.5,Rail Wear,Emergency,5,1,3,2026-09-14,0,60,8,Pending

@@ -1,0 +1,251 @@
+task_id,asset_id,corridor_id,location_km,asset_type,defect_type,maintenance_type,criticality,urgency,safety_risk,due_date,overdue_days,estimated_duration_min,crew_required,status
+SMMS0001,SIG_153,COR_20,106.2,Point,Cable Fault,Corrective,2,3,1,2026-09-04,0,45,4,Scheduled
+SMMS0002,SIG_199,COR_14,107.4,Interlock,Interlocking Fault,Preventive,4,5,2,2026-09-15,0,120,3,Pending
+SMMS0003,SIG_096,COR_11,151.6,Signal,Cable Fault,Corrective,4,2,2,2026-09-03,1,180,5,Completed
+SMMS0004,SIG_254,COR_14,123.2,Interlock,Interlocking Fault,Emergency,2,1,5,2026-09-15,0,30,8,In Progress
+SMMS0005,SIG_017,COR_09,40.5,Cable,Point Malfunction,Emergency,5,4,5,2026-09-08,0,120,2,Scheduled
+SMMS0006,SIG_279,COR_12,97.6,Signal,Interlocking Fault,Preventive,4,1,2,2026-09-07,0,60,8,Completed
+SMMS0007,SIG_135,COR_12,155.2,Signal,Interlocking Fault,Corrective,2,2,5,2026-09-13,0,150,4,In Progress
+SMMS0008,SIG_220,COR_06,110.9,Point,Point Malfunction,Corrective,5,3,5,2026-09-18,0,60,6,Scheduled
+SMMS0009,SIG_150,COR_10,103.1,Signal,Point Malfunction,Emergency,1,3,2,2026-09-09,0,150,8,Pending
+SMMS0010,SIG_165,COR_08,137.1,Interlock,Interlocking Fault,Preventive,5,3,4,2026-09-03,1,90,5,Pending
+SMMS0011,SIG_207,COR_17,135.0,Cable,Interlocking Fault,Emergency,3,5,1,2026-09-01,3,180,8,In Progress
+SMMS0012,SIG_235,COR_12,153.0,Interlock,Point Malfunction,Emergency,2,4,3,2026-09-01,3,60,8,Pending
+SMMS0013,SIG_296,COR_05,101.9,Interlock,Cable Fault,Corrective,1,1,4,2026-09-16,0,30,2,Completed
+SMMS0014,SIG_226,COR_15,0.1,Interlock,Point Malfunction,Preventive,3,2,3,2026-09-04,0,30,7,Pending
+SMMS0015,SIG_191,COR_06,9.3,Cable,Point Malfunction,Emergency,1,1,1,2026-09-01,3,45,5,Pending
+SMMS0016,SIG_116,COR_17,122.4,Signal,Signal Failure,Predictive,1,4,2,2026-09-17,0,90,2,Pending
+SMMS0017,SIG_053,COR_04,56.4,Cable,Point Malfunction,Emergency,2,2,1,2026-09-01,3,120,6,Pending
+SMMS0018,SIG_085,COR_15,63.2,Point,Point Malfunction,Emergency,5,4,2,2026-09-19,0,30,2,Pending
+SMMS0019,SIG_197,COR_12,173.4,Cable,Point Malfunction,Preventive,3,1,2,2026-09-02,2,120,6,Scheduled
+SMMS0020,SIG_146,COR_01,152.6,Cable,Point Malfunction,Preventive,4,3,1,2026-09-18,0,180,8,Completed
+SMMS0021,SIG_198,COR_04,43.4,Signal,Axle Counter Fault,Corrective,3,3,2,2026-09-14,0,90,8,In Progress
+SMMS0022,SIG_188,COR_18,122.9,Interlock,Signal Failure,Corrective,5,1,1,2026-09-12,0,60,3,Pending
+SMMS0023,SIG_204,COR_17,51.6,Interlock,Interlocking Fault,Emergency,1,5,5,2026-08-31,4,120,3,Pending
+SMMS0024,SIG_041,COR_17,165.8,Point,Axle Counter Fault,Predictive,4,5,1,2026-09-08,0,60,7,Pending
+SMMS0025,SIG_030,COR_08,15.5,Interlock,Signal Failure,Emergency,5,5,1,2026-09-06,0,60,7,Scheduled
+SMMS0026,SIG_062,COR_01,127.4,Signal,Point Malfunction,Emergency,3,5,5,2026-09-04,0,180,8,Scheduled
+SMMS0027,SIG_191,COR_05,135.0,Cable,Signal Failure,Corrective,3,4,3,2026-09-04,0,120,2,Pending
+SMMS0028,SIG_040,COR_16,81.9,Cable,Signal Failure,Emergency,5,2,3,2026-09-17,0,45,4,In Progress
+SMMS0029,SIG_060,COR_08,133.3,Signal,Signal Failure,Corrective,2,1,4,2026-09-17,0,60,5,Completed
+SMMS0030,SIG_019,COR_18,144.6,Interlock,Point Malfunction,Predictive,2,4,3,2026-09-04,0,60,8,Pending
+SMMS0031,SIG_062,COR_17,121.2,Signal,Point Malfunction,Preventive,5,1,4,2026-09-10,0,30,5,In Progress
+SMMS0032,SIG_168,COR_03,99.6,Signal,Cable Fault,Preventive,3,5,3,2026-09-08,0,150,6,Pending
+SMMS0033,SIG_253,COR_07,131.8,Point,Point Malfunction,Corrective,4,1,2,2026-09-10,0,120,4,Scheduled
+SMMS0034,SIG_172,COR_01,136.6,Interlock,Cable Fault,Corrective,2,5,2,2026-08-30,5,90,5,Completed
+SMMS0035,SIG_144,COR_03,7.9,Point,Axle Counter Fault,Emergency,3,4,1,2026-09-03,1,120,2,Scheduled
+SMMS0036,SIG_202,COR_03,106.5,Signal,Interlocking Fault,Preventive,2,3,3,2026-09-19,0,180,4,Completed
+SMMS0037,SIG_168,COR_11,81.5,Point,Signal Failure,Preventive,2,5,1,2026-09-11,0,45,2,Pending
+SMMS0038,SIG_161,COR_14,21.7,Cable,Point Malfunction,Emergency,3,4,3,2026-09-13,0,180,2,Pending
+SMMS0039,SIG_021,COR_07,150.5,Cable,Point Malfunction,Corrective,2,3,4,2026-09-08,0,120,2,Scheduled
+SMMS0040,SIG_090,COR_01,171.4,Interlock,Axle Counter Fault,Preventive,1,4,1,2026-09-07,0,180,8,Pending
+SMMS0041,SIG_032,COR_08,23.5,Interlock,Cable Fault,Corrective,5,5,3,2026-08-30,5,180,2,Pending
+SMMS0042,SIG_102,COR_15,145.7,Signal,Cable Fault,Corrective,1,4,1,2026-09-01,3,45,6,Pending
+SMMS0043,SIG_255,COR_01,68.9,Interlock,Point Malfunction,Predictive,2,2,3,2026-09-11,0,60,5,In Progress
+SMMS0044,SIG_126,COR_10,89.8,Interlock,Signal Failure,Corrective,3,4,2,2026-08-31,4,90,3,Scheduled
+SMMS0045,SIG_128,COR_18,143.1,Interlock,Cable Fault,Emergency,5,4,3,2026-09-15,0,120,6,Pending
+SMMS0046,SIG_093,COR_01,57.4,Point,Signal Failure,Predictive,1,4,5,2026-09-07,0,60,8,Scheduled
+SMMS0047,SIG_082,COR_04,44.6,Point,Cable Fault,Corrective,2,5,4,2026-09-06,0,60,8,Completed
+SMMS0048,SIG_091,COR_08,106.7,Cable,Axle Counter Fault,Corrective,3,5,5,2026-09-04,0,45,6,Completed
+SMMS0049,SIG_278,COR_10,31.6,Signal,Signal Failure,Corrective,2,5,2,2026-09-14,0,30,6,Pending
+SMMS0050,SIG_104,COR_05,61.3,Point,Cable Fault,Corrective,1,2,5,2026-09-09,0,150,3,In Progress
+SMMS0051,SIG_187,COR_03,67.2,Interlock,Axle Counter Fault,Corrective,3,3,3,2026-09-15,0,45,3,Scheduled
+SMMS0052,SIG_250,COR_11,31.4,Cable,Point Malfunction,Preventive,4,3,3,2026-09-12,0,45,3,Scheduled
+SMMS0053,SIG_201,COR_19,5.8,Cable,Axle Counter Fault,Preventive,5,1,4,2026-09-17,0,45,4,Scheduled
+SMMS0054,SIG_178,COR_11,30.2,Signal,Cable Fault,Emergency,1,3,2,2026-09-06,0,45,7,Pending
+SMMS0055,SIG_056,COR_01,8.7,Interlock,Interlocking Fault,Preventive,4,4,4,2026-09-07,0,60,6,Pending
+SMMS0056,SIG_296,COR_08,29.3,Signal,Signal Failure,Predictive,1,3,3,2026-09-14,0,30,2,Pending
+SMMS0057,SIG_083,COR_03,98.5,Signal,Cable Fault,Emergency,1,4,2,2026-09-11,0,120,5,Pending
+SMMS0058,SIG_170,COR_07,175.4,Interlock,Axle Counter Fault,Predictive,3,3,2,2026-09-02,2,30,2,Pending
+SMMS0059,SIG_252,COR_05,9.8,Signal,Interlocking Fault,Corrective,3,5,4,2026-09-16,0,45,2,Pending
+SMMS0060,SIG_150,COR_03,85.2,Signal,Cable Fault,Emergency,4,4,3,2026-09-04,0,30,7,Scheduled
+SMMS0061,SIG_190,COR_13,66.5,Interlock,Signal Failure,Predictive,4,4,3,2026-09-04,0,45,8,Pending
+SMMS0062,SIG_078,COR_04,15.4,Cable,Axle Counter Fault,Emergency,5,2,5,2026-08-31,4,30,8,Pending
+SMMS0063,SIG_215,COR_18,123.7,Interlock,Axle Counter Fault,Preventive,4,3,1,2026-09-15,0,90,8,Scheduled
+SMMS0064,SIG_293,COR_17,144.1,Point,Signal Failure,Emergency,2,2,2,2026-09-15,0,180,3,Pending
+SMMS0065,SIG_041,COR_14,36.3,Point,Axle Counter Fault,Predictive,3,1,1,2026-09-12,0,90,6,Pending
+SMMS0066,SIG_142,COR_17,82.5,Signal,Axle Counter Fault,Emergency,1,4,2,2026-09-09,0,45,6,Scheduled
+SMMS0067,SIG_055,COR_19,140.3,Cable,Axle Counter Fault,Predictive,4,3,4,2026-09-02,2,150,5,Scheduled
+SMMS0068,SIG_020,COR_06,49.6,Point,Axle Counter Fault,Emergency,1,4,3,2026-09-14,0,150,3,Pending
+SMMS0069,SIG_138,COR_12,3.6,Cable,Cable Fault,Predictive,4,1,2,2026-09-14,0,45,4,Completed
+SMMS0070,SIG_165,COR_09,131.2,Signal,Point Malfunction,Emergency,2,4,4,2026-09-13,0,180,6,In Progress
+SMMS0071,SIG_264,COR_06,11.8,Interlock,Point Malfunction,Corrective,2,2,2,2026-08-31,4,180,2,Pending
+SMMS0072,SIG_026,COR_12,126.8,Cable,Cable Fault,Emergency,5,4,1,2026-09-13,0,150,2,Pending
+SMMS0073,SIG_229,COR_06,172.9,Interlock,Axle Counter Fault,Predictive,3,2,3,2026-09-14,0,150,8,Scheduled
+SMMS0074,SIG_015,COR_13,8.9,Point,Point Malfunction,Preventive,2,3,4,2026-09-08,0,120,2,In Progress
+SMMS0075,SIG_243,COR_05,116.5,Signal,Point Malfunction,Predictive,5,3,3,2026-08-30,5,90,5,In Progress
+SMMS0076,SIG_130,COR_07,84.0,Interlock,Axle Counter Fault,Corrective,1,5,3,2026-09-13,0,120,7,Scheduled
+SMMS0077,SIG_153,COR_04,86.7,Cable,Cable Fault,Predictive,3,3,3,2026-09-08,0,45,3,Scheduled
+SMMS0078,SIG_030,COR_20,72.7,Cable,Point Malfunction,Corrective,4,3,3,2026-09-06,0,90,5,Pending
+SMMS0079,SIG_299,COR_19,146.9,Cable,Point Malfunction,Emergency,3,5,3,2026-08-31,4,180,3,In Progress
+SMMS0080,SIG_093,COR_10,17.6,Point,Cable Fault,Preventive,3,1,2,2026-09-16,0,60,3,Scheduled
+SMMS0081,SIG_216,COR_11,66.9,Cable,Interlocking Fault,Corrective,4,1,5,2026-09-08,0,120,6,Pending
+SMMS0082,SIG_257,COR_04,156.1,Interlock,Axle Counter Fault,Predictive,4,1,2,2026-09-05,0,45,3,Pending
+SMMS0083,SIG_235,COR_05,56.9,Point,Signal Failure,Emergency,3,2,3,2026-09-17,0,150,2,Pending
+SMMS0084,SIG_108,COR_06,103.7,Point,Interlocking Fault,Corrective,2,5,4,2026-09-07,0,150,5,Pending
+SMMS0085,SIG_197,COR_01,6.8,Point,Cable Fault,Corrective,3,5,2,2026-09-14,0,30,7,Pending
+SMMS0086,SIG_116,COR_12,56.2,Signal,Interlocking Fault,Predictive,2,1,1,2026-09-06,0,60,4,Pending
+SMMS0087,SIG_269,COR_11,78.1,Point,Cable Fault,Emergency,3,2,2,2026-09-15,0,180,5,Pending
+SMMS0088,SIG_068,COR_07,132.1,Point,Signal Failure,Predictive,1,4,3,2026-09-06,0,180,6,Scheduled
+SMMS0089,SIG_025,COR_04,117.6,Signal,Signal Failure,Corrective,4,4,4,2026-09-18,0,30,6,Pending
+SMMS0090,SIG_106,COR_01,54.2,Signal,Axle Counter Fault,Predictive,5,5,2,2026-09-03,1,90,8,In Progress
+SMMS0091,SIG_061,COR_10,20.5,Signal,Interlocking Fault,Preventive,5,2,3,2026-09-15,0,180,6,Completed
+SMMS0092,SIG_210,COR_10,28.9,Interlock,Point Malfunction,Emergency,3,2,1,2026-09-10,0,30,7,Pending
+SMMS0093,SIG_294,COR_16,26.8,Signal,Axle Counter Fault,Corrective,1,3,2,2026-09-02,2,90,4,Pending
+SMMS0094,SIG_052,COR_06,157.3,Cable,Cable Fault,Predictive,4,1,1,2026-08-31,4,180,8,In Progress
+SMMS0095,SIG_071,COR_06,59.2,Interlock,Axle Counter Fault,Predictive,1,3,3,2026-08-30,5,45,2,Pending
+SMMS0096,SIG_140,COR_13,124.2,Interlock,Interlocking Fault,Preventive,1,2,1,2026-09-13,0,180,3,Pending
+SMMS0097,SIG_248,COR_19,122.1,Point,Axle Counter Fault,Emergency,3,5,1,2026-09-17,0,180,7,In Progress
+SMMS0098,SIG_248,COR_16,20.3,Interlock,Interlocking Fault,Corrective,1,3,3,2026-09-03,1,30,7,In Progress
+SMMS0099,SIG_296,COR_19,40.3,Cable,Axle Counter Fault,Corrective,4,2,4,2026-09-15,0,60,7,Scheduled
+SMMS0100,SIG_077,COR_18,160.6,Signal,Signal Failure,Preventive,5,4,4,2026-09-11,0,180,3,Pending
+SMMS0101,SIG_165,COR_08,59.6,Cable,Signal Failure,Preventive,5,4,4,2026-09-14,0,180,3,Pending
+SMMS0102,SIG_294,COR_15,15.8,Interlock,Interlocking Fault,Predictive,1,4,1,2026-09-13,0,30,5,Pending
+SMMS0103,SIG_282,COR_01,148.7,Cable,Axle Counter Fault,Preventive,4,3,3,2026-09-16,0,180,2,In Progress
+SMMS0104,SIG_170,COR_18,138.1,Interlock,Cable Fault,Emergency,1,1,2,2026-09-13,0,30,4,Pending
+SMMS0105,SIG_150,COR_18,94.0,Signal,Signal Failure,Preventive,4,2,4,2026-09-19,0,30,4,Scheduled
+SMMS0106,SIG_062,COR_13,38.8,Point,Cable Fault,Corrective,4,1,5,2026-09-05,0,30,8,In Progress
+SMMS0107,SIG_259,COR_05,173.5,Signal,Axle Counter Fault,Corrective,5,4,5,2026-09-13,0,90,6,In Progress
+SMMS0108,SIG_297,COR_06,131.5,Point,Signal Failure,Emergency,5,5,3,2026-09-04,0,120,5,Pending
+SMMS0109,SIG_128,COR_09,71.6,Cable,Cable Fault,Emergency,2,2,4,2026-09-18,0,120,7,In Progress
+SMMS0110,SIG_154,COR_18,154.9,Point,Point Malfunction,Preventive,5,3,3,2026-09-15,0,150,3,Completed
+SMMS0111,SIG_092,COR_17,97.6,Cable,Signal Failure,Predictive,5,4,5,2026-09-19,0,120,7,Scheduled
+SMMS0112,SIG_147,COR_14,145.5,Signal,Signal Failure,Emergency,2,1,1,2026-09-16,0,45,4,In Progress
+SMMS0113,SIG_147,COR_09,26.4,Signal,Cable Fault,Preventive,5,1,3,2026-09-04,0,180,5,Pending
+SMMS0114,SIG_115,COR_18,70.0,Cable,Signal Failure,Emergency,4,4,3,2026-09-16,0,120,2,Pending
+SMMS0115,SIG_104,COR_20,156.4,Interlock,Point Malfunction,Predictive,5,5,5,2026-09-07,0,45,8,Scheduled
+SMMS0116,SIG_151,COR_15,31.9,Signal,Point Malfunction,Preventive,5,1,4,2026-09-05,0,30,5,Pending
+SMMS0117,SIG_067,COR_06,105.1,Cable,Signal Failure,Predictive,4,2,1,2026-09-07,0,45,4,Scheduled
+SMMS0118,SIG_155,COR_16,142.2,Cable,Signal Failure,Predictive,5,2,2,2026-09-19,0,120,2,In Progress
+SMMS0119,SIG_213,COR_18,96.7,Signal,Cable Fault,Preventive,2,3,3,2026-09-04,0,60,4,Pending
+SMMS0120,SIG_272,COR_16,179.4,Signal,Signal Failure,Predictive,4,2,5,2026-09-18,0,120,3,Completed
+SMMS0121,SIG_196,COR_04,69.5,Cable,Signal Failure,Predictive,5,5,4,2026-09-09,0,90,2,Pending
+SMMS0122,SIG_099,COR_11,92.5,Signal,Point Malfunction,Corrective,1,2,2,2026-09-19,0,180,7,Pending
+SMMS0123,SIG_106,COR_18,149.2,Interlock,Signal Failure,Preventive,1,4,3,2026-09-02,2,30,2,Pending
+SMMS0124,SIG_129,COR_18,12.7,Point,Cable Fault,Emergency,4,4,4,2026-09-04,0,90,4,Pending
+SMMS0125,SIG_274,COR_01,115.5,Signal,Axle Counter Fault,Corrective,1,3,5,2026-09-02,2,30,4,In Progress
+SMMS0126,SIG_045,COR_10,137.7,Interlock,Interlocking Fault,Emergency,1,4,2,2026-09-08,0,120,3,Pending
+SMMS0127,SIG_280,COR_10,172.8,Point,Cable Fault,Predictive,1,5,5,2026-09-11,0,45,2,Pending
+SMMS0128,SIG_202,COR_18,98.6,Signal,Cable Fault,Preventive,3,2,4,2026-09-17,0,150,8,Scheduled
+SMMS0129,SIG_095,COR_08,111.0,Cable,Point Malfunction,Corrective,2,5,1,2026-09-04,0,180,8,Completed
+SMMS0130,SIG_237,COR_18,13.2,Signal,Cable Fault,Corrective,2,5,4,2026-09-16,0,60,4,Pending
+SMMS0131,SIG_121,COR_04,51.3,Signal,Point Malfunction,Predictive,4,4,3,2026-09-19,0,120,7,Pending
+SMMS0132,SIG_079,COR_19,102.0,Cable,Interlocking Fault,Preventive,1,3,2,2026-09-17,0,180,3,Scheduled
+SMMS0133,SIG_224,COR_09,151.2,Point,Cable Fault,Emergency,4,4,3,2026-09-19,0,180,4,Pending
+SMMS0134,SIG_090,COR_20,14.8,Cable,Point Malfunction,Preventive,3,1,1,2026-09-02,2,30,8,Scheduled
+SMMS0135,SIG_298,COR_19,72.9,Point,Signal Failure,Predictive,5,5,4,2026-08-30,5,150,8,Pending
+SMMS0136,SIG_115,COR_19,132.0,Cable,Point Malfunction,Emergency,5,5,1,2026-09-11,0,90,4,Scheduled
+SMMS0137,SIG_085,COR_17,25.3,Point,Point Malfunction,Preventive,4,3,1,2026-09-06,0,45,8,Pending
+SMMS0138,SIG_136,COR_12,42.1,Point,Axle Counter Fault,Predictive,4,4,4,2026-09-01,3,30,2,Completed
+SMMS0139,SIG_053,COR_17,114.0,Cable,Cable Fault,Preventive,4,4,3,2026-09-09,0,120,7,In Progress
+SMMS0140,SIG_265,COR_09,67.7,Point,Axle Counter Fault,Emergency,3,3,4,2026-09-01,3,180,5,In Progress
+SMMS0141,SIG_257,COR_05,79.2,Point,Signal Failure,Predictive,2,2,2,2026-08-30,5,45,4,Scheduled
+SMMS0142,SIG_118,COR_14,146.0,Signal,Interlocking Fault,Emergency,4,2,5,2026-09-02,2,45,7,In Progress
+SMMS0143,SIG_125,COR_02,23.0,Point,Point Malfunction,Corrective,5,2,1,2026-08-30,5,45,4,Completed
+SMMS0144,SIG_208,COR_20,174.5,Signal,Cable Fault,Corrective,2,4,5,2026-09-15,0,90,8,Pending
+SMMS0145,SIG_211,COR_20,25.7,Point,Axle Counter Fault,Predictive,2,3,4,2026-09-06,0,120,6,Pending
+SMMS0146,SIG_198,COR_05,19.5,Point,Axle Counter Fault,Emergency,2,5,1,2026-09-11,0,45,5,Completed
+SMMS0147,SIG_020,COR_18,90.6,Signal,Signal Failure,Emergency,2,5,5,2026-09-18,0,180,2,In Progress
+SMMS0148,SIG_221,COR_17,75.7,Signal,Axle Counter Fault,Emergency,2,4,4,2026-09-19,0,60,6,In Progress
+SMMS0149,SIG_051,COR_14,24.1,Interlock,Point Malfunction,Corrective,3,5,5,2026-09-17,0,90,4,Pending
+SMMS0150,SIG_296,COR_17,21.2,Signal,Interlocking Fault,Preventive,3,4,3,2026-08-30,5,30,3,Pending
+SMMS0151,SIG_130,COR_09,153.9,Interlock,Axle Counter Fault,Predictive,5,3,4,2026-09-17,0,180,3,Pending
+SMMS0152,SIG_248,COR_06,66.6,Interlock,Cable Fault,Predictive,5,3,4,2026-09-16,0,150,3,In Progress
+SMMS0153,SIG_118,COR_15,141.0,Point,Signal Failure,Preventive,5,4,3,2026-09-02,2,180,6,Scheduled
+SMMS0154,SIG_083,COR_13,173.6,Signal,Signal Failure,Preventive,4,5,4,2026-08-31,4,30,2,Pending
+SMMS0155,SIG_041,COR_20,6.8,Interlock,Interlocking Fault,Predictive,5,1,2,2026-09-10,0,150,5,Pending
+SMMS0156,SIG_266,COR_10,35.1,Point,Axle Counter Fault,Preventive,1,3,2,2026-09-05,0,150,2,Completed
+SMMS0157,SIG_142,COR_13,63.6,Interlock,Interlocking Fault,Preventive,5,1,1,2026-09-01,3,30,6,Pending
+SMMS0158,SIG_299,COR_12,62.5,Cable,Point Malfunction,Preventive,4,4,5,2026-09-16,0,30,4,Pending
+SMMS0159,SIG_055,COR_18,13.0,Cable,Cable Fault,Corrective,5,3,5,2026-09-15,0,180,8,Scheduled
+SMMS0160,SIG_194,COR_19,87.1,Point,Cable Fault,Emergency,4,5,1,2026-09-13,0,90,2,Pending
+SMMS0161,SIG_113,COR_08,144.0,Interlock,Cable Fault,Corrective,3,2,3,2026-09-11,0,30,5,Scheduled
+SMMS0162,SIG_039,COR_18,167.7,Interlock,Cable Fault,Predictive,2,5,3,2026-09-09,0,45,7,Scheduled
+SMMS0163,SIG_256,COR_07,42.3,Point,Cable Fault,Preventive,2,2,2,2026-09-05,0,180,6,Pending
+SMMS0164,SIG_062,COR_03,121.6,Interlock,Axle Counter Fault,Corrective,5,1,4,2026-09-02,2,60,6,Pending
+SMMS0165,SIG_141,COR_16,32.9,Cable,Interlocking Fault,Preventive,5,2,1,2026-09-17,0,120,8,Pending
+SMMS0166,SIG_017,COR_17,62.5,Point,Interlocking Fault,Corrective,5,4,3,2026-09-16,0,150,2,Pending
+SMMS0167,SIG_195,COR_19,18.1,Cable,Axle Counter Fault,Predictive,2,5,3,2026-09-05,0,45,4,Pending
+SMMS0168,SIG_176,COR_12,33.1,Interlock,Point Malfunction,Emergency,3,3,4,2026-09-18,0,60,5,Pending
+SMMS0169,SIG_295,COR_08,146.6,Cable,Point Malfunction,Emergency,4,2,2,2026-09-03,1,180,7,Pending
+SMMS0170,SIG_091,COR_14,89.9,Cable,Interlocking Fault,Predictive,3,5,5,2026-08-30,5,30,5,Pending
+SMMS0171,SIG_031,COR_07,146.5,Interlock,Signal Failure,Emergency,3,3,3,2026-09-04,0,60,6,Scheduled
+SMMS0172,SIG_177,COR_01,74.1,Cable,Axle Counter Fault,Preventive,5,5,5,2026-09-07,0,45,8,Pending
+SMMS0173,SIG_262,COR_16,139.5,Interlock,Signal Failure,Emergency,5,3,4,2026-09-09,0,150,3,In Progress
+SMMS0174,SIG_173,COR_14,113.6,Interlock,Signal Failure,Corrective,2,3,2,2026-09-19,0,60,4,Scheduled
+SMMS0175,SIG_203,COR_09,159.8,Cable,Axle Counter Fault,Emergency,4,2,2,2026-09-07,0,180,2,Pending
+SMMS0176,SIG_129,COR_03,37.9,Interlock,Signal Failure,Corrective,1,4,5,2026-09-06,0,30,2,In Progress
+SMMS0177,SIG_043,COR_04,47.2,Point,Signal Failure,Emergency,3,2,2,2026-09-15,0,150,4,Pending
+SMMS0178,SIG_068,COR_17,150.9,Signal,Signal Failure,Predictive,3,4,4,2026-09-03,1,180,6,Completed
+SMMS0179,SIG_228,COR_05,174.5,Point,Axle Counter Fault,Emergency,5,4,5,2026-09-16,0,150,7,Scheduled
+SMMS0180,SIG_247,COR_18,40.9,Signal,Interlocking Fault,Predictive,3,4,3,2026-09-10,0,45,4,Pending
+SMMS0181,SIG_070,COR_12,51.6,Signal,Interlocking Fault,Emergency,3,1,4,2026-09-15,0,180,4,Scheduled
+SMMS0182,SIG_281,COR_12,33.9,Interlock,Interlocking Fault,Preventive,2,4,4,2026-08-30,5,45,4,Pending
+SMMS0183,SIG_123,COR_17,137.6,Cable,Cable Fault,Predictive,4,2,1,2026-09-19,0,45,3,Pending
+SMMS0184,SIG_234,COR_20,81.5,Interlock,Point Malfunction,Predictive,1,2,1,2026-09-19,0,120,2,Pending
+SMMS0185,SIG_145,COR_09,22.5,Interlock,Signal Failure,Preventive,1,2,1,2026-09-02,2,90,3,Pending
+SMMS0186,SIG_256,COR_12,83.5,Signal,Cable Fault,Corrective,2,1,3,2026-09-08,0,180,5,Pending
+SMMS0187,SIG_093,COR_07,161.2,Cable,Interlocking Fault,Corrective,1,2,4,2026-09-14,0,180,5,Pending
+SMMS0188,SIG_102,COR_15,132.4,Signal,Axle Counter Fault,Preventive,4,4,3,2026-08-31,4,60,3,Scheduled
+SMMS0189,SIG_282,COR_17,22.0,Interlock,Cable Fault,Preventive,3,1,2,2026-08-31,4,30,3,Scheduled
+SMMS0190,SIG_008,COR_06,143.0,Signal,Interlocking Fault,Preventive,1,1,5,2026-09-09,0,180,7,Pending
+SMMS0191,SIG_080,COR_12,138.7,Point,Point Malfunction,Emergency,1,5,3,2026-09-18,0,180,7,Pending
+SMMS0192,SIG_079,COR_18,142.5,Point,Interlocking Fault,Preventive,3,5,3,2026-09-10,0,180,5,Scheduled
+SMMS0193,SIG_194,COR_12,130.4,Cable,Signal Failure,Emergency,4,5,3,2026-08-30,5,120,7,Pending
+SMMS0194,SIG_096,COR_18,62.6,Interlock,Cable Fault,Preventive,1,5,2,2026-09-17,0,90,4,In Progress
+SMMS0195,SIG_188,COR_15,0.1,Interlock,Point Malfunction,Corrective,5,3,5,2026-09-16,0,45,4,Scheduled
+SMMS0196,SIG_199,COR_07,94.3,Interlock,Axle Counter Fault,Preventive,5,3,3,2026-09-16,0,90,7,Pending
+SMMS0197,SIG_268,COR_03,7.9,Point,Point Malfunction,Corrective,2,1,4,2026-09-02,2,45,2,Pending
+SMMS0198,SIG_199,COR_16,94.6,Cable,Signal Failure,Predictive,2,5,1,2026-09-19,0,30,3,Scheduled
+SMMS0199,SIG_240,COR_02,65.0,Interlock,Cable Fault,Corrective,5,3,5,2026-09-01,3,30,7,Pending
+SMMS0200,SIG_040,COR_07,172.9,Signal,Signal Failure,Preventive,5,4,2,2026-09-08,0,45,6,Scheduled
+SMMS0201,SIG_092,COR_18,134.9,Interlock,Signal Failure,Predictive,4,4,1,2026-09-17,0,45,8,Pending
+SMMS0202,SIG_259,COR_11,118.4,Interlock,Cable Fault,Predictive,5,3,3,2026-09-11,0,90,8,Scheduled
+SMMS0203,SIG_124,COR_19,98.2,Interlock,Axle Counter Fault,Predictive,3,4,4,2026-09-09,0,90,2,Scheduled
+SMMS0204,SIG_009,COR_17,24.3,Cable,Signal Failure,Predictive,2,2,3,2026-09-08,0,30,8,In Progress
+SMMS0205,SIG_284,COR_17,100.1,Point,Signal Failure,Corrective,4,3,2,2026-09-07,0,45,4,Pending
+SMMS0206,SIG_128,COR_08,46.1,Cable,Signal Failure,Emergency,5,2,1,2026-09-17,0,150,4,In Progress
+SMMS0207,SIG_250,COR_19,147.5,Signal,Axle Counter Fault,Predictive,1,5,4,2026-09-04,0,30,8,Pending
+SMMS0208,SIG_179,COR_14,75.0,Signal,Point Malfunction,Corrective,4,1,3,2026-09-09,0,120,2,Pending
+SMMS0209,SIG_077,COR_11,90.4,Point,Point Malfunction,Corrective,4,4,5,2026-09-17,0,120,6,Pending
+SMMS0210,SIG_149,COR_13,26.6,Cable,Signal Failure,Emergency,5,1,5,2026-09-12,0,90,4,Pending
+SMMS0211,SIG_223,COR_05,137.2,Interlock,Axle Counter Fault,Preventive,4,4,5,2026-09-15,0,45,6,Scheduled
+SMMS0212,SIG_127,COR_08,12.9,Interlock,Cable Fault,Corrective,1,4,4,2026-09-15,0,60,4,Pending
+SMMS0213,SIG_013,COR_10,30.5,Cable,Axle Counter Fault,Emergency,5,2,4,2026-09-10,0,30,8,Pending
+SMMS0214,SIG_080,COR_03,20.2,Signal,Point Malfunction,Preventive,3,1,3,2026-09-10,0,150,8,Pending
+SMMS0215,SIG_242,COR_01,59.7,Point,Point Malfunction,Predictive,5,4,5,2026-09-13,0,150,3,Scheduled
+SMMS0216,SIG_193,COR_19,163.1,Signal,Cable Fault,Preventive,1,3,2,2026-08-30,5,180,7,Scheduled
+SMMS0217,SIG_239,COR_01,12.0,Cable,Cable Fault,Corrective,1,3,4,2026-08-31,4,45,5,Scheduled
+SMMS0218,SIG_162,COR_16,156.0,Signal,Point Malfunction,Preventive,5,4,5,2026-09-02,2,150,2,Pending
+SMMS0219,SIG_157,COR_11,88.2,Point,Signal Failure,Predictive,3,3,3,2026-09-15,0,45,6,Pending
+SMMS0220,SIG_132,COR_13,160.3,Signal,Axle Counter Fault,Predictive,2,2,3,2026-08-31,4,90,7,Pending
+SMMS0221,SIG_267,COR_20,157.1,Point,Interlocking Fault,Preventive,5,2,4,2026-09-11,0,60,6,Pending
+SMMS0222,SIG_068,COR_07,117.4,Point,Point Malfunction,Predictive,5,2,4,2026-09-16,0,180,3,Scheduled
+SMMS0223,SIG_081,COR_11,12.2,Signal,Point Malfunction,Predictive,2,1,3,2026-09-17,0,90,5,Pending
+SMMS0224,SIG_141,COR_05,140.2,Signal,Point Malfunction,Preventive,1,5,5,2026-09-19,0,60,6,Scheduled
+SMMS0225,SIG_119,COR_08,123.7,Cable,Signal Failure,Emergency,2,5,5,2026-09-06,0,90,7,Scheduled
+SMMS0226,SIG_199,COR_16,85.3,Point,Point Malfunction,Preventive,1,4,1,2026-09-04,0,60,5,Pending
+SMMS0227,SIG_105,COR_03,31.9,Interlock,Axle Counter Fault,Emergency,3,4,2,2026-09-05,0,90,5,In Progress
+SMMS0228,SIG_195,COR_11,70.9,Signal,Axle Counter Fault,Corrective,4,4,1,2026-09-18,0,45,6,Scheduled
+SMMS0229,SIG_286,COR_13,92.9,Signal,Point Malfunction,Predictive,4,4,3,2026-08-31,4,180,8,Pending
+SMMS0230,SIG_217,COR_10,110.4,Signal,Axle Counter Fault,Preventive,4,4,1,2026-09-04,0,150,6,Pending
+SMMS0231,SIG_280,COR_05,70.8,Cable,Interlocking Fault,Corrective,2,4,5,2026-09-17,0,150,3,In Progress
+SMMS0232,SIG_129,COR_11,124.5,Point,Signal Failure,Corrective,1,4,3,2026-09-01,3,30,6,Scheduled
+SMMS0233,SIG_082,COR_13,99.1,Signal,Point Malfunction,Predictive,5,2,2,2026-09-15,0,180,3,Pending
+SMMS0234,SIG_215,COR_10,55.7,Interlock,Cable Fault,Preventive,1,2,2,2026-08-31,4,30,6,In Progress
+SMMS0235,SIG_235,COR_16,154.0,Signal,Axle Counter Fault,Emergency,2,2,5,2026-08-30,5,150,5,Pending
+SMMS0236,SIG_041,COR_20,108.0,Point,Axle Counter Fault,Predictive,5,5,2,2026-09-13,0,30,3,Pending
+SMMS0237,SIG_179,COR_02,26.2,Signal,Axle Counter Fault,Predictive,3,1,1,2026-09-19,0,30,5,Completed
+SMMS0238,SIG_146,COR_20,119.0,Point,Interlocking Fault,Predictive,1,1,3,2026-09-04,0,60,4,In Progress
+SMMS0239,SIG_219,COR_18,11.7,Interlock,Point Malfunction,Corrective,3,3,5,2026-09-01,3,90,6,Pending
+SMMS0240,SIG_030,COR_04,102.8,Signal,Interlocking Fault,Predictive,4,5,3,2026-09-05,0,60,6,Scheduled
+SMMS0241,SIG_182,COR_05,110.6,Interlock,Axle Counter Fault,Emergency,4,2,5,2026-09-18,0,45,7,Pending
+SMMS0242,SIG_001,COR_04,4.3,Signal,Point Malfunction,Emergency,4,1,3,2026-09-05,0,60,6,In Progress
+SMMS0243,SIG_006,COR_07,124.2,Cable,Signal Failure,Predictive,3,5,5,2026-09-05,0,60,8,Pending
+SMMS0244,SIG_175,COR_13,130.4,Signal,Point Malfunction,Preventive,3,3,4,2026-09-09,0,90,8,Pending
+SMMS0245,SIG_247,COR_05,112.9,Cable,Interlocking Fault,Emergency,1,5,3,2026-09-03,1,120,7,Scheduled
+SMMS0246,SIG_275,COR_01,37.5,Cable,Cable Fault,Corrective,2,3,1,2026-09-16,0,60,5,Scheduled
+SMMS0247,SIG_293,COR_20,70.1,Signal,Cable Fault,Predictive,1,3,4,2026-09-04,0,30,5,In Progress
+SMMS0248,SIG_232,COR_10,38.9,Cable,Point Malfunction,Corrective,3,1,2,2026-09-10,0,30,5,Scheduled
+SMMS0249,SIG_257,COR_05,34.2,Interlock,Axle Counter Fault,Predictive,3,2,1,2026-09-14,0,180,6,Scheduled
+SMMS0250,SIG_106,COR_02,82.7,Signal,Signal Failure,Predictive,1,5,1,2026-09-03,1,60,5,In Progress

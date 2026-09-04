@@ -1,0 +1,251 @@
+task_id,asset_id,corridor_id,location_km,asset_type,defect_type,maintenance_type,criticality,urgency,safety_risk,due_date,overdue_days,estimated_duration_min,crew_required,status
+TDMS0001,OHE_267,COR_10,4.0,Insulator,OHE Wire Sag,Predictive,2,2,3,2026-09-02,2,60,6,Pending
+TDMS0002,OHE_061,COR_09,26.9,Insulator,Catenary Damage,Corrective,5,5,5,2026-09-13,0,30,3,Scheduled
+TDMS0003,OHE_164,COR_09,25.5,Insulator,Pole Damage,Preventive,2,1,3,2026-09-16,0,120,4,Scheduled
+TDMS0004,OHE_067,COR_01,84.7,OHE,Catenary Damage,Emergency,1,1,4,2026-08-31,4,90,3,Scheduled
+TDMS0005,OHE_229,COR_20,64.0,Insulator,OHE Wire Sag,Corrective,4,5,2,2026-09-17,0,30,8,In Progress
+TDMS0006,OHE_050,COR_15,55.9,Pole,Feeder Fault,Preventive,2,2,5,2026-09-13,0,60,4,Pending
+TDMS0007,OHE_167,COR_15,87.8,OHE,Feeder Fault,Corrective,3,4,4,2026-09-09,0,180,3,Pending
+TDMS0008,OHE_295,COR_05,91.4,Pole,Catenary Damage,Predictive,5,1,3,2026-09-10,0,120,5,Pending
+TDMS0009,OHE_123,COR_20,43.9,Feeder,Feeder Fault,Emergency,1,3,2,2026-09-12,0,180,7,Scheduled
+TDMS0010,OHE_291,COR_11,98.0,Feeder,OHE Wire Sag,Corrective,5,4,1,2026-09-12,0,120,6,Pending
+TDMS0011,OHE_050,COR_15,31.7,Pole,Catenary Damage,Corrective,5,4,3,2026-09-16,0,90,7,Scheduled
+TDMS0012,OHE_112,COR_05,159.7,OHE,OHE Wire Sag,Preventive,4,5,3,2026-09-01,3,90,6,Scheduled
+TDMS0013,OHE_106,COR_11,54.0,Insulator,Feeder Fault,Predictive,1,5,1,2026-09-05,0,120,6,Pending
+TDMS0014,OHE_151,COR_02,66.5,OHE,Catenary Damage,Predictive,1,3,1,2026-09-03,1,45,5,Scheduled
+TDMS0015,OHE_163,COR_13,73.1,Pole,Pole Damage,Preventive,2,4,2,2026-09-11,0,45,6,Pending
+TDMS0016,OHE_214,COR_05,51.9,Feeder,OHE Wire Sag,Corrective,1,1,2,2026-09-10,0,150,5,Scheduled
+TDMS0017,OHE_044,COR_05,115.6,Pole,Feeder Fault,Emergency,5,2,4,2026-09-03,1,120,5,Scheduled
+TDMS0018,OHE_197,COR_12,40.6,Pole,Pole Damage,Corrective,5,4,2,2026-09-13,0,150,6,Pending
+TDMS0019,OHE_296,COR_12,6.0,OHE,Pole Damage,Emergency,3,1,5,2026-09-16,0,90,7,Pending
+TDMS0020,OHE_144,COR_15,93.1,OHE,OHE Wire Sag,Emergency,1,5,5,2026-09-15,0,60,6,Pending
+TDMS0021,OHE_274,COR_01,84.4,Pole,Pole Damage,Predictive,4,3,3,2026-09-09,0,60,3,Pending
+TDMS0022,OHE_156,COR_19,46.9,Pole,Pole Damage,Preventive,5,1,3,2026-09-18,0,180,7,Scheduled
+TDMS0023,OHE_249,COR_03,22.8,OHE,Insulator Failure,Predictive,2,5,3,2026-09-08,0,60,8,Pending
+TDMS0024,OHE_090,COR_19,133.0,Pole,Insulator Failure,Preventive,3,2,4,2026-09-02,2,45,8,Scheduled
+TDMS0025,OHE_176,COR_03,174.1,Feeder,Feeder Fault,Emergency,4,2,4,2026-08-31,4,150,7,Pending
+TDMS0026,OHE_177,COR_02,115.6,OHE,Catenary Damage,Preventive,4,4,4,2026-09-17,0,60,5,Scheduled
+TDMS0027,OHE_120,COR_13,123.0,Pole,Feeder Fault,Predictive,2,5,4,2026-09-16,0,30,4,Completed
+TDMS0028,OHE_196,COR_11,173.1,OHE,Catenary Damage,Predictive,4,5,3,2026-09-13,0,60,4,Pending
+TDMS0029,OHE_131,COR_19,70.4,Feeder,Pole Damage,Preventive,5,3,2,2026-09-02,2,60,6,Pending
+TDMS0030,OHE_035,COR_01,74.0,OHE,Feeder Fault,Predictive,2,3,3,2026-08-30,5,45,2,Pending
+TDMS0031,OHE_030,COR_20,118.2,Feeder,Pole Damage,Corrective,1,1,5,2026-09-01,3,45,5,Scheduled
+TDMS0032,OHE_290,COR_06,161.3,Feeder,Insulator Failure,Predictive,4,1,4,2026-09-19,0,60,8,Pending
+TDMS0033,OHE_132,COR_06,140.5,Insulator,Catenary Damage,Emergency,4,3,1,2026-09-09,0,60,8,Pending
+TDMS0034,OHE_036,COR_16,176.3,Feeder,Pole Damage,Emergency,2,4,1,2026-09-13,0,45,6,In Progress
+TDMS0035,OHE_055,COR_15,128.8,OHE,Catenary Damage,Corrective,1,5,3,2026-09-05,0,180,5,Pending
+TDMS0036,OHE_077,COR_01,167.9,Pole,Insulator Failure,Preventive,3,4,5,2026-09-14,0,30,6,Scheduled
+TDMS0037,OHE_245,COR_14,72.7,OHE,Pole Damage,Preventive,1,4,4,2026-09-14,0,30,6,Scheduled
+TDMS0038,OHE_171,COR_10,72.1,OHE,Insulator Failure,Predictive,1,4,3,2026-09-10,0,150,3,Pending
+TDMS0039,OHE_197,COR_07,53.8,Pole,Catenary Damage,Predictive,4,1,4,2026-08-31,4,150,3,Pending
+TDMS0040,OHE_013,COR_19,42.9,Pole,Catenary Damage,Predictive,4,5,4,2026-09-05,0,30,2,Pending
+TDMS0041,OHE_022,COR_13,21.3,Pole,Pole Damage,Preventive,5,2,1,2026-09-09,0,30,7,Pending
+TDMS0042,OHE_010,COR_16,163.3,OHE,OHE Wire Sag,Preventive,1,2,1,2026-09-19,0,60,8,In Progress
+TDMS0043,OHE_088,COR_19,11.5,OHE,Catenary Damage,Emergency,5,5,2,2026-09-13,0,30,8,Pending
+TDMS0044,OHE_206,COR_11,21.7,Feeder,Insulator Failure,Preventive,1,5,2,2026-09-09,0,60,2,Pending
+TDMS0045,OHE_213,COR_06,125.3,Feeder,Feeder Fault,Preventive,5,1,2,2026-09-03,1,30,8,In Progress
+TDMS0046,OHE_193,COR_06,2.8,Pole,Catenary Damage,Corrective,1,2,1,2026-09-18,0,150,7,Scheduled
+TDMS0047,OHE_214,COR_16,124.6,Feeder,OHE Wire Sag,Predictive,5,4,4,2026-09-08,0,45,3,Scheduled
+TDMS0048,OHE_093,COR_16,110.2,OHE,Insulator Failure,Predictive,4,1,5,2026-08-31,4,45,3,Pending
+TDMS0049,OHE_049,COR_20,65.1,Feeder,Feeder Fault,Preventive,3,1,2,2026-09-15,0,30,8,Pending
+TDMS0050,OHE_255,COR_06,28.8,OHE,Catenary Damage,Predictive,3,2,4,2026-09-14,0,60,4,Scheduled
+TDMS0051,OHE_023,COR_04,133.3,Feeder,OHE Wire Sag,Corrective,4,5,1,2026-09-13,0,30,3,Scheduled
+TDMS0052,OHE_297,COR_11,75.4,Insulator,OHE Wire Sag,Corrective,3,2,1,2026-09-17,0,45,7,Pending
+TDMS0053,OHE_193,COR_08,13.2,Pole,Catenary Damage,Emergency,2,2,5,2026-09-05,0,90,3,Pending
+TDMS0054,OHE_235,COR_07,113.8,Insulator,OHE Wire Sag,Predictive,2,1,5,2026-09-03,1,30,4,Pending
+TDMS0055,OHE_235,COR_14,30.8,Insulator,OHE Wire Sag,Predictive,5,2,5,2026-09-13,0,45,6,Completed
+TDMS0056,OHE_045,COR_14,154.3,Pole,OHE Wire Sag,Emergency,4,3,1,2026-09-06,0,150,5,Scheduled
+TDMS0057,OHE_127,COR_11,78.2,Feeder,Pole Damage,Preventive,5,1,4,2026-09-06,0,30,2,Completed
+TDMS0058,OHE_018,COR_14,95.6,Pole,Catenary Damage,Emergency,4,2,1,2026-09-15,0,120,8,Pending
+TDMS0059,OHE_112,COR_05,64.5,Feeder,Catenary Damage,Corrective,4,3,2,2026-09-12,0,150,5,In Progress
+TDMS0060,OHE_013,COR_15,83.5,Feeder,Feeder Fault,Preventive,3,4,1,2026-09-17,0,180,7,Pending
+TDMS0061,OHE_272,COR_02,53.4,Insulator,Pole Damage,Preventive,1,5,3,2026-09-09,0,150,2,Scheduled
+TDMS0062,OHE_027,COR_04,68.9,Pole,Pole Damage,Corrective,3,3,2,2026-09-10,0,150,6,Scheduled
+TDMS0063,OHE_105,COR_05,176.6,Feeder,Pole Damage,Corrective,4,5,2,2026-09-16,0,180,7,In Progress
+TDMS0064,OHE_181,COR_09,90.6,Pole,Insulator Failure,Corrective,1,3,3,2026-09-09,0,90,5,Scheduled
+TDMS0065,OHE_241,COR_18,122.1,Insulator,Feeder Fault,Predictive,1,2,4,2026-09-02,2,30,2,Pending
+TDMS0066,OHE_148,COR_03,19.7,Insulator,Catenary Damage,Preventive,4,2,2,2026-09-04,0,120,7,Pending
+TDMS0067,OHE_278,COR_05,85.3,Pole,Feeder Fault,Corrective,3,2,1,2026-09-12,0,30,8,In Progress
+TDMS0068,OHE_172,COR_14,104.2,Insulator,Feeder Fault,Emergency,4,3,5,2026-09-15,0,45,8,Pending
+TDMS0069,OHE_117,COR_16,66.9,Insulator,Catenary Damage,Preventive,3,3,4,2026-09-07,0,45,6,Completed
+TDMS0070,OHE_147,COR_06,175.2,Feeder,OHE Wire Sag,Preventive,1,1,3,2026-09-16,0,120,3,Pending
+TDMS0071,OHE_095,COR_07,101.2,OHE,Insulator Failure,Predictive,2,3,4,2026-09-10,0,120,3,Scheduled
+TDMS0072,OHE_013,COR_13,167.6,Feeder,Feeder Fault,Predictive,2,1,5,2026-09-02,2,120,4,Scheduled
+TDMS0073,OHE_243,COR_10,174.5,Feeder,Pole Damage,Emergency,3,1,4,2026-09-08,0,30,3,Scheduled
+TDMS0074,OHE_158,COR_01,72.3,Feeder,Feeder Fault,Predictive,1,3,1,2026-09-02,2,120,7,Pending
+TDMS0075,OHE_114,COR_09,35.2,OHE,Pole Damage,Emergency,1,5,4,2026-09-15,0,45,5,Pending
+TDMS0076,OHE_262,COR_02,163.5,Insulator,Feeder Fault,Preventive,4,3,4,2026-09-18,0,60,2,Pending
+TDMS0077,OHE_158,COR_15,157.4,OHE,OHE Wire Sag,Emergency,4,4,3,2026-09-10,0,45,8,Scheduled
+TDMS0078,OHE_213,COR_05,150.4,OHE,OHE Wire Sag,Preventive,3,4,5,2026-09-12,0,60,2,Completed
+TDMS0079,OHE_193,COR_03,1.2,Insulator,Feeder Fault,Preventive,5,4,5,2026-09-17,0,180,3,Pending
+TDMS0080,OHE_149,COR_18,88.3,Insulator,Pole Damage,Predictive,4,5,4,2026-09-11,0,45,2,In Progress
+TDMS0081,OHE_135,COR_10,172.1,Pole,Catenary Damage,Predictive,4,2,4,2026-09-03,1,150,7,Pending
+TDMS0082,OHE_142,COR_16,179.0,OHE,Pole Damage,Predictive,5,4,5,2026-09-02,2,90,8,Pending
+TDMS0083,OHE_062,COR_12,92.3,OHE,Insulator Failure,Preventive,5,1,2,2026-09-14,0,60,5,In Progress
+TDMS0084,OHE_183,COR_06,9.5,Insulator,Feeder Fault,Predictive,1,3,3,2026-09-03,1,120,7,Completed
+TDMS0085,OHE_100,COR_06,137.6,Feeder,Pole Damage,Predictive,3,3,3,2026-09-15,0,150,7,Scheduled
+TDMS0086,OHE_274,COR_19,63.3,Feeder,Catenary Damage,Preventive,5,3,3,2026-09-02,2,180,5,Pending
+TDMS0087,OHE_053,COR_07,27.8,Feeder,OHE Wire Sag,Corrective,4,4,1,2026-09-04,0,30,8,Pending
+TDMS0088,OHE_246,COR_12,56.1,Insulator,OHE Wire Sag,Emergency,5,5,3,2026-08-30,5,45,7,Pending
+TDMS0089,OHE_114,COR_05,154.2,Feeder,OHE Wire Sag,Predictive,2,2,2,2026-09-02,2,30,5,Scheduled
+TDMS0090,OHE_040,COR_01,139.4,Pole,Catenary Damage,Preventive,1,1,5,2026-09-02,2,120,2,Pending
+TDMS0091,OHE_023,COR_03,54.3,OHE,Catenary Damage,Corrective,5,2,5,2026-09-07,0,45,3,Scheduled
+TDMS0092,OHE_047,COR_05,152.3,Insulator,Pole Damage,Predictive,3,2,5,2026-08-30,5,180,7,Scheduled
+TDMS0093,OHE_292,COR_03,17.8,OHE,Pole Damage,Preventive,2,3,2,2026-09-15,0,180,6,Pending
+TDMS0094,OHE_110,COR_17,153.2,Pole,Insulator Failure,Preventive,4,1,2,2026-09-02,2,180,4,Completed
+TDMS0095,OHE_110,COR_17,41.0,OHE,Insulator Failure,Corrective,4,1,5,2026-09-12,0,45,5,In Progress
+TDMS0096,OHE_286,COR_02,14.8,Pole,Catenary Damage,Emergency,3,4,5,2026-09-08,0,150,4,Scheduled
+TDMS0097,OHE_116,COR_18,73.3,Pole,OHE Wire Sag,Corrective,4,3,2,2026-09-13,0,30,7,Pending
+TDMS0098,OHE_203,COR_15,94.1,OHE,Catenary Damage,Preventive,4,4,5,2026-09-02,2,30,7,Completed
+TDMS0099,OHE_034,COR_12,175.5,Insulator,OHE Wire Sag,Emergency,1,2,4,2026-09-04,0,150,5,Pending
+TDMS0100,OHE_140,COR_13,64.1,Pole,Feeder Fault,Predictive,2,4,1,2026-09-17,0,30,4,Pending
+TDMS0101,OHE_069,COR_01,17.9,OHE,Catenary Damage,Emergency,1,2,4,2026-09-06,0,120,7,Pending
+TDMS0102,OHE_050,COR_03,119.0,Pole,Feeder Fault,Preventive,3,4,4,2026-09-08,0,120,4,Scheduled
+TDMS0103,OHE_280,COR_01,171.5,OHE,Feeder Fault,Corrective,4,4,3,2026-09-16,0,180,5,Pending
+TDMS0104,OHE_017,COR_06,100.2,Insulator,OHE Wire Sag,Emergency,4,2,3,2026-08-31,4,150,5,Pending
+TDMS0105,OHE_292,COR_16,118.8,Pole,Feeder Fault,Preventive,5,1,4,2026-09-02,2,60,5,Scheduled
+TDMS0106,OHE_181,COR_10,57.7,OHE,Pole Damage,Corrective,2,3,3,2026-09-11,0,180,7,Scheduled
+TDMS0107,OHE_175,COR_13,17.5,Insulator,Insulator Failure,Emergency,3,1,2,2026-09-19,0,45,3,Scheduled
+TDMS0108,OHE_044,COR_03,156.4,OHE,Insulator Failure,Preventive,1,5,3,2026-09-17,0,30,5,Scheduled
+TDMS0109,OHE_291,COR_17,162.3,Insulator,Catenary Damage,Emergency,5,1,3,2026-09-12,0,90,6,Pending
+TDMS0110,OHE_051,COR_16,18.0,Feeder,Insulator Failure,Emergency,5,3,2,2026-09-17,0,120,4,Pending
+TDMS0111,OHE_104,COR_16,114.4,OHE,Pole Damage,Preventive,3,3,1,2026-09-12,0,60,6,Pending
+TDMS0112,OHE_048,COR_19,17.1,Insulator,Insulator Failure,Corrective,5,5,4,2026-09-06,0,90,3,Pending
+TDMS0113,OHE_155,COR_17,144.7,Pole,Pole Damage,Predictive,2,4,4,2026-09-01,3,60,6,Scheduled
+TDMS0114,OHE_093,COR_01,113.0,Feeder,Pole Damage,Emergency,2,4,3,2026-09-16,0,150,6,In Progress
+TDMS0115,OHE_290,COR_02,94.0,Insulator,Feeder Fault,Preventive,2,2,3,2026-09-12,0,180,5,Pending
+TDMS0116,OHE_105,COR_14,48.0,Insulator,OHE Wire Sag,Predictive,5,2,4,2026-09-01,3,45,2,Pending
+TDMS0117,OHE_126,COR_10,83.5,Pole,Feeder Fault,Corrective,2,2,3,2026-08-30,5,45,2,Pending
+TDMS0118,OHE_282,COR_06,116.0,OHE,Feeder Fault,Corrective,1,1,3,2026-09-07,0,120,4,In Progress
+TDMS0119,OHE_187,COR_03,71.4,Feeder,OHE Wire Sag,Corrective,5,5,1,2026-09-12,0,120,7,In Progress
+TDMS0120,OHE_129,COR_16,159.2,Feeder,Pole Damage,Corrective,3,3,5,2026-09-15,0,150,5,In Progress
+TDMS0121,OHE_217,COR_07,26.0,Feeder,OHE Wire Sag,Predictive,4,4,3,2026-09-06,0,180,6,Pending
+TDMS0122,OHE_192,COR_04,57.0,Pole,Feeder Fault,Preventive,3,2,3,2026-09-16,0,90,7,Pending
+TDMS0123,OHE_011,COR_20,6.3,OHE,OHE Wire Sag,Predictive,5,4,3,2026-09-08,0,150,7,Pending
+TDMS0124,OHE_274,COR_08,154.4,Pole,Catenary Damage,Emergency,3,3,1,2026-09-02,2,180,8,Pending
+TDMS0125,OHE_083,COR_15,113.6,Pole,Catenary Damage,Predictive,1,4,4,2026-09-05,0,150,5,Completed
+TDMS0126,OHE_217,COR_04,148.4,Insulator,Pole Damage,Corrective,3,4,5,2026-09-09,0,150,8,Scheduled
+TDMS0127,OHE_233,COR_01,137.2,Feeder,Feeder Fault,Preventive,1,4,2,2026-09-09,0,150,4,Pending
+TDMS0128,OHE_057,COR_06,44.9,Feeder,Pole Damage,Emergency,3,4,4,2026-09-01,3,180,7,Pending
+TDMS0129,OHE_168,COR_10,35.8,Pole,Insulator Failure,Preventive,4,4,5,2026-09-04,0,45,2,Completed
+TDMS0130,OHE_118,COR_03,175.3,Feeder,Insulator Failure,Preventive,1,4,5,2026-09-16,0,90,6,Pending
+TDMS0131,OHE_189,COR_06,170.5,OHE,Catenary Damage,Emergency,4,4,1,2026-09-01,3,45,7,Pending
+TDMS0132,OHE_148,COR_16,68.8,Pole,OHE Wire Sag,Preventive,3,2,4,2026-09-07,0,45,5,In Progress
+TDMS0133,OHE_149,COR_09,42.4,Pole,OHE Wire Sag,Predictive,5,4,1,2026-08-30,5,30,5,Pending
+TDMS0134,OHE_204,COR_07,128.4,Pole,Pole Damage,Predictive,1,1,5,2026-09-09,0,30,2,Pending
+TDMS0135,OHE_242,COR_12,179.4,OHE,Catenary Damage,Predictive,5,5,4,2026-09-06,0,60,5,Scheduled
+TDMS0136,OHE_287,COR_02,104.5,Insulator,OHE Wire Sag,Emergency,3,4,2,2026-09-03,1,30,4,Scheduled
+TDMS0137,OHE_073,COR_09,21.0,OHE,OHE Wire Sag,Emergency,3,3,4,2026-09-12,0,60,4,Scheduled
+TDMS0138,OHE_265,COR_11,78.4,Feeder,Insulator Failure,Emergency,2,5,4,2026-09-07,0,30,3,Pending
+TDMS0139,OHE_094,COR_02,84.6,Feeder,Feeder Fault,Emergency,1,4,1,2026-09-06,0,90,4,Completed
+TDMS0140,OHE_249,COR_15,88.7,Feeder,Catenary Damage,Predictive,1,2,3,2026-09-16,0,45,8,Pending
+TDMS0141,OHE_140,COR_19,160.4,Feeder,Pole Damage,Corrective,5,5,2,2026-09-15,0,90,2,Pending
+TDMS0142,OHE_049,COR_11,4.7,OHE,Feeder Fault,Predictive,5,1,3,2026-09-14,0,45,2,Pending
+TDMS0143,OHE_233,COR_09,107.0,OHE,Insulator Failure,Corrective,5,4,3,2026-09-14,0,150,7,Completed
+TDMS0144,OHE_067,COR_07,155.4,Insulator,Insulator Failure,Corrective,1,5,5,2026-09-17,0,90,2,Pending
+TDMS0145,OHE_123,COR_13,16.1,Feeder,OHE Wire Sag,Emergency,4,3,2,2026-09-04,0,30,4,Pending
+TDMS0146,OHE_159,COR_20,23.6,OHE,Insulator Failure,Preventive,4,4,4,2026-09-12,0,90,4,Scheduled
+TDMS0147,OHE_047,COR_14,146.0,Feeder,Feeder Fault,Emergency,1,1,5,2026-09-12,0,60,5,Scheduled
+TDMS0148,OHE_080,COR_16,94.9,OHE,Insulator Failure,Emergency,4,1,4,2026-09-19,0,60,3,Completed
+TDMS0149,OHE_128,COR_17,77.0,OHE,Pole Damage,Corrective,1,5,1,2026-09-08,0,120,5,Pending
+TDMS0150,OHE_292,COR_09,64.0,OHE,Pole Damage,Corrective,1,4,2,2026-09-13,0,180,3,In Progress
+TDMS0151,OHE_043,COR_14,157.8,Insulator,Insulator Failure,Emergency,4,5,3,2026-08-31,4,60,8,In Progress
+TDMS0152,OHE_095,COR_03,134.5,Insulator,Catenary Damage,Emergency,5,1,1,2026-09-05,0,90,2,Pending
+TDMS0153,OHE_245,COR_15,124.5,Pole,Insulator Failure,Predictive,4,3,1,2026-09-19,0,45,3,Pending
+TDMS0154,OHE_009,COR_07,154.6,Feeder,Feeder Fault,Preventive,2,4,5,2026-09-02,2,45,2,Pending
+TDMS0155,OHE_076,COR_16,75.9,OHE,OHE Wire Sag,Preventive,4,4,4,2026-09-13,0,30,8,Pending
+TDMS0156,OHE_104,COR_10,102.5,Pole,Catenary Damage,Predictive,1,1,4,2026-09-06,0,90,8,Pending
+TDMS0157,OHE_284,COR_10,6.7,Pole,Feeder Fault,Emergency,2,1,5,2026-09-17,0,30,5,Scheduled
+TDMS0158,OHE_033,COR_09,160.7,Pole,Feeder Fault,Corrective,4,5,3,2026-09-16,0,90,7,Pending
+TDMS0159,OHE_148,COR_07,84.5,Pole,OHE Wire Sag,Preventive,5,3,5,2026-09-04,0,180,8,Scheduled
+TDMS0160,OHE_068,COR_10,130.1,Pole,Feeder Fault,Predictive,4,2,5,2026-09-13,0,45,4,Scheduled
+TDMS0161,OHE_248,COR_05,31.2,Feeder,Pole Damage,Emergency,1,4,4,2026-09-01,3,60,3,Pending
+TDMS0162,OHE_010,COR_12,158.6,Insulator,OHE Wire Sag,Preventive,5,1,1,2026-08-31,4,60,5,Pending
+TDMS0163,OHE_062,COR_18,40.3,Insulator,Insulator Failure,Predictive,1,5,3,2026-09-06,0,45,8,Scheduled
+TDMS0164,OHE_054,COR_02,166.8,Pole,Feeder Fault,Corrective,1,5,5,2026-09-15,0,180,8,Completed
+TDMS0165,OHE_022,COR_17,19.0,OHE,OHE Wire Sag,Predictive,2,3,4,2026-09-16,0,180,6,Pending
+TDMS0166,OHE_079,COR_12,60.2,Feeder,Catenary Damage,Preventive,4,4,1,2026-09-02,2,45,8,In Progress
+TDMS0167,OHE_147,COR_17,30.8,Insulator,Insulator Failure,Emergency,3,2,2,2026-09-09,0,180,8,Scheduled
+TDMS0168,OHE_071,COR_14,74.4,Pole,Feeder Fault,Predictive,1,4,2,2026-09-06,0,180,2,Scheduled
+TDMS0169,OHE_036,COR_03,60.9,Pole,OHE Wire Sag,Emergency,1,4,1,2026-09-15,0,150,7,Pending
+TDMS0170,OHE_030,COR_17,175.1,Pole,Feeder Fault,Predictive,3,3,1,2026-09-17,0,180,4,Completed
+TDMS0171,OHE_076,COR_13,80.3,Feeder,Pole Damage,Emergency,3,4,2,2026-09-18,0,60,2,Pending
+TDMS0172,OHE_200,COR_05,93.7,Insulator,OHE Wire Sag,Corrective,5,5,3,2026-09-09,0,120,4,In Progress
+TDMS0173,OHE_012,COR_01,160.3,Insulator,OHE Wire Sag,Predictive,4,5,1,2026-09-04,0,150,2,In Progress
+TDMS0174,OHE_260,COR_12,22.3,OHE,Feeder Fault,Predictive,5,1,4,2026-09-07,0,60,3,In Progress
+TDMS0175,OHE_290,COR_18,152.0,Feeder,Insulator Failure,Predictive,3,5,2,2026-09-17,0,150,5,Scheduled
+TDMS0176,OHE_054,COR_11,93.0,Feeder,Insulator Failure,Emergency,1,2,4,2026-09-06,0,180,5,Pending
+TDMS0177,OHE_218,COR_05,85.7,Pole,Catenary Damage,Predictive,5,4,5,2026-08-31,4,120,6,In Progress
+TDMS0178,OHE_300,COR_16,114.6,Pole,Feeder Fault,Emergency,2,2,5,2026-09-07,0,45,5,Scheduled
+TDMS0179,OHE_263,COR_17,21.3,Feeder,Feeder Fault,Emergency,1,2,5,2026-09-03,1,60,2,Scheduled
+TDMS0180,OHE_057,COR_04,66.5,Insulator,Catenary Damage,Preventive,1,3,3,2026-09-12,0,60,4,Pending
+TDMS0181,OHE_074,COR_05,141.1,Pole,Catenary Damage,Predictive,3,2,2,2026-08-30,5,180,7,Pending
+TDMS0182,OHE_281,COR_12,12.2,OHE,Feeder Fault,Emergency,5,3,5,2026-09-02,2,90,4,In Progress
+TDMS0183,OHE_068,COR_05,90.9,Pole,Feeder Fault,Emergency,2,3,1,2026-09-14,0,180,6,Scheduled
+TDMS0184,OHE_199,COR_08,162.0,Insulator,Pole Damage,Corrective,4,3,1,2026-09-12,0,180,3,Scheduled
+TDMS0185,OHE_159,COR_18,116.1,OHE,OHE Wire Sag,Corrective,5,5,2,2026-09-17,0,180,5,Scheduled
+TDMS0186,OHE_062,COR_18,32.4,OHE,Insulator Failure,Preventive,2,5,4,2026-08-30,5,30,8,Scheduled
+TDMS0187,OHE_206,COR_19,8.1,OHE,Insulator Failure,Emergency,2,4,1,2026-09-09,0,180,6,Pending
+TDMS0188,OHE_047,COR_04,176.4,Feeder,Insulator Failure,Preventive,2,3,1,2026-09-07,0,45,4,Completed
+TDMS0189,OHE_031,COR_20,173.0,Feeder,Catenary Damage,Corrective,3,4,1,2026-09-04,0,60,3,Pending
+TDMS0190,OHE_133,COR_13,169.5,OHE,Catenary Damage,Preventive,2,5,5,2026-09-09,0,45,5,Scheduled
+TDMS0191,OHE_198,COR_04,48.5,Insulator,Feeder Fault,Emergency,1,4,1,2026-09-15,0,90,7,Pending
+TDMS0192,OHE_138,COR_18,173.4,OHE,OHE Wire Sag,Preventive,3,5,4,2026-08-30,5,90,2,In Progress
+TDMS0193,OHE_105,COR_05,67.2,Feeder,OHE Wire Sag,Emergency,5,4,1,2026-09-15,0,30,8,Pending
+TDMS0194,OHE_149,COR_06,0.1,Pole,Insulator Failure,Predictive,4,3,2,2026-09-18,0,120,8,Scheduled
+TDMS0195,OHE_083,COR_18,101.4,Insulator,Catenary Damage,Emergency,1,2,5,2026-08-31,4,60,5,Pending
+TDMS0196,OHE_163,COR_11,114.3,Pole,Insulator Failure,Preventive,3,3,2,2026-09-15,0,90,6,Pending
+TDMS0197,OHE_002,COR_20,85.8,OHE,OHE Wire Sag,Emergency,5,4,4,2026-09-03,1,120,2,In Progress
+TDMS0198,OHE_040,COR_18,5.6,Pole,Catenary Damage,Predictive,4,5,3,2026-09-19,0,90,3,In Progress
+TDMS0199,OHE_064,COR_15,66.7,Feeder,Feeder Fault,Corrective,2,1,3,2026-08-30,5,150,7,Pending
+TDMS0200,OHE_156,COR_08,42.2,Pole,Insulator Failure,Corrective,3,4,5,2026-09-01,3,45,2,Pending
+TDMS0201,OHE_203,COR_04,156.6,Pole,OHE Wire Sag,Preventive,5,5,5,2026-09-19,0,45,2,Scheduled
+TDMS0202,OHE_066,COR_09,168.0,Feeder,Pole Damage,Predictive,2,1,5,2026-09-01,3,120,4,Scheduled
+TDMS0203,OHE_002,COR_14,115.4,OHE,Insulator Failure,Emergency,4,3,1,2026-09-13,0,150,6,Pending
+TDMS0204,OHE_265,COR_02,159.1,Feeder,Catenary Damage,Predictive,4,5,4,2026-09-10,0,60,2,Pending
+TDMS0205,OHE_042,COR_19,145.4,Feeder,Feeder Fault,Corrective,2,2,2,2026-09-09,0,60,4,Pending
+TDMS0206,OHE_050,COR_01,86.4,OHE,Pole Damage,Predictive,3,2,1,2026-09-19,0,90,3,Completed
+TDMS0207,OHE_171,COR_17,142.9,OHE,Pole Damage,Emergency,1,4,5,2026-08-31,4,30,2,Completed
+TDMS0208,OHE_194,COR_11,160.2,OHE,OHE Wire Sag,Corrective,4,1,3,2026-08-31,4,120,7,Pending
+TDMS0209,OHE_029,COR_18,9.4,Pole,Feeder Fault,Corrective,5,4,2,2026-09-02,2,180,6,In Progress
+TDMS0210,OHE_006,COR_15,69.1,Pole,Pole Damage,Corrective,3,1,4,2026-09-18,0,120,4,Scheduled
+TDMS0211,OHE_053,COR_01,107.1,OHE,Pole Damage,Preventive,5,2,5,2026-09-02,2,60,4,Pending
+TDMS0212,OHE_228,COR_06,43.8,OHE,Catenary Damage,Preventive,3,5,4,2026-09-18,0,120,7,In Progress
+TDMS0213,OHE_299,COR_18,139.6,Feeder,Feeder Fault,Predictive,5,3,3,2026-09-08,0,60,2,Scheduled
+TDMS0214,OHE_030,COR_08,91.3,OHE,Feeder Fault,Predictive,2,2,2,2026-09-03,1,180,2,Pending
+TDMS0215,OHE_240,COR_20,124.6,Insulator,Pole Damage,Predictive,4,3,2,2026-09-14,0,30,5,In Progress
+TDMS0216,OHE_254,COR_08,165.6,Feeder,OHE Wire Sag,Emergency,5,2,2,2026-08-31,4,90,7,In Progress
+TDMS0217,OHE_193,COR_07,72.1,OHE,Insulator Failure,Corrective,1,3,1,2026-09-09,0,120,2,Pending
+TDMS0218,OHE_100,COR_19,164.3,Insulator,Catenary Damage,Corrective,2,2,3,2026-09-13,0,45,3,In Progress
+TDMS0219,OHE_174,COR_18,44.3,Feeder,Catenary Damage,Preventive,3,1,1,2026-09-04,0,180,7,Pending
+TDMS0220,OHE_057,COR_11,168.5,Insulator,Feeder Fault,Preventive,3,3,2,2026-09-19,0,120,8,Completed
+TDMS0221,OHE_034,COR_04,26.0,Feeder,OHE Wire Sag,Preventive,5,4,3,2026-09-12,0,60,6,Pending
+TDMS0222,OHE_126,COR_02,137.4,Feeder,Pole Damage,Predictive,2,3,2,2026-09-19,0,30,7,In Progress
+TDMS0223,OHE_261,COR_19,159.5,Feeder,Catenary Damage,Emergency,5,1,2,2026-09-03,1,120,5,In Progress
+TDMS0224,OHE_261,COR_12,89.7,Pole,OHE Wire Sag,Predictive,3,5,4,2026-09-19,0,150,5,Pending
+TDMS0225,OHE_206,COR_19,117.0,Feeder,OHE Wire Sag,Preventive,4,2,4,2026-09-17,0,45,4,Pending
+TDMS0226,OHE_293,COR_06,168.4,Insulator,Insulator Failure,Corrective,2,1,3,2026-09-11,0,90,6,Pending
+TDMS0227,OHE_022,COR_15,92.2,Insulator,Feeder Fault,Emergency,4,4,4,2026-09-17,0,60,8,Pending
+TDMS0228,OHE_196,COR_01,32.3,Feeder,Insulator Failure,Corrective,3,1,3,2026-09-07,0,180,6,Scheduled
+TDMS0229,OHE_041,COR_09,166.8,OHE,Catenary Damage,Corrective,3,1,5,2026-09-19,0,45,4,Pending
+TDMS0230,OHE_129,COR_10,134.1,Insulator,OHE Wire Sag,Preventive,5,3,1,2026-09-09,0,180,4,Pending
+TDMS0231,OHE_207,COR_13,147.9,OHE,Feeder Fault,Preventive,4,2,2,2026-09-10,0,150,7,Pending
+TDMS0232,OHE_265,COR_19,141.5,Pole,Feeder Fault,Predictive,1,3,2,2026-09-06,0,90,8,Completed
+TDMS0233,OHE_108,COR_15,81.0,OHE,Insulator Failure,Preventive,5,2,3,2026-09-12,0,150,2,Pending
+TDMS0234,OHE_174,COR_08,75.4,Pole,Pole Damage,Predictive,3,5,1,2026-09-10,0,120,8,Pending
+TDMS0235,OHE_079,COR_11,102.3,Pole,Feeder Fault,Preventive,4,1,5,2026-09-03,1,90,3,Pending
+TDMS0236,OHE_292,COR_15,115.0,Insulator,Catenary Damage,Preventive,1,5,2,2026-09-09,0,30,8,Scheduled
+TDMS0237,OHE_014,COR_06,35.8,Pole,Insulator Failure,Preventive,2,3,5,2026-09-14,0,30,5,Pending
+TDMS0238,OHE_006,COR_06,58.8,Pole,Feeder Fault,Preventive,1,2,5,2026-09-15,0,90,5,Scheduled
+TDMS0239,OHE_106,COR_05,156.7,Insulator,Feeder Fault,Emergency,2,5,5,2026-09-11,0,60,6,Pending
+TDMS0240,OHE_142,COR_07,1.3,Feeder,Feeder Fault,Corrective,4,5,2,2026-09-13,0,120,4,Completed
+TDMS0241,OHE_236,COR_15,103.7,OHE,Insulator Failure,Emergency,3,3,4,2026-09-14,0,120,8,In Progress
+TDMS0242,OHE_213,COR_08,32.3,Pole,Feeder Fault,Emergency,2,5,1,2026-09-04,0,90,7,Completed
+TDMS0243,OHE_081,COR_09,158.9,Insulator,Catenary Damage,Preventive,4,4,5,2026-09-06,0,30,4,Pending
+TDMS0244,OHE_259,COR_11,73.8,Feeder,Insulator Failure,Preventive,5,1,4,2026-09-02,2,30,2,Scheduled
+TDMS0245,OHE_196,COR_11,134.3,Feeder,Feeder Fault,Corrective,1,3,1,2026-09-13,0,150,3,Pending
+TDMS0246,OHE_249,COR_15,12.3,Feeder,Feeder Fault,Preventive,4,3,2,2026-09-13,0,45,8,Pending
+TDMS0247,OHE_091,COR_10,22.3,Pole,OHE Wire Sag,Corrective,1,3,2,2026-09-02,2,90,4,Pending
+TDMS0248,OHE_273,COR_07,79.6,OHE,Pole Damage,Corrective,4,3,4,2026-08-31,4,30,6,Pending
+TDMS0249,OHE_104,COR_08,67.4,Feeder,OHE Wire Sag,Corrective,1,4,1,2026-09-11,0,30,4,In Progress
+TDMS0250,OHE_113,COR_04,143.4,Feeder,OHE Wire Sag,Corrective,4,5,1,2026-09-01,3,180,4,Pending
