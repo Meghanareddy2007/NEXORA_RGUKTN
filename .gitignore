@@ -1,0 +1,17 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.class
+.venv/
+env/
+venv/
+*.db
+*.sqlite3
+
+# Node / Frontend
+node_modules/
+.next/
+out/
+build/
+*.tsbuildinfo
+.env*.local

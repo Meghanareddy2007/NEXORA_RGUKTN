@@ -32,7 +32,26 @@ ROWS_TRAINS = 600
 ROWS_NETWORK = NUM_CORRIDORS
 
 CORRIDORS = [f"COR_{i:02d}" for i in range(1, NUM_CORRIDORS + 1)]
-STATIONS = [f"Station_{c}" for c in string.ascii_uppercase[:24]]
+STATIONS = [
+    "Chennai_Central",
+    "Arakkonam",
+    "Katpadi",
+    "Vellore",
+    "Vaniyambadi",
+    "Jolarpettai",
+    "Bangarapet",
+    "Krishnarajapuram",
+    "Bengaluru_City",
+    "Hosur",
+    "Dharmapuri",
+    "Salem",
+    "Erode",
+    "Karur",
+    "Tiruppur",
+    "Coimbatore",
+    "Tiruchirappalli",
+    "Dindigul",
+]
 
 DEFECT_TYPES_TRACK = ["Rail Crack", "Ballast Deficiency", "Track Geometry Fault", "Weld Failure", "Rail Wear"]
 DEFECT_TYPES_SIGNAL = ["Signal Failure", "Point Malfunction", "Cable Fault", "Interlocking Fault", "Axle Counter Fault"]
@@ -150,37 +169,43 @@ def gen_trains(n):
     return pd.DataFrame(rows)
 
 
+CORRIDOR_EDGES = [
+    ("Chennai_Central", "Arakkonam", 69.0, 4, "Yes", "Triple", "High"),
+    ("Arakkonam", "Katpadi", 61.0, 2, "Yes", "Double", "High"),
+    ("Katpadi", "Vellore", 12.0, 2, "Yes", "Double", "Med"),
+    ("Katpadi", "Vaniyambadi", 57.0, 2, "Yes", "Double", "High"),
+    ("Vaniyambadi", "Jolarpettai", 26.0, 2, "Yes", "Double", "High"),
+    ("Jolarpettai", "Bangarapet", 71.0, 2, "Yes", "Double", "Med"),
+    ("Bangarapet", "Krishnarajapuram", 56.0, 2, "Yes", "Double", "High"),
+    ("Krishnarajapuram", "Bengaluru_City", 14.0, 3, "Yes", "Triple", "High"),
+    ("Bengaluru_City", "Hosur", 52.0, 1, "Yes", "Single", "Med"),
+    ("Hosur", "Dharmapuri", 92.0, 1, "Yes", "Single", "Med"),
+    ("Dharmapuri", "Salem", 63.0, 1, "Yes", "Single", "Med"),
+    ("Jolarpettai", "Salem", 120.0, 2, "Yes", "Double", "High"),
+    ("Salem", "Erode", 63.0, 2, "Yes", "Double", "High"),
+    ("Salem", "Karur", 85.0, 1, "Yes", "Single", "Med"),
+    ("Karur", "Erode", 65.0, 1, "Yes", "Single", "Med"),
+    ("Erode", "Tiruppur", 50.0, 2, "Yes", "Double", "High"),
+    ("Tiruppur", "Coimbatore", 50.0, 2, "Yes", "Double", "High"),
+    ("Karur", "Tiruchirappalli", 78.0, 2, "Yes", "Double", "Med"),
+    ("Karur", "Dindigul", 74.0, 1, "Yes", "Single", "Low"),
+    ("Erode", "Dindigul", 108.0, 1, "Yes", "Single", "Low"),
+]
+
+
 def gen_network(n):
-    # Build a connected graph, not a random one: random.sample(STATIONS, 2)
-    # per row has no connectivity guarantee and almost always splits the
-    # network into several disconnected mini-clusters when drawn. Instead:
-    # 1) lay a random spanning tree across every station first (guarantees
-    #    one connected network, like a real rail corridor system), then
-    # 2) add any remaining rows as extra branch/loop edges between stations
-    #    already in the tree, so the diagram still reads as one network.
-    shuffled_stations = random.sample(STATIONS, len(STATIONS))
-    edges = []
-    for i in range(1, len(shuffled_stations)):
-        edges.append((shuffled_stations[i - 1], shuffled_stations[i]))
-
-    placed = set(shuffled_stations)
-    while len(edges) < n:
-        s_from, s_to = random.sample(list(placed), 2)
-        if (s_from, s_to) in edges or (s_to, s_from) in edges:
-            continue
-        edges.append((s_from, s_to))
-
     rows = []
-    for c, (s_from, s_to) in zip(CORRIDORS[:n], edges[:n]):
+    for i, c in enumerate(CORRIDORS[:n]):
+        s_from, s_to, dist, tracks, elec, sec, dens = CORRIDOR_EDGES[i % len(CORRIDOR_EDGES)]
         rows.append({
             "corridor_id": c,
             "station_from": s_from,
             "station_to": s_to,
-            "distance_km": round(random.uniform(15, 220), 1),
-            "track_count": random.choice([1, 2, 3]),
-            "electrified": random.choices(["Yes", "No"], weights=[0.75, 0.25])[0],
-            "section_type": random.choice(["Single", "Double", "Triple"]),
-            "traffic_density": random.choices(TRAFFIC_LEVELS, weights=[0.3, 0.4, 0.3])[0],
+            "distance_km": dist,
+            "track_count": tracks,
+            "electrified": elec,
+            "section_type": sec,
+            "traffic_density": dens,
         })
     return pd.DataFrame(rows)
 

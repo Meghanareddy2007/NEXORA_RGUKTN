@@ -7,7 +7,6 @@ import {
   MaintenanceRequest,
 } from "@/lib/api";
 import { TopBar } from "@/components/TopBar";
-import { PlanVisualizationPanel } from "@/components/PlanVisualizationPanel";
 import { Loader2, CheckCircle2, Clock, ChevronDown, ChevronUp } from "lucide-react";
 
 const PRIORITY_STYLE: Record<string, string> = {
@@ -85,10 +84,10 @@ export default function ProposedBlocksPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold">{req.asset_label}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${PRIORITY_STYLE[req.priority]}`}>
-                        {req.priority}
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${PRIORITY_STYLE[req.priority || "MEDIUM"] || "bg-muted text-foreground"}`}>
+                        {req.priority || "MEDIUM"}
                       </span>
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${STATUS_STYLE[req.status]}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${STATUS_STYLE[req.status] || "bg-muted text-foreground"}`}>
                         {req.status}
                       </span>
                     </div>
@@ -166,11 +165,7 @@ export default function ProposedBlocksPage() {
                     </div>
                     <div>
                       <h3 className="text-xs font-semibold mb-2">Plan Visualization</h3>
-                      {req.plan_visualization ? (
-                        <PlanVisualizationPanel viz={req.plan_visualization} activeCandidate={chosen} />
-                      ) : (
-                        <p className="text-xs text-muted-foreground">No visualization available.</p>
-                      )}
+                      <p className="text-xs text-muted-foreground">Open the Generate Plan tab to view the timeline visualization for a selected candidate.</p>
                     </div>
                   </div>
                 )}
