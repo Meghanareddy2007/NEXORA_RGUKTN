@@ -4,7 +4,7 @@ BLK0002,COR_01,2026-09-04,12:30,16:00,210,Low,3,Signal,Yes,Traction|Signal,Avail
 BLK0003,COR_04,2026-09-10,13:45,15:45,120,Med,6,Signal,Yes,Traction,Available
 BLK0004,COR_11,2026-09-24,12:15,15:45,210,Low,6,Traction,No,Signal|Engineering|Traction,Available
 BLK0005,COR_17,2026-09-22,14:15,16:45,150,Med,0,Signal,Yes,Signal,Available
-BLK0006,COR_02,2026-09-17,07:00,10:00,180,Low,3,Traction,Yes,Engineering|Traction,Available
+BLK0006,COR_02,2026-09-17,07:00,10:00,180,Low,3,Traction,Yes,Engineering|Traction,Booked
 BLK0007,COR_05,2026-09-23,14:30,18:00,210,Low,5,Engineering,No,Traction|Signal,Booked
 BLK0008,COR_07,2026-09-11,10:15,12:15,120,Med,5,Signal,No,Traction|Engineering|Signal,Available
 BLK0009,COR_03,2026-09-09,14:00,17:30,210,High,0,Signal,Yes,Engineering,Available
@@ -66,7 +66,7 @@ BLK0064,COR_18,2026-09-07,10:15,13:45,210,High,6,Engineering,Yes,Signal|Traction
 BLK0065,COR_10,2026-09-24,18:15,20:45,150,High,5,Engineering,No,Signal|Engineering|Traction,Available
 BLK0066,COR_04,2026-09-18,10:30,12:30,120,Low,5,Signal,No,Engineering,Available
 BLK0067,COR_14,2026-09-10,02:15,05:15,180,Low,3,Engineering,Yes,Signal|Engineering|Traction,Available
-BLK0068,COR_18,2026-09-13,11:15,13:45,150,High,0,Combined,No,Engineering|Traction,Available
+BLK0068,COR_18,2026-09-13,11:15,13:45,150,High,0,Combined,No,Engineering|Traction,Booked
 BLK0069,COR_04,2026-09-17,00:15,02:15,120,Low,0,Signal,No,Signal|Engineering|Traction,Booked
 BLK0070,COR_16,2026-09-19,08:45,09:45,60,Med,6,Signal,No,Traction|Signal,Available
 BLK0071,COR_12,2026-09-07,00:15,01:45,90,Med,6,Signal,Yes,Signal|Engineering,Available
