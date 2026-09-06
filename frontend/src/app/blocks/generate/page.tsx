@@ -118,9 +118,9 @@ export default function GeneratePlanPage() {
         time_window: timeWindow,
       });
       setRequest(record);
-      setViz(record.plan_visualization);
       const best = record.candidates.find((c) => c.recommendation === "Best Option");
-      setSelectedOption(best ? best.option : record.candidates[0]?.option ?? null);
+      const firstOption = best ? best.option : record.candidates[0]?.option ?? null;
+      setSelectedOption(firstOption);
     } catch {
       setError("Could not generate a plan. Check that the backend is running on :8000.");
     } finally {
@@ -135,7 +135,6 @@ export default function GeneratePlanPage() {
     try {
       const updated = await selectPlanOption(request.id, selectedOption);
       setRequest(updated);
-      setViz(updated.plan_visualization);
       setApproved(true);
     } catch {
       setError("Could not approve this block plan. It may already be booked.");

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   fetchDashboard,
   approveBlock,
@@ -161,6 +162,36 @@ export default function DashboardPage() {
                 icon={TimerReset}
                 tone="danger"
               />
+            </div>
+
+            {/* RailOps Command Center Live Visualization Banner */}
+            <div className="relative overflow-hidden rounded-xl border border-cyan-500/40 bg-gradient-to-r from-cyan-950/40 via-slate-900/60 to-blue-950/40 p-4 shadow-lg flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-inner">
+                  <TrainFront className="h-5 w-5 animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-100">
+                      RailOps Dynamic Network Simulation & Operations Map
+                    </h3>
+                    <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/60 font-semibold">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      LIVE SIMULATION
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Real-time train movements, live track availability, conflict detection, and AI dynamic corridor re-routing.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/map"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-cyan-500/20"
+              >
+                <span>Launch RailOps Command Center</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
 
             {/* Network / Recommended block / Upcoming blocks */}

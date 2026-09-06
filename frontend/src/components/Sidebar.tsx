@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/map", label: "RailOps Command Map", icon: Map },
   { href: "/blocks", label: "Block Schedule", icon: GanttChartSquare },
   { href: "/blocks/generate", label: "Block Planning", icon: GanttChartSquare },
   { href: "/map", label: "Network Map", icon: Map },

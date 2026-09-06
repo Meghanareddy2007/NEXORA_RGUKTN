@@ -100,7 +100,7 @@ BLK0098,COR_09,2026-09-12,15:30,19:00,210,High,5,Engineering,No,Traction,Availab
 BLK0099,COR_03,2026-09-08,12:45,15:15,150,Low,3,Traction,Yes,Engineering|Traction,Booked
 BLK0100,COR_16,2026-09-15,10:45,13:15,150,Med,3,Traction,Yes,Engineering|Signal|Traction,Available
 BLK0101,COR_13,2026-09-21,17:15,19:45,150,Low,5,Combined,No,Traction|Engineering|Signal,Available
-BLK0102,COR_12,2026-09-04,06:00,10:00,240,Med,1,Engineering,Yes,Signal|Engineering,Booked
+BLK0102,COR_12,2026-09-04,06:00,10:00,240,Med,1,Engineering,Yes,Signal|Engineering,Available
 BLK0103,COR_07,2026-09-08,17:15,19:45,150,High,0,Signal,Yes,Traction|Engineering|Signal,Booked
 BLK0104,COR_19,2026-09-17,11:00,12:00,60,Low,6,Signal,Yes,Engineering|Traction,Available
 BLK0105,COR_05,2026-09-04,18:45,22:45,240,Med,3,Signal,No,Signal|Traction|Engineering,Booked
