@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  fetchDashboard,
   fetchAssets,
   fetchMaintenanceTypes,
   createMaintenanceRequest,
@@ -12,6 +13,7 @@ import {
   CandidateOption,
   MaintenanceRequest,
   PlanVisualization,
+  DashboardSummary,
 } from "@/lib/api";
 import { TopBar } from "@/components/TopBar";
 import { PlanVisualizationPanel } from "@/components/PlanVisualizationPanel";
@@ -31,6 +33,12 @@ const RECOMMENDATION_STYLE: Record<string, string> = {
   "Not Recommended": "bg-danger/15 text-danger",
 };
 
+const PRIORITY_STYLE: Record<string, string> = {
+  HIGH: "bg-danger/15 text-danger",
+  MEDIUM: "bg-warning/15 text-warning",
+  LOW: "bg-success/15 text-success",
+};
+
 function timeLabel(t: string) {
   const [h, m] = t.split(":").map(Number);
   const period = h >= 12 ? "PM" : "AM";
@@ -40,6 +48,9 @@ function timeLabel(t: string) {
 
 export default function GeneratePlanPage() {
   const router = useRouter();
+
+  const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
+  const [dashboardError, setDashboardError] = useState(false);
 
   const [assets, setAssets] = useState<Asset[]>([]);
   const [maintenanceTypes, setMaintenanceTypes] = useState<string[]>([]);
@@ -61,6 +72,10 @@ export default function GeneratePlanPage() {
   const [approved, setApproved] = useState(false);
 
   useEffect(() => {
+    fetchDashboard()
+      .then(setDashboard)
+      .catch(() => setDashboardError(true));
+
     fetchAssets().then((a) => {
       setAssets(a);
       if (a.length) setAssetId(a[0].asset_id);
@@ -133,10 +148,139 @@ export default function GeneratePlanPage() {
     <div className="flex flex-col h-full">
       <TopBar title="Block Planning" subtitle="Generate Plan" />
 
-      <div className="p-6">
+      <div className="p-6 flex flex-col gap-5">
         {error && (
-          <div className="rounded-md border border-danger/30 bg-danger/10 text-danger text-sm p-3 mb-4">{error}</div>
+          <div className="rounded-md border border-danger/30 bg-danger/10 text-danger text-sm p-3">{error}</div>
         )}
+
+        {/* Block Planning Status */}
+        <section className="rounded-xl border border-border bg-card p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-sm font-semibold">Block Planning Status</h2>
+              <p className="text-xs text-muted-foreground mt-1">Current planning readiness and AI recommendations</p>
+            </div>
+            {dashboard && (
+              <span className="text-[11px] text-muted-foreground">Today · {dashboard.today}</span>
+            )}
+          </div>
+
+          {dashboardError && (
+            <p className="text-xs text-muted-foreground mb-3">Planning status is temporarily unavailable.</p>
+          )}
+
+          {dashboard && (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-[11px] text-muted-foreground">Planned Today</div>
+                  <div className="text-xl font-semibold mt-1">{dashboard.kpis.blocks_planned_today}</div>
+                </div>
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-[11px] text-muted-foreground">Upcoming</div>
+                  <div className="text-xl font-semibold mt-1">{dashboard.upcoming_blocks.length}</div>
+                </div>
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-[11px] text-muted-foreground">AI Recommended</div>
+                  <div className="text-xl font-semibold mt-1">{dashboard.recommended_block ? "Ready" : "—"}</div>
+                </div>
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-[11px] text-muted-foreground">Asset Availability</div>
+                  <div className="text-xl font-semibold mt-1">{dashboard.kpis.asset_availability_pct}%</div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-[11px] mb-1.5">
+                  <span className="text-muted-foreground">Planning readiness</span>
+                  <span className="font-medium">{dashboard.recommended_block ? "Ready" : "Needs Attention"}</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${dashboard.recommended_block ? "bg-success" : "bg-warning"}`}
+                    style={{ width: dashboard.recommended_block ? "100%" : "55%" }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </section>
+
+        {/* Recommended + Upcoming Blocks */}
+        {dashboard && (
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <section className="rounded-xl border border-success/30 bg-card p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-success" />
+                <h2 className="text-sm font-semibold text-success">Recommended Blocks</h2>
+              </div>
+              {dashboard.recommended_block ? (
+                <div className="rounded-lg border border-success/20 bg-success/5 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium text-sm">{dashboard.recommended_block.block_id}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{dashboard.recommended_block.corridor_label}</div>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${PRIORITY_STYLE[dashboard.recommended_block.priority]}`}>
+                      {dashboard.recommended_block.priority}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mt-3 text-center">
+                    <div className="rounded-md bg-muted/40 py-2">
+                      <div className="text-xs font-semibold">{timeLabel(dashboard.recommended_block.start_time)}</div>
+                      <div className="text-[9px] text-muted-foreground">Start</div>
+                    </div>
+                    <div className="rounded-md bg-muted/40 py-2">
+                      <div className="text-xs font-semibold">{dashboard.recommended_block.duration_min} min</div>
+                      <div className="text-[9px] text-muted-foreground">Duration</div>
+                    </div>
+                    <div className="rounded-md bg-muted/40 py-2">
+                      <div className="text-xs font-semibold">{dashboard.recommended_block.trains_affected}</div>
+                      <div className="text-[9px] text-muted-foreground">Trains</div>
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground mt-3">
+                    {dashboard.recommended_block.reasons.slice(0, 2).join(" · ")}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground py-4">No recommended block is currently available.</p>
+              )}
+            </section>
+
+            <section className="rounded-xl border border-border bg-card p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-semibold">Upcoming Blocks</h2>
+                <span className="text-[10px] text-muted-foreground">Next scheduled blocks</span>
+              </div>
+              <div className="flex flex-col gap-2 max-h-[210px] overflow-y-auto">
+                {dashboard.upcoming_blocks.slice(0, 5).map((b) => (
+                  <div key={b.block_id} className="rounded-lg border border-border p-2.5 text-xs flex items-center justify-between gap-3">
+                    <div>
+                      <div className="font-medium">{b.block_id}</div>
+                      <div className="text-muted-foreground">{b.corridor_label}</div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="font-medium">{timeLabel(b.start_time)} – {timeLabel(b.end_time)}</div>
+                      <span className={`inline-flex mt-1 px-1.5 py-0.5 rounded text-[9px] font-semibold ${PRIORITY_STYLE[b.priority]}`}>{b.priority}</span>
+                    </div>
+                  </div>
+                ))}
+                {dashboard.upcoming_blocks.length === 0 && (
+                  <p className="text-xs text-muted-foreground py-4">No upcoming blocks scheduled.</p>
+                )}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* Generate Plan */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-semibold">Generate Block Plan</h2>
+            <p className="text-xs text-muted-foreground mt-1">Create an AI-assisted maintenance block and review candidate windows.</p>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[320px_1fr_360px] gap-4 items-start">
           {/* ---------------- Maintenance Request Details form ---------------- */}
