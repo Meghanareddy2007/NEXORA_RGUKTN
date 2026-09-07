@@ -11,7 +11,6 @@ const NAV = [
   { href: "/map", label: "RailOps Command Map", icon: Map },
   { href: "/blocks", label: "Block Schedule", icon: GanttChartSquare },
   { href: "/blocks/generate", label: "Block Planning", icon: GanttChartSquare },
-  { href: "/map", label: "Network Map", icon: Map },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
