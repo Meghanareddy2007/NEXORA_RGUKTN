@@ -1,7 +1,42 @@
 import axios from "axios";
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
+
 export const api = axios.create({ baseURL: API_BASE });
+
+// Attach the logged-in user's token (if any) to every outgoing request.
+// Reads directly from localStorage (not the auth.ts helper) to avoid a
+// circular import between lib/api.ts and lib/auth.ts.
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const raw = window.localStorage.getItem("nexora_auth");
+    if (raw) {
+      try {
+        const { access_token } = JSON.parse(raw);
+        if (access_token) {
+          config.headers = config.headers || {};
+          config.headers.Authorization = `Bearer ${access_token}`;
+        }
+      } catch {
+        /* ignore malformed storage */
+      }
+    }
+  }
+  return config;
+});
+
+// If the backend ever returns 401 (expired/missing token) on a call that
+// required auth, clear stale auth so the user is prompted to log in again.
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err?.response?.status === 401 && typeof window !== "undefined") {
+      window.localStorage.removeItem("nexora_auth");
+      window.dispatchEvent(new Event("nexora-auth-changed"));
+    }
+    return Promise.reject(err);
+  }
+);
 
 export interface KpiSummary {
   avg_availability_target_pct: number;
@@ -117,10 +152,12 @@ export interface DashboardSummary {
   alerts: Alert[];
 }
 
-// ---- Raw dataset rows (as exposed by GET /api/datasets/{name}) -----------
+// ============================================================================
+// ANALYTICS — raw dataset rows (as exposed by GET /api/datasets/{name})
 // These map 1:1 onto the seeded CSVs and back the deeper Analytics
 // visualizations (priority matrix, section pressure, resource utilization)
 // without requiring any new backend endpoints.
+// ============================================================================
 
 export interface RawMaintenanceTask {
   task_id: string;
@@ -209,15 +246,12 @@ export const fetchNetwork = () => api.get("/api/network").then((r) => r.data);
 export const fetchCorridorRisk = () => api.get<CorridorRisk[]>("/api/analytics/corridor-risk").then((r) => r.data);
 export const runOptimization = (max_tasks = 150, max_blocks = 60) =>
   api
-    .post<OptimizeResult>("/api/optimize/run", null, {
-      params: { max_tasks, max_blocks },
-    })
+    .post<OptimizeResult>("/api/optimize/run", null, { params: { max_tasks, max_blocks } })
     .then((r) => r.data);
 
-/* -------------------------------------------------------------------------- */
-/* Block Planning APIs                                                        */
-/* These functions connect directly to the FastAPI Block Planning module.    */
-/* -------------------------------------------------------------------------- */
+// ============================================================================
+// RAILWAY OPERATIONS & MAINTENANCE DASHBOARD TYPES & APIS
+// ============================================================================
 
 export type RouteStatus =
   | "AVAILABLE"
@@ -369,20 +403,15 @@ export const predictAiPriority = (payload: {
   is_peak_hour?: boolean;
 }) => api.post("/api/ai/predict-priority", payload).then((r) => r.data);
 
+// ============================================================================
 // BLOCK PLANNER TYPES & APIS
-
+// ============================================================================
 
 export interface Asset {
   asset_id: string;
   asset_type: string;
   department: string;
   corridor_id: string;
-  location_km?: number;
-  asset_criticality?: number;
-  availability_target_pct?: number;
-  last_maintenance_date?: string;
-  next_due_date?: string;
-  failure_risk?: number;
   corridor_label: string;
   current_status: string;
   label: string;
@@ -401,25 +430,35 @@ export interface CandidateOption {
   trains_affected: number;
   expected_delay_min: number;
   score: number;
-  recommendation: "Best Option" | "Consider" | "Not Recommended";
+  recommendation: string;
   reasons: string[];
 }
 
-export interface MaintenanceRequestInput {
+export interface MaintenanceRequest {
+  id: number;
   asset_id: string;
-  maintenance_type: string;
-  required_duration_hrs: number;
-  priority: "HIGH" | "MEDIUM" | "LOW";
+  asset_label?: string;
+  corridor_id: string;
+  corridor_label?: string;
+  maintenance_type?: string;
+  required_duration_hrs?: number;
+  priority?: string;
   preferred_date?: string;
   time_window?: string;
+  status: string;
+  candidates: CandidateOption[];
+  selected_option_index?: number;
+  selected_block_id?: string;
+  created_at: string;
+  updated_at: string;
 }
-
 
 export interface PlanVisualization {
   corridor_id: string;
   date: string;
   hours: string[];
   block: {
+    asset_label: string;
     start_time: string;
     end_time: string;
     start_pct: number;
@@ -434,28 +473,10 @@ export interface PlanVisualization {
     status: "Running" | "Delayed" | "Blocked";
   }[];
 }
-export interface MaintenanceRequest {
-  id: number;
-  asset_id: string;
-  asset_label?: string;
-  corridor_id: string;
-  corridor_label?: string;
-  maintenance_type?: string;
-  required_duration_hrs?: number;
-  priority?: "HIGH" | "MEDIUM" | "LOW";
-  preferred_date?: string;
-  time_window?: string;
-  status: string;
-  candidates: CandidateOption[];
-  selected_option_index?: number | null;
-  selected_block_id?: string | null;
-  created_at: string;
-  updated_at: string;
-}
 
 export const fetchAssets = () => api.get<Asset[]>("/api/plan/assets").then((r) => r.data);
 export const fetchMaintenanceTypes = () => api.get<string[]>("/api/plan/maintenance-types").then((r) => r.data);
-export const createMaintenanceRequest = (payload:MaintenanceRequestInput ) =>
+export const createMaintenanceRequest = (payload: any) =>
   api.post<MaintenanceRequest>("/api/plan/requests", payload).then((r) => r.data);
 export const fetchMaintenanceRequests = () =>
   api.get<MaintenanceRequest[]>("/api/plan/requests").then((r) => r.data);
@@ -463,3 +484,47 @@ export const fetchPlanPreview = (requestId: number, option: number) =>
   api.get<PlanVisualization>(`/api/plan/requests/${requestId}/preview/${option}`).then((r) => r.data);
 export const selectPlanOption = (requestId: number, option: number) =>
   api.post<MaintenanceRequest>(`/api/plan/requests/${requestId}/select`, { option }).then((r) => r.data);
+
+// ============================================================================
+// REINFORCEMENT LEARNING — Adaptive Corridor Block-Release Agent
+// ============================================================================
+
+export type RlTrafficLevel = "Low" | "Med" | "High";
+export type RlBacklogLevel = "Low" | "Med" | "High";
+export type RlAction = "DEFER" | "MODERATE_RELEASE" | "AGGRESSIVE_RELEASE";
+
+export interface RlPolicyRow {
+  traffic_level: RlTrafficLevel;
+  backlog_level: RlBacklogLevel;
+  best_action: RlAction;
+  best_action_label: string;
+  q_values: Record<RlAction, number>;
+}
+
+export interface RlSummary {
+  trained_episodes: number;
+  epsilon: number;
+  reward_curve: number[];
+  avg_reward_first_10: number;
+  avg_reward_last_20: number;
+  policy: RlPolicyRow[];
+}
+
+export interface RlRecommendation {
+  state: { traffic_level: RlTrafficLevel; backlog_level: RlBacklogLevel };
+  recommended_action: RlAction;
+  recommended_action_label: string;
+  q_values: Record<RlAction, number>;
+  confidence_gap: number;
+  trained_episodes: number;
+}
+
+export const fetchRlSummary = () => api.get<RlSummary>("/api/rl/summary").then((r) => r.data);
+export const trainRlAgent = (episodes = 200) =>
+  api.post<RlSummary>("/api/rl/train", null, { params: { episodes } }).then((r) => r.data);
+export const fetchRlRecommendation = (traffic_level: RlTrafficLevel, backlog_level: RlBacklogLevel) =>
+  api
+    .get<RlRecommendation>("/api/rl/recommend", { params: { traffic_level, backlog_level } })
+    .then((r) => r.data);
+
+

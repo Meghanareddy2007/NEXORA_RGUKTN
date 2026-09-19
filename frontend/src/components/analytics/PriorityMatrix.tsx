@@ -48,7 +48,7 @@ export function PriorityMatrix({ points }: { points: PriorityPoint[] }) {
             name="Traffic Impact"
             domain={[0.5, 3.5]}
             ticks={[1, 2, 3]}
-            tickFormatter={(v) => ({ 1: "Low", 2: "Med", 3: "High" }[v] ?? "")}
+            tickFormatter={(v: number) => ({ 1: "Low", 2: "Med", 3: "High" } as Record<number, string>)[v] ?? ""}
             stroke="hsl(215 20% 65%)"
             fontSize={11}
             label={{ value: "Traffic Impact", position: "insideBottom", offset: -4, fontSize: 11, fill: "hsl(215 20% 65%)" }}

@@ -151,11 +151,16 @@ export function BottomTimeline({
                             : b.priority === "Emergency"
                             ? "bg-gradient-to-r from-red-700 to-red-900 border border-red-500 animate-pulse"
                             : "bg-gradient-to-r from-indigo-600 to-purple-700 border border-indigo-400"
+                        } ${
+                          isUnderway
+                            ? "ring-2 ring-yellow-300 ring-offset-1 ring-offset-black shadow-[0_0_14px_rgba(250,204,21,0.85)] scale-[1.04] z-10"
+                            : ""
                         }`}
                         title={`${b.id} (${b.activity}) - ${b.start_time} to ${b.end_time}`}
                       >
                         <span className="truncate">{b.id}: {b.activity}</span>
                         <span className="text-[9px] font-mono shrink-0 ml-1 opacity-80">
+                          {isUnderway ? "\u25cf ACTIVE " : ""}
                           {b.start_time}-{b.end_time}
                         </span>
                       </div>
@@ -177,6 +182,8 @@ export function BottomTimeline({
                 const width = Math.max(4, getPercent(arrM) - left);
                 const isDelayed = train.status === "DELAYED";
                 const isRerouted = train.is_rerouted;
+                const isActiveNow =
+                  currentTimeMinutes >= depM && currentTimeMinutes <= arrM;
 
                 return (
                   <div key={train.id} className="relative h-6 flex items-center">
@@ -200,6 +207,10 @@ export function BottomTimeline({
                             : isRerouted
                             ? "bg-gradient-to-r from-amber-600 to-amber-700 border-amber-400"
                             : "bg-gradient-to-r from-cyan-600 to-blue-700 border-cyan-400"
+                        } ${
+                          isActiveNow
+                            ? "ring-2 ring-white/90 shadow-[0_0_12px_rgba(255,255,255,0.8)] scale-[1.04] z-10"
+                            : ""
                         }`}
                         title={`${train.name} (${train.id}) &bull; ${train.origin} &rarr; ${train.destination} &bull; ${train.departure_time} - ${train.expected_arrival}`}
                       >

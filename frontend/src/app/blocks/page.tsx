@@ -1,356 +1,350 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Gantt, Task, ViewMode } from "gantt-task-react";
-import "gantt-task-react/dist/index.css";
-import { fetchBlocks, Block } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import {
+  fetchAssets,
+  fetchMaintenanceTypes,
+  createMaintenanceRequest,
+  fetchPlanPreview,
+  selectPlanOption,
+  Asset,
+  CandidateOption,
+  MaintenanceRequest,
+  PlanVisualization,
+} from "@/lib/api";
+import { TopBar } from "@/components/TopBar";
+import { PlanVisualizationPanel } from "@/components/PlanVisualizationPanel";
+import { Loader2, Sparkles, CheckCircle2, Star, ChevronRight } from "lucide-react";
 
-const STATUS_COLOR: Record<string, string> = {
-  Available: "#22c55e",
-  Booked: "#f59e0b",
-  Locked: "#ef4444",
+const TIME_WINDOWS = [
+  "Anytime (00:00-23:59)",
+  "00:00-06:00",
+  "06:00-12:00",
+  "12:00-18:00",
+  "18:00-23:59",
+];
+
+const RECOMMENDATION_STYLE: Record<string, string> = {
+  "Best Option": "bg-success/15 text-success",
+  "Consider": "bg-warning/15 text-warning",
+  "Not Recommended": "bg-danger/15 text-danger",
 };
 
-export default function BlocksPage() {
-  const [blocks, setBlocks] = useState<Block[]>([]);
-  const [view, setView] = useState<ViewMode>(ViewMode.Day);
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [corridorFilter, setCorridorFilter] = useState("All");
+function timeLabel(t: string) {
+  const [h, m] = t.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+}
+
+export default function GeneratePlanPage() {
+  const router = useRouter();
+
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [maintenanceTypes, setMaintenanceTypes] = useState<string[]>([]);
+
+  const [assetId, setAssetId] = useState("");
+  const [maintenanceType, setMaintenanceType] = useState("");
+  const [durationHrs, setDurationHrs] = useState(2);
+  const [priority, setPriority] = useState<"HIGH" | "MEDIUM" | "LOW">("HIGH");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [timeWindow, setTimeWindow] = useState(TIME_WINDOWS[0]);
+
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [request, setRequest] = useState<MaintenanceRequest | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [viz, setViz] = useState<PlanVisualization | null>(null);
+  const [approving, setApproving] = useState(false);
+  const [approved, setApproved] = useState(false);
 
   useEffect(() => {
-    fetchBlocks().then(setBlocks);
+    fetchAssets().then((a) => {
+      setAssets(a);
+      if (a.length) setAssetId(a[0].asset_id);
+    });
+    fetchMaintenanceTypes().then((t) => {
+      setMaintenanceTypes(t);
+      if (t.length) setMaintenanceType(t[0]);
+    });
   }, []);
 
-  /* -------------------- FILTER OPTIONS -------------------- */
+  const activeCandidate: CandidateOption | undefined = useMemo(() => {
+    if (!request) return undefined;
+    return request.candidates.find((c) => c.option === selectedOption) ?? request.candidates[0];
+  }, [request, selectedOption]);
 
-  const corridors = useMemo(() => {
-    return Array.from(new Set(blocks.map((b) => b.corridor_id))).sort();
-  }, [blocks]);
+  // Re-fetch the timeline whenever the highlighted row changes, so the
+  // Plan Visualization panel always matches the option the user is looking at.
+  useEffect(() => {
+    if (!request || !selectedOption) return;
+    fetchPlanPreview(request.id, selectedOption)
+      .then(setViz)
+      .catch(() => {});
+  }, [request, selectedOption]);
 
-  const filteredBlocks = useMemo(() => {
-    return blocks.filter((b) => {
-      const statusMatch =
-        statusFilter === "All" || b.status === statusFilter;
+  const handleGenerate = async () => {
+    if (!assetId || !maintenanceType) return;
+    setSubmitting(true);
+    setError(null);
+    setApproved(false);
+    try {
+      // POST /api/maintenance-requests -> persisted immediately in the
+      // backend's SQLite `maintenance_requests` table (backend/data/app.db),
+      // together with the AI-generated candidate windows.
+      const record = await createMaintenanceRequest({
+        asset_id: assetId,
+        maintenance_type: maintenanceType,
+        required_duration_hrs: durationHrs,
+        priority,
+        preferred_date: preferredDate || undefined,
+        time_window: timeWindow,
+      });
+      setRequest(record);
+      const best = record.candidates.find((c) => c.recommendation === "Best Option");
+      const firstOption = best ? best.option : record.candidates[0]?.option ?? null;
+      setSelectedOption(firstOption);
+    } catch {
+      setError("Could not generate a plan. Check that the backend is running on :8000.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-      const corridorMatch =
-        corridorFilter === "All" || b.corridor_id === corridorFilter;
-
-      return statusMatch && corridorMatch;
-    });
-  }, [blocks, statusFilter, corridorFilter]);
-
-  /* -------------------- SUMMARY -------------------- */
-
-  const summary = useMemo(() => {
-    return {
-      total: blocks.length,
-      available: blocks.filter((b) => b.status === "Available").length,
-      booked: blocks.filter((b) => b.status === "Booked").length,
-      locked: blocks.filter((b) => b.status === "Locked").length,
-    };
-  }, [blocks]);
-
-  /* -------------------- GANTT TASKS -------------------- */
-
-  const tasks: Task[] = useMemo(
-    () =>
-      filteredBlocks.slice(0, 60).map((b) => {
-        const start = new Date(`${b.date}T${b.start_time}:00`);
-        const end = new Date(
-          start.getTime() + b.duration_min * 60000
-        );
-
-        const color = STATUS_COLOR[b.status] ?? "#38bdf8";
-
-        return {
-          id: b.block_id,
-          name: `${b.block_id} · ${b.corridor_id}`,
-          start,
-          end,
-          progress: b.status === "Booked" ? 100 : 0,
-          type: "task",
-          styles: {
-            backgroundColor: color,
-            backgroundSelectedColor: color,
-            progressColor: "#0ea5e9",
-            progressSelectedColor: "#0284c7",
-          },
-        } as Task;
-      }),
-    [filteredBlocks]
-  );
+  const handleApprove = async () => {
+    if (!request || !selectedOption) return;
+    setApproving(true);
+    setError(null);
+    try {
+      const updated = await selectPlanOption(request.id, selectedOption);
+      setRequest(updated);
+      setApproved(true);
+    } catch {
+      setError("Could not approve this block plan. It may already be booked.");
+    } finally {
+      setApproving(false);
+    }
+  };
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col h-full">
+      <TopBar title="Block Planning" subtitle="Generate Plan" />
 
-      {/* ================= HEADER ================= */}
+      <div className="p-6">
+        {error && (
+          <div className="rounded-md border border-danger/30 bg-danger/10 text-danger text-sm p-3 mb-4">{error}</div>
+        )}
 
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-primary" />
+        <div className="grid grid-cols-1 xl:grid-cols-[320px_1fr_360px] gap-4 items-start">
+          {/* ---------------- Maintenance Request Details form ---------------- */}
+          <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
+            <h2 className="text-sm font-semibold">Maintenance Request Details</h2>
 
-            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Operations
-            </span>
-          </div>
+            <label className="flex flex-col gap-1 text-xs">
+              <span className="text-muted-foreground">Asset</span>
+              <select
+                value={assetId}
+                onChange={(e) => setAssetId(e.target.value)}
+                className="rounded-md border border-border bg-background px-2.5 py-2 text-sm"
+              >
+                {assets.map((a) => (
+                  <option key={a.asset_id} value={a.asset_id}>
+                    {a.label}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-            Block Schedule
-          </h1>
+            <label className="flex flex-col gap-1 text-xs">
+              <span className="text-muted-foreground">Maintenance Type</span>
+              <select
+                value={maintenanceType}
+                onChange={(e) => setMaintenanceType(e.target.value)}
+                className="rounded-md border border-border bg-background px-2.5 py-2 text-sm"
+              >
+                {maintenanceTypes.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            View and monitor railway block availability across corridors.
-            Use the timeline to inspect scheduled maintenance windows.
-          </p>
-        </div>
-
-        {/* View controls */}
-        <div className="flex rounded-lg border border-border bg-card p-1">
-          {[
-            { label: "Day", value: ViewMode.Day },
-            { label: "Week", value: ViewMode.Week },
-            { label: "Month", value: ViewMode.Month },
-          ].map((item) => (
-            <button
-              key={item.label}
-              onClick={() => setView(item.value)}
-              className={`rounded-md px-4 py-2 text-xs font-medium transition ${
-                view === item.value
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </header>
-
-      {/* ================= SUMMARY CARDS ================= */}
-
-      <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
-
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">
-            Total Blocks
-          </p>
-
-          <p className="mt-2 text-2xl font-semibold">
-            {summary.total}
-          </p>
-
-          <p className="mt-1 text-xs text-muted-foreground">
-            Scheduled windows
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">
-              Available
-            </p>
-
-            <span className="h-2 w-2 rounded-full bg-green-500" />
-          </div>
-
-          <p className="mt-2 text-2xl font-semibold text-green-500">
-            {summary.available}
-          </p>
-
-          <p className="mt-1 text-xs text-muted-foreground">
-            Open for planning
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">
-              Booked
-            </p>
-
-            <span className="h-2 w-2 rounded-full bg-amber-500" />
-          </div>
-
-          <p className="mt-2 text-2xl font-semibold text-amber-500">
-            {summary.booked}
-          </p>
-
-          <p className="mt-1 text-xs text-muted-foreground">
-            Currently reserved
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">
-              Locked
-            </p>
-
-            <span className="h-2 w-2 rounded-full bg-red-500" />
-          </div>
-
-          <p className="mt-2 text-2xl font-semibold text-red-500">
-            {summary.locked}
-          </p>
-
-          <p className="mt-1 text-xs text-muted-foreground">
-            Not available
-          </p>
-        </div>
-
-      </section>
-
-      {/* ================= FILTER BAR ================= */}
-
-      <section className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 md:flex-row md:items-center md:justify-between">
-
-        <div>
-          <h2 className="text-sm font-semibold">
-            Schedule Overview
-          </h2>
-
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Showing {filteredBlocks.length} block
-            {filteredBlocks.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-
-          {/* Status */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-          >
-            <option value="All">All Status</option>
-            <option value="Available">Available</option>
-            <option value="Booked">Booked</option>
-            <option value="Locked">Locked</option>
-          </select>
-
-          {/* Corridor */}
-          <select
-            value={corridorFilter}
-            onChange={(e) => setCorridorFilter(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-primary"
-          >
-            <option value="All">All Corridors</option>
-
-            {corridors.map((corridor) => (
-              <option key={corridor} value={corridor}>
-                {corridor}
-              </option>
-            ))}
-          </select>
-
-        </div>
-      </section>
-
-      {/* ================= LEGEND ================= */}
-
-      <div className="flex flex-wrap items-center gap-5 px-1 text-xs text-muted-foreground">
-
-        <span className="font-medium text-foreground">
-          Status
-        </span>
-
-        {Object.entries(STATUS_COLOR).map(([label, color]) => (
-          <span
-            key={label}
-            className="flex items-center gap-2"
-          >
-            <span
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: color }}
-            />
-
-            {label}
-          </span>
-        ))}
-
-      </div>
-
-      {/* ================= GANTT ================= */}
-
-      <section className="overflow-hidden rounded-xl border border-border bg-card">
-
-        <div className="border-b border-border px-4 py-3">
-          <div className="flex items-center justify-between">
-
-            <div>
-              <h2 className="text-sm font-semibold">
-                Block Timeline
-              </h2>
-
-              <p className="text-xs text-muted-foreground">
-                {view === ViewMode.Day
-                  ? "Daily block allocation"
-                  : view === ViewMode.Week
-                  ? "Weekly block allocation"
-                  : "Monthly block allocation"}
-              </p>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="flex flex-col gap-1 text-xs">
+                <span className="text-muted-foreground">Required Duration (hrs)</span>
+                <input
+                  type="number"
+                  min={0.5}
+                  step={0.5}
+                  value={durationHrs}
+                  onChange={(e) => setDurationHrs(Number(e.target.value))}
+                  className="rounded-md border border-border bg-background px-2.5 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-xs">
+                <span className="text-muted-foreground">Priority</span>
+                <select
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value as "HIGH" | "MEDIUM" | "LOW")}
+                  className="rounded-md border border-border bg-background px-2.5 py-2 text-sm"
+                >
+                  <option value="HIGH">HIGH</option>
+                  <option value="MEDIUM">MEDIUM</option>
+                  <option value="LOW">LOW</option>
+                </select>
+              </label>
             </div>
 
-            <span className="rounded-md bg-muted px-2.5 py-1 text-[11px] text-muted-foreground">
-              {Math.min(filteredBlocks.length, 60)} shown
-            </span>
+            <label className="flex flex-col gap-1 text-xs">
+              <span className="text-muted-foreground">Preferred Date</span>
+              <input
+                type="date"
+                value={preferredDate}
+                onChange={(e) => setPreferredDate(e.target.value)}
+                className="rounded-md border border-border bg-background px-2.5 py-2 text-sm"
+              />
+            </label>
 
+            <label className="flex flex-col gap-1 text-xs">
+              <span className="text-muted-foreground">Time Window</span>
+              <select
+                value={timeWindow}
+                onChange={(e) => setTimeWindow(e.target.value)}
+                className="rounded-md border border-border bg-background px-2.5 py-2 text-sm"
+              >
+                {TIME_WINDOWS.map((w) => (
+                  <option key={w} value={w}>
+                    {w}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <button
+              onClick={handleGenerate}
+              disabled={submitting || !assetId || !maintenanceType}
+              className="mt-2 flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              Generate AI Plan
+            </button>
           </div>
-        </div>
 
-        <div className="overflow-x-auto p-3">
+          {/* ---------------- AI Generated Plan - Candidate Time Windows ---------------- */}
+          <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
+            <h2 className="text-sm font-semibold">AI Generated Plan — Candidate Time Windows</h2>
 
-          {tasks.length > 0 ? (
-            <Gantt
-              tasks={tasks}
-              viewMode={view}
-              listCellWidth="180px"
-              columnWidth={
-                view === ViewMode.Month
-                  ? 300
-                  : view === ViewMode.Week
-                  ? 100
-                  : 65
-              }
-              rowHeight={46}
-              barCornerRadius={5}
-              todayColor="rgba(14, 165, 233, 0.08)"
-            />
-          ) : (
-            <div className="flex min-h-[300px] items-center justify-center">
-              <div className="text-center">
-                <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                  <span className="text-lg">—</span>
+            {!request && (
+              <p className="text-xs text-muted-foreground py-6 text-center">
+                Fill in the maintenance request details and click{" "}
+                <span className="text-foreground font-medium">Generate AI Plan</span> to see candidate blocks.
+              </p>
+            )}
+
+            {request && request.candidates.length === 0 && (
+              <p className="text-xs text-muted-foreground py-6 text-center">
+                No available blocks matched this request's corridor / duration.
+              </p>
+            )}
+
+            {request && request.candidates.length > 0 && (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-left text-muted-foreground border-b border-border">
+                        <th className="py-2 pr-3">Option</th>
+                        <th className="py-2 pr-3">Time Window</th>
+                        <th className="py-2 pr-3">Trains Affected</th>
+                        <th className="py-2 pr-3">Est. Delay</th>
+                        <th className="py-2 pr-3">Score</th>
+                        <th className="py-2 pr-3">Recommendation</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {request.candidates.map((c) => {
+                        const active = selectedOption === c.option;
+                        return (
+                          <tr
+                            key={c.option}
+                            onClick={() => setSelectedOption(c.option)}
+                            className={`border-b border-border/50 cursor-pointer transition-colors ${
+                              active ? "bg-primary/10" : "hover:bg-muted/40"
+                            }`}
+                          >
+                            <td className="py-2.5 pr-3 font-medium">{c.option}</td>
+                            <td className="py-2.5 pr-3">
+                              {timeLabel(c.start_time)} - {timeLabel(c.end_time)}
+                            </td>
+                            <td className="py-2.5 pr-3">{c.trains_affected}</td>
+                            <td className="py-2.5 pr-3">{c.expected_delay_min} min</td>
+                            <td className="py-2.5 pr-3 font-medium">{c.score}/100</td>
+                            <td className="py-2.5 pr-3">
+                              <span
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold ${RECOMMENDATION_STYLE[c.recommendation]}`}
+                              >
+                                {c.recommendation === "Best Option" && <Star className="h-2.5 w-2.5" />}
+                                {c.recommendation}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
 
-                <p className="text-sm font-medium">
-                  No blocks found
-                </p>
+                {activeCandidate && activeCandidate.reasons.length > 0 && (
+                  <div className="rounded-lg border border-success/30 bg-success/5 p-3 text-xs">
+                    <div className="font-medium text-success mb-1.5">Why this option is best</div>
+                    <ul className="flex flex-col gap-1">
+                      {activeCandidate.reasons.map((r, i) => (
+                        <li key={i} className="flex items-center gap-1.5 text-muted-foreground">
+                          <CheckCircle2 className="h-3 w-3 text-success shrink-0" />
+                          {r}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Try changing the selected filters.
-                </p>
-              </div>
-            </div>
-          )}
+                <button
+                  onClick={handleApprove}
+                  disabled={approving || !selectedOption || approved}
+                  className="mt-1 flex items-center justify-center gap-2 rounded-md bg-success text-white px-4 py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                >
+                  {approving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                  {approved ? "Block Plan Approved" : `Approve Option ${selectedOption ?? ""}`}
+                </button>
 
+                {approved && (
+                  <button
+                    onClick={() => router.push("/blocks/proposed")}
+                    className="flex items-center justify-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    View in Proposed Blocks <ChevronRight className="h-3 w-3" />
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* ---------------- Plan Visualization ---------------- */}
+          <div className="rounded-xl border border-border bg-card p-4">
+            <h2 className="text-sm font-semibold mb-3">Plan Visualization</h2>
+            {viz ? (
+              <PlanVisualizationPanel viz={viz} activeCandidate={activeCandidate} />
+            ) : (
+              <p className="text-xs text-muted-foreground py-6 text-center">
+                The timeline appears here once a plan is generated.
+              </p>
+            )}
+          </div>
         </div>
-      </section>
-
-      {/* ================= FOOTER INFO ================= */}
-
-      <div className="flex flex-col gap-1 px-1 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-        <span>
-          Data source: COA Block Availability
-        </span>
-
-        <span>
-          Timeline displays up to 60 blocks
-        </span>
       </div>
-
     </div>
   );
 }

@@ -43,3 +43,371 @@ body {
   background: hsl(var(--border));
   border-radius: 999px;
 }
+
+/* ===== Login page animated railway background ===== */
+.rail-track {
+  height: 3px;
+  background-image: repeating-linear-gradient(
+    to right,
+    hsl(var(--primary) / 0.9) 0,
+    hsl(var(--primary) / 0.9) 22px,
+    transparent 22px,
+    transparent 44px
+  );
+  animation-name: rail-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rail-scroll {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -220px;
+  }
+}
+
+.rail-train {
+  left: -140px;
+  animation-name: rail-train-pass;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rail-train-pass {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 200px));
+    opacity: 0;
+  }
+}
+
+.rail-grid {
+  background-image: linear-gradient(hsl(var(--border)) 1px, transparent 1px),
+    linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: rail-grid-drift 40s linear infinite;
+}
+
+@keyframes rail-grid-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 96px 96px;
+  }
+}
+
+/* ===== Login page — animated decision-network background (left panel) ===== */
+.neuro-node {
+  transform-origin: center;
+  animation-name: neuro-pulse;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-duration: 2.6s;
+}
+
+@keyframes neuro-pulse {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 5px hsl(var(--primary) / 0.8));
+  }
+}
+
+.neuro-edge {
+  stroke-dasharray: 6 10;
+  animation-name: neuro-flow;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes neuro-flow {
+  from { stroke-dashoffset: 32; }
+  to { stroke-dashoffset: 0; }
+}
+
+.neuro-scan {
+  background: linear-gradient(to bottom, transparent, hsl(var(--primary)), transparent);
+  animation: neuro-scan-drift 7s ease-in-out infinite;
+}
+
+@keyframes neuro-scan-drift {
+  0% { top: -10%; }
+  50% { top: 95%; }
+  100% { top: -10%; }
+}
+
+/* ===== Login card entrance ===== */
+.login-fade-in {
+  animation: login-fade-in 0.6s ease-out both;
+}
+@keyframes login-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Login page — 3D perspective railway scene (right/left showcase) ===== */
+.rail3d-star {
+  animation-name: rail3d-twinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rail3d-twinkle {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.95; }
+}
+
+.rail3d-sleepers {
+  animation: rail3d-sleeper-scroll 1.1s linear infinite;
+}
+
+@keyframes rail3d-sleeper-scroll {
+  from { background-position-y: 0; }
+  to { background-position-y: -184px; }
+}
+
+.rail3d-lamp-glow {
+  animation: rail3d-lamp-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes rail3d-lamp-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.rail3d-loco-sway {
+  animation: rail3d-sway 4.5s ease-in-out infinite;
+}
+
+@keyframes rail3d-sway {
+  0%, 100% { transform: rotateX(16deg) rotateY(18deg); }
+  50% { transform: rotateX(16deg) rotateY(30deg); }
+}
+
+.rail3d-train-wrap {
+  animation: rail3d-approach 7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-track,
+  .rail-train,
+  .rail-grid,
+  .neuro-node,
+  .neuro-edge,
+  .neuro-scan,
+  .login-fade-in,
+  .rail3d-star,
+  .rail3d-sleepers,
+  .rail3d-lamp-glow,
+  .rail3d-loco-sway,
+  .rail3d-train-wrap {
+    animation: none !important;
+  }
+}
+
+/* Chrome/Edge fill autofilled inputs with a light background by default,
+   which breaks the dark theme. This forces it back to match. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: hsl(var(--foreground));
+  -webkit-box-shadow: 0 0 0 1000px hsl(var(--background)) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ===== Login page v2 — RailYardScene (left showcase panel) ===== */
+.ry-breathe {
+  background: radial-gradient(ellipse 900px 700px at 78% 30%, hsl(var(--primary) / 0.16) 0%, hsl(var(--background)) 55%, hsl(222 47% 4%) 100%);
+  background-size: 130% 130%;
+  animation: ry-breathe 12s ease-in-out infinite;
+}
+@keyframes ry-breathe {
+  0%, 100% { background-position: 0% 0%; }
+  50% { background-position: 12% 8%; }
+}
+.ry-grid {
+  background-image: linear-gradient(hsl(var(--border)) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px);
+  background-size: 56px 56px;
+  opacity: 0.12;
+}
+.ry-scanline {
+  background: linear-gradient(180deg, transparent, hsl(var(--primary) / 0.09), transparent);
+  mix-blend-mode: screen;
+  animation: ry-sweep 8s linear infinite;
+}
+@keyframes ry-sweep {
+  0% { top: -160px; }
+  100% { top: 100%; }
+}
+.ry-star { animation: ry-twinkle 3.4s ease-in-out infinite; }
+@keyframes ry-twinkle {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.75; }
+}
+.ry-track { fill: none; stroke: hsl(var(--muted-foreground)); stroke-width: 1.6; opacity: 0.55; }
+.ry-track-dash { fill: none; stroke: hsl(var(--muted-foreground)); stroke-width: 1.4; stroke-dasharray: 5 5; opacity: 0.5; }
+.ry-pulse {
+  fill: none;
+  stroke: hsl(var(--success));
+  stroke-width: 1.8;
+  stroke-dasharray: 22 900;
+  opacity: 0;
+  filter: drop-shadow(0 0 4px hsl(var(--success) / 0.7));
+  animation: ry-pulse-travel 5s linear infinite;
+}
+.ry-pulse-delay { animation-delay: 2.4s; }
+@keyframes ry-pulse-travel {
+  0% { stroke-dashoffset: 0; opacity: 0; }
+  6% { opacity: 0.85; }
+  94% { opacity: 0.85; }
+  100% { stroke-dashoffset: -900; opacity: 0; }
+}
+.ry-label { font-size: 11px; letter-spacing: 0.06em; fill: hsl(var(--muted-foreground)); }
+.ry-node { fill: hsl(var(--success)); filter: drop-shadow(0 0 5px hsl(var(--success))); animation: ry-cycle 6s steps(1) infinite; }
+@keyframes ry-cycle {
+  0%, 32% { fill: hsl(var(--success)); }
+  33%, 65% { fill: hsl(var(--warning)); }
+  66%, 100% { fill: hsl(var(--danger)); }
+}
+.ry-sensor { stroke: hsl(var(--muted-foreground)); stroke-width: 1.3; fill: none; opacity: 0.8; }
+.ry-sensor-dot { fill: hsl(var(--success)); opacity: 0.9; animation: ry-blink 2.4s ease-in-out infinite; }
+.ry-sensor-dot-b { animation-delay: 1.1s; }
+@keyframes ry-blink {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+.ry-consist { animation: ry-creep 6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+@keyframes ry-creep {
+  0%, 100% { transform: translateX(0px); }
+  50% { transform: translateX(10px); }
+}
+.ry-depot { stroke: hsl(var(--muted-foreground)); stroke-width: 1.3; fill: none; }
+
+.ry-tag {
+  color: hsl(var(--foreground));
+  background: hsl(var(--card) / 0.7);
+  border-color: hsl(var(--border));
+  backdrop-filter: blur(2px);
+  white-space: nowrap;
+  opacity: 0;
+  animation-name: ry-drift;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+@keyframes ry-drift {
+  0% { opacity: 0; transform: translate(0, 8px); }
+  14% { opacity: 1; transform: translate(0, 0); }
+  82% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--ry-dx, 10px), -18px); }
+}
+
+/* the cute 3D train */
+.ry-train-wrap {
+  filter: drop-shadow(0 22px 22px rgba(0, 0, 0, 0.38));
+  animation: ry-journey 13s cubic-bezier(0.35, 0.05, 0.25, 1) infinite;
+}
+@keyframes ry-journey {
+  0% { transform: translateX(0) translateY(8px) scale(0.82); opacity: 0; }
+  8% { opacity: 1; }
+  30% { transform: translateX(23vw) translateY(0) scale(0.92); }
+  55% { transform: translateX(51vw) translateY(-2px) scale(1); }
+  78% { transform: translateX(78vw) translateY(-4px) scale(1.06); }
+  94% { opacity: 1; }
+  100% { transform: translateX(112vw) translateY(-8px) scale(1.1); opacity: 0; }
+}
+.ry-train { transform: perspective(900px) rotateX(2deg) rotateY(-7deg); transform-style: preserve-3d; }
+.ry-eye {
+  width: 9px; height: 13px; border-radius: 50%;
+  background: hsl(var(--info) / 0.4);
+  box-shadow: 0 0 9px hsl(var(--info));
+}
+.ry-smile { width: 15px; height: 8px; border-bottom: 3px solid hsl(var(--info)); border-radius: 0 0 12px 12px; }
+.ry-light {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: hsl(var(--warning) / 0.5);
+  border: 3px solid hsl(var(--foreground));
+  box-shadow: 0 0 16px hsl(var(--warning)), 0 0 30px hsl(var(--warning) / 0.6);
+  animation: ry-light-pulse 1.1s ease-in-out infinite;
+}
+.ry-light-2 { animation-delay: 0.25s; }
+@keyframes ry-light-pulse {
+  50% { filter: brightness(1.3); transform: scale(1.08); }
+}
+.ry-stripe {
+  background: linear-gradient(90deg, hsl(var(--info)), hsl(var(--primary)) 55%, hsl(var(--success)));
+  box-shadow: 0 0 12px hsl(var(--primary) / 0.5);
+}
+.ry-car-window {
+  border-radius: 7px;
+  background: linear-gradient(135deg, hsl(var(--sidebar)), hsl(222 47% 4%));
+  border: 1px solid hsl(var(--info) / 0.6);
+}
+.ry-wheel {
+  width: 27px; height: 27px; border-radius: 50%;
+  background: radial-gradient(circle, hsl(var(--muted-foreground)) 0 22%, hsl(var(--sidebar)) 24% 58%, hsl(222 47% 4%) 60% 100%);
+  border: 2px solid hsl(222 47% 4%);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);
+  animation: ry-wheel-spin 0.7s linear infinite;
+}
+@keyframes ry-wheel-spin { to { transform: rotate(360deg); } }
+.ry-train-shadow { border-radius: 50%; background: rgba(0, 0, 0, 0.42); filter: blur(7px); transform: scaleX(1.03); }
+.ry-smoke {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: hsl(var(--foreground) / 0.18);
+  filter: blur(2px);
+  animation: ry-smoke-float 2.6s ease-out infinite;
+}
+.ry-smoke-2 { animation-delay: 0.8s; }
+.ry-smoke-3 { animation-delay: 1.6s; }
+@keyframes ry-smoke-float {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+  25% { opacity: 0.45; }
+  100% { opacity: 0; transform: translate(30px, -38px) scale(2.4); }
+}
+
+@keyframes ry-journey-reduced {
+  0% { transform: translateX(0); opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { transform: translateX(112vw); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ry-breathe,
+  .ry-scanline,
+  .ry-star,
+  .ry-pulse,
+  .ry-node,
+  .ry-sensor-dot,
+  .ry-consist,
+  .ry-tag,
+  .ry-light,
+  .ry-wheel,
+  .ry-smoke {
+    animation: none !important;
+  }
+  /* keep the train itself moving — a single slow, linear translateX has no
+     scaling/bouncing/parallax, so it doesn't trigger the vestibular issues
+     reduced-motion is meant to avoid. Only the flashier bits (blinking
+     lights, spinning wheels, smoke puffs) are frozen above. */
+  .ry-train-wrap {
+    animation: ry-journey-reduced 20s linear infinite;
+  }
+}
