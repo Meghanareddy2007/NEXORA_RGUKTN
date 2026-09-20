@@ -84,3 +84,7 @@ frontend/
 3. Jump to the Gantt view to show the resulting block calendar.
 4. Jump to the map to show corridor-level failure risk.
 5. Close on the analytics page for backlog/traffic breakdowns.
+
+
+## TMS persistence
+Track problem reports and emergency records are appended to `backend/data/TMS_REPORTS.csv` through `/api/tms/records`. If the backend is unavailable, the TMS browser client queues writes in localStorage and retries automatically.

@@ -48,7 +48,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(username.trim(), password);
-      router.push("/");
+      router.push(selectedDept === "TMS" ? "/tms" : "/");
     } catch (err: any) {
       setError(err?.response?.data?.detail || "Invalid username or password.");
     } finally {
@@ -60,19 +60,25 @@ export default function LoginPage() {
     <div className="relative flex min-h-screen overflow-hidden bg-background">
       {/* ---------- Left: animated rail-yard showcase ---------- */}
       <div className="relative hidden w-[58%] flex-col justify-end overflow-hidden lg:flex">
+        {/* Streamrollers team logo */}
+<div className="absolute left-6 top-5 z-20">
+  <img
+    src="/streamrollers-logo.png"
+    alt="Streamrollers Logo"
+    className="h-32 w-auto object-contain"
+  />
+</div>
         <RailYardScene />
 
-        <div className="relative z-10 max-w-lg px-11 pb-12">
-          <p className="login-fade-in mb-3.5 font-mono text-xs tracking-wide text-success">SIH25 · PROBLEM STATEMENT 27</p>
+        <div className="relative z-10 max-w-2XL px-11 pb-4">
           <h1
             className="login-fade-in text-3xl font-semibold leading-tight text-foreground"
             style={{ animationDelay: "0.1s" }}
           >
             Maximizing asset availability, one block at a time.
           </h1>
-          <p className="login-fade-in mt-3.5 max-w-[40ch] text-sm leading-relaxed text-muted-foreground" style={{ animationDelay: "0.18s" }}>
-            A single console for Track, Signal &amp; Telecom, Traction and Corridor Availability teams —
-            replacing spreadsheets and phone calls with an optimized, conflict-free block calendar.
+          <p className="login-fade-in mt-3.5 max-w-full text-sm leading-relaxed text-muted-foreground" style={{ animationDelay: "0.18s" }}>
+            A single console for Track, Signal &amp; Telecom, Traction and Corridor Availability teams —replacing spreadsheets and phone calls with an optimized, conflict-free block calendar.
           </p>
           <div className="login-fade-in mt-5 flex gap-4 font-mono text-[11.5px] text-muted-foreground" style={{ animationDelay: "0.24s" }}>
             <span className="flex items-center gap-1.5">

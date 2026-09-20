@@ -27,8 +27,9 @@ export function Sidebar() {
       .catch(() => setOnline(false));
   }, []);
 
-  // No sidebar on the login screen itself.
-  if (pathname === "/login") return null;
+  // No sidebar on the login screen, and none on /tms — that console
+  // (public/tms-dashboard) renders its own complete sidebar/topbar shell.
+  if (pathname === "/login" || pathname.startsWith("/tms")) return null;
 
   return (
     <aside className="w-60 shrink-0 border-r border-border bg-sidebar p-4 flex flex-col gap-1">

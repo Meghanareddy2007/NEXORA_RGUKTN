@@ -1,17 +1,17 @@
-﻿# Python
-__pycache__/
-*.py[cod]
-*.class
-.venv/
-env/
-venv/
-*.db
-*.sqlite3
-
-# Node / Frontend
+# Dependencies
 node_modules/
-.next/
-out/
-build/
-*.tsbuildinfo
-.env*.local
+frontend/node_modules/
+backend/data/app.db
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Next.js
+frontend/.next/
+frontend/tsconfig.tsbuildinfo
+
+# Environment files
+.env
+.env.local
