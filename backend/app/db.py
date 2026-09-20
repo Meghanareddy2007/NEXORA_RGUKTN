@@ -25,9 +25,11 @@ def get_conn() -> sqlite3.Connection:
 
 
 def init_db() -> None:
-    """Create the maintenance_requests table if it doesn't exist yet. Safe to call on every startup."""
+    """Create and migrate the maintenance_requests table."""
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
     conn = get_conn()
+
     try:
         conn.execute(
             """
@@ -38,6 +40,13 @@ def init_db() -> None:
                 corridor_id TEXT NOT NULL,
                 corridor_label TEXT,
                 maintenance_type TEXT,
+                defect_type TEXT,
+                location_km REAL,
+                criticality INTEGER,
+                urgency INTEGER,
+                safety_risk INTEGER,
+                crew_required INTEGER,
+                reported_by TEXT,
                 required_duration_hrs REAL,
                 priority TEXT,
                 preferred_date TEXT,
@@ -51,7 +60,31 @@ def init_db() -> None:
             )
             """
         )
+
+        # Migration for databases created by an older version.
+        existing_columns = {
+            row["name"]
+            for row in conn.execute("PRAGMA table_info(maintenance_requests)")
+        }
+
+        new_columns = {
+            "defect_type": "TEXT",
+            "location_km": "REAL",
+            "criticality": "INTEGER",
+            "urgency": "INTEGER",
+            "safety_risk": "INTEGER",
+            "crew_required": "INTEGER",
+            "reported_by": "TEXT",
+        }
+
+        for column, column_type in new_columns.items():
+            if column not in existing_columns:
+                conn.execute(
+                    f"ALTER TABLE maintenance_requests ADD COLUMN {column} {column_type}"
+                )
+
         conn.commit()
+
     finally:
         conn.close()
 
@@ -62,18 +95,42 @@ def _row_to_dict(row: sqlite3.Row) -> Dict[str, Any]:
     d["candidates"] = json.loads(d.pop("candidates_json")) if d.get("candidates_json") else []
     return d
 
+def create_request(
+    payload: Dict[str, Any],
+    candidates: List[Dict[str, Any]]
+) -> Dict[str, Any]:
 
-def create_request(payload: Dict[str, Any], candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
     now = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+
     conn = get_conn()
+
     try:
         cur = conn.execute(
             """
             INSERT INTO maintenance_requests
-                (asset_id, asset_label, corridor_id, corridor_label, maintenance_type,
-                 required_duration_hrs, priority, preferred_date, time_window,
-                 status, candidates_json, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (
+                    asset_id,
+                    asset_label,
+                    corridor_id,
+                    corridor_label,
+                    maintenance_type,
+                    defect_type,
+                    location_km,
+                    criticality,
+                    urgency,
+                    safety_risk,
+                    crew_required,
+                    reported_by,
+                    required_duration_hrs,
+                    priority,
+                    preferred_date,
+                    time_window,
+                    status,
+                    candidates_json,
+                    created_at,
+                    updated_at
+                )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 payload["asset_id"],
@@ -81,6 +138,13 @@ def create_request(payload: Dict[str, Any], candidates: List[Dict[str, Any]]) ->
                 payload["corridor_id"],
                 payload.get("corridor_label"),
                 payload.get("maintenance_type"),
+                payload.get("defect_type"),
+                payload.get("location_km"),
+                payload.get("criticality"),
+                payload.get("urgency"),
+                payload.get("safety_risk"),
+                payload.get("crew_required"),
+                payload.get("reported_by"),
                 payload.get("required_duration_hrs"),
                 payload.get("priority"),
                 payload.get("preferred_date"),
@@ -91,9 +155,13 @@ def create_request(payload: Dict[str, Any], candidates: List[Dict[str, Any]]) ->
                 now,
             ),
         )
+
         conn.commit()
+
         new_id = cur.lastrowid
+
         return get_request(new_id)  # type: ignore[return-value]
+
     finally:
         conn.close()
 

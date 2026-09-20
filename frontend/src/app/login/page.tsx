@@ -43,18 +43,24 @@ export default function LoginPage() {
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-    try {
-      await login(username.trim(), password);
+  e.preventDefault();
+  setError(null);
+  setLoading(true);
+
+  try {
+    const user = await login(username.trim(), password);
+
+    if (user.department === "TRACTION") {
+      router.push("/tdms");
+    } else {
       router.push("/");
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || "Invalid username or password.");
-    } finally {
-      setLoading(false);
     }
+  } catch (err: any) {
+    setError(err?.response?.data?.detail || "Invalid username or password.");
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <div className="relative flex min-h-screen overflow-hidden bg-background">

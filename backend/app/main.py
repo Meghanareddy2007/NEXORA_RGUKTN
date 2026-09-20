@@ -11,6 +11,7 @@ Docs:
     http://localhost:8000/docs
 """
 import os
+from datetime import date
 from typing import Optional
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query, Depends
@@ -543,20 +544,51 @@ def get_plan_maintenance_types():
 @app.get("/api/plan/requests")
 def get_plan_requests():
     return list_requests()
+@app.get("/api/plan/requests/{request_id}")
+def get_single_plan_request(request_id: int):
+    request = get_request(request_id)
 
+    if not request:
+        raise HTTPException(404, "Request not found")
+
+    return request
 
 @app.post("/api/plan/requests")
 def post_plan_request(payload: dict):
     asset_id = payload.get("asset_id")
+
     assets = list_assets(DATA_DIR)
-    asset_obj = next((a for a in assets if a["asset_id"] == asset_id), None)
-    corridor_id = asset_obj["corridor_id"] if asset_obj else payload.get("corridor_id", "COR_01")
-    corridor_label = asset_obj["corridor_label"] if asset_obj else corridor_id
+
+    asset_obj = next(
+        (a for a in assets if a["asset_id"] == asset_id),
+        None
+    )
+
+    corridor_id = (
+        asset_obj["corridor_id"]
+        if asset_obj
+        else payload.get("corridor_id", "COR_01")
+    )
+
+    corridor_label = (
+        asset_obj["corridor_label"]
+        if asset_obj
+        else corridor_id
+    )
+
     payload["corridor_id"] = corridor_id
     payload["corridor_label"] = corridor_label
-    payload["asset_label"] = asset_obj["label"] if asset_obj else asset_id
 
-    duration_min = int(float(payload.get("required_duration_hrs", 2.0)) * 60)
+    payload["asset_label"] = (
+        asset_obj["label"]
+        if asset_obj
+        else payload.get("asset_label", asset_id)
+    )
+
+    duration_min = int(
+        float(payload.get("required_duration_hrs", 2.0)) * 60
+    )
+
     candidates = generate_candidates(
         DATA_DIR,
         corridor_id=corridor_id,
@@ -565,7 +597,9 @@ def post_plan_request(payload: dict):
         time_window=payload.get("time_window"),
         priority=payload.get("priority", "HIGH"),
     )
+
     req = create_request(payload, candidates)
+
     return req
 
 

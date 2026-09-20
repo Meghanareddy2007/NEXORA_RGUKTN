@@ -213,6 +213,21 @@ export interface CorridorRisk {
   asset_count: number;
   critical_assets: number;
 }
+export interface TDMSProblemFormData {
+  asset_id: string;
+  asset_type: string;
+  corridor_id: string;
+  location_km: string;
+  defect_type: string;
+  problem_description: string;
+  criticality: number;
+  urgency: number;
+  safety_risk: number;
+  maintenance_type: string;
+  required_duration_hrs: number;
+  preferred_date?: string;
+  time_window?: string;
+}
 
 const TASK_SOURCE_MAP: { name: string; source: MaintenanceTask["source"]; department: MaintenanceTask["department"] }[] = [
   { name: "tms_maintenance", source: "TMS", department: "Engineering" },
@@ -433,25 +448,39 @@ export interface CandidateOption {
   recommendation: string;
   reasons: string[];
 }
-
 export interface MaintenanceRequest {
   id: number;
   asset_id: string;
   asset_label?: string;
   corridor_id: string;
   corridor_label?: string;
+
   maintenance_type?: string;
+  defect_type?: string;
+
+  location_km?: number;
+  criticality?: number;
+  urgency?: number;
+  safety_risk?: number;
+  crew_required?: number;
+
   required_duration_hrs?: number;
   priority?: string;
   preferred_date?: string;
   time_window?: string;
+
+  reported_by?: string;
+
   status: string;
   candidates: CandidateOption[];
+
   selected_option_index?: number;
   selected_block_id?: string;
+
   created_at: string;
   updated_at: string;
 }
+
 
 export interface PlanVisualization {
   corridor_id: string;
@@ -474,16 +503,47 @@ export interface PlanVisualization {
   }[];
 }
 
-export const fetchAssets = () => api.get<Asset[]>("/api/plan/assets").then((r) => r.data);
-export const fetchMaintenanceTypes = () => api.get<string[]>("/api/plan/maintenance-types").then((r) => r.data);
+export const fetchAssets = () =>
+  api.get<Asset[]>("/api/plan/assets").then((r) => r.data);
+
+export const fetchMaintenanceTypes = () =>
+  api.get<string[]>("/api/plan/maintenance-types").then((r) => r.data);
+
 export const createMaintenanceRequest = (payload: any) =>
-  api.post<MaintenanceRequest>("/api/plan/requests", payload).then((r) => r.data);
+  api
+    .post<MaintenanceRequest>("/api/plan/requests", payload)
+    .then((r) => r.data);
+
 export const fetchMaintenanceRequests = () =>
-  api.get<MaintenanceRequest[]>("/api/plan/requests").then((r) => r.data);
-export const fetchPlanPreview = (requestId: number, option: number) =>
-  api.get<PlanVisualization>(`/api/plan/requests/${requestId}/preview/${option}`).then((r) => r.data);
-export const selectPlanOption = (requestId: number, option: number) =>
-  api.post<MaintenanceRequest>(`/api/plan/requests/${requestId}/select`, { option }).then((r) => r.data);
+  api
+    .get<MaintenanceRequest[]>("/api/plan/requests")
+    .then((r) => r.data);
+
+export const fetchMaintenanceRequest = (requestId: number) =>
+  api
+    .get<MaintenanceRequest>(`/api/plan/requests/${requestId}`)
+    .then((r) => r.data);
+
+export const fetchPlanPreview = (
+  requestId: number,
+  option: number
+) =>
+  api
+    .get<PlanVisualization>(
+      `/api/plan/requests/${requestId}/preview/${option}`
+    )
+    .then((r) => r.data);
+
+export const selectPlanOption = (
+  requestId: number,
+  option: number
+) =>
+  api
+    .post<MaintenanceRequest>(
+      `/api/plan/requests/${requestId}/select`,
+      { option }
+    )
+    .then((r) => r.data);
 
 // ============================================================================
 // REINFORCEMENT LEARNING — Adaptive Corridor Block-Release Agent
