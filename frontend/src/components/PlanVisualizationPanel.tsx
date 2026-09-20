@@ -44,7 +44,7 @@ export function PlanVisualizationPanel({
         <div className="text-xs font-medium truncate pr-2">{viz.block.asset_label}</div>
         <div className="relative h-7 rounded-md bg-muted/40 border border-border overflow-hidden">
           <div
-            className="absolute inset-y-0 flex items-center justify-center bg-danger/80 text-white text-[9px] font-semibold rounded-md"
+            className="absolute inset-y-0 flex items-center justify-center bg-danger/80 text-white text-[9px] font-semibold rounded-md ring-2 ring-white/80 shadow-[0_0_14px_rgba(239,68,68,0.9)] animate-pulse"
             style={{
               left: `${viz.block.start_pct}%`,
               width: `${Math.max(viz.block.end_pct - viz.block.start_pct, 6)}%`,

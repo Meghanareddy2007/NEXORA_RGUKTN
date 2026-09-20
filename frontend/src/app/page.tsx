@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   fetchDashboard,
   approveBlock,
@@ -10,6 +11,8 @@ import {
 } from "@/lib/api";
 import { StatCard } from "@/components/StatCard";
 import { TopBar } from "@/components/TopBar";
+import { OptimizationGanttChart } from "@/components/OptimizationGanttChart";
+import { useAuth, canApprove } from "@/lib/auth";
 import { NetworkSnapshot } from "@/components/NetworkSnapshot";
 import {
   BarChart,
@@ -58,6 +61,7 @@ function timeLabel(t: string) {
 }
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const [dash, setDash] = useState<DashboardSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [approving, setApproving] = useState(false);
@@ -163,6 +167,36 @@ export default function DashboardPage() {
               />
             </div>
 
+            {/* RailOps Command Center Live Visualization Banner */}
+            <div className="relative overflow-hidden rounded-xl border border-cyan-500/40 bg-gradient-to-r from-cyan-950/40 via-slate-900/60 to-blue-950/40 p-4 shadow-lg flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-inner">
+                  <TrainFront className="h-5 w-5 animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-100">
+                      RailOps Dynamic Network Simulation & Operations Map
+                    </h3>
+                    <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/60 font-semibold">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      LIVE SIMULATION
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Real-time train movements, live track availability, conflict detection, and AI dynamic corridor re-routing.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/map"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-cyan-500/20"
+              >
+                <span>Launch RailOps Command Center</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
             {/* Network / Recommended block / Upcoming blocks */}
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 items-stretch">
               <div className="xl:col-span-2">
@@ -229,14 +263,20 @@ export default function DashboardPage() {
                       ))}
                     </ul>
 
-                    <button
-                      onClick={handleApprove}
-                      disabled={approving || approved}
-                      className="mt-auto flex items-center justify-center gap-2 rounded-md bg-success text-white px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-60"
-                    >
-                      {approving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-                      {approved ? "Approved" : "Approve Block Plan"}
-                    </button>
+                    {canApprove(user?.department) ? (
+                      <button
+                        onClick={handleApprove}
+                        disabled={approving || approved}
+                        className="mt-auto flex items-center justify-center gap-2 rounded-md bg-success text-white px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-60"
+                      >
+                        {approving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                        {approved ? "Approved" : "Approve Block Plan"}
+                      </button>
+                    ) : (
+                      <p className="mt-auto text-[11px] text-muted-foreground italic">
+                        Only the Corridor Operating Authority (COA) can approve blocks.
+                      </p>
+                    )}
                   </>
                 ) : (
                   <p className="text-xs text-muted-foreground">No available block to recommend today.</p>
@@ -411,6 +451,8 @@ export default function DashboardPage() {
                       </tbody>
                     </table>
                   </div>
+
+                  <OptimizationGanttChart tasks={optResult.scheduled} />
                 </>
               )}
             </div>

@@ -2,21 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GanttChartSquare, Map, BarChart3, TrainFront, Circle } from "lucide-react";
+import { LayoutDashboard, GanttChartSquare, Map, BarChart3, TrainFront, Circle, LogOut, BrainCircuit } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { useAuth, logout, DEPARTMENT_LABELS } from "@/lib/auth";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/map", label: "RailOps Command Map", icon: Map },
   { href: "/blocks", label: "Block Schedule", icon: GanttChartSquare },
-  { href: "/blocks/generate", label: "Block Planning", icon: GanttChartSquare },
-  { href: "/map", label: "Network Map", icon: Map },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/rl-agent", label: "RL Agent", icon: BrainCircuit },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const [online, setOnline] = useState<boolean | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     api
@@ -24,6 +26,10 @@ export function Sidebar() {
       .then(() => setOnline(true))
       .catch(() => setOnline(false));
   }, []);
+
+  // No sidebar on the login screen, and none on /tms — that console
+  // (public/tms-dashboard) renders its own complete sidebar/topbar shell.
+  if (pathname === "/login" || pathname.startsWith("/tms")) return null;
 
   return (
     <aside className="w-60 shrink-0 border-r border-border bg-sidebar p-4 flex flex-col gap-1">
@@ -59,7 +65,26 @@ export function Sidebar() {
         );
       })}
 
-      <div className="mt-auto rounded-lg border border-border bg-card p-3">
+      {user && (
+        <div className="mt-auto rounded-lg border border-border bg-card p-3">
+          <div className="text-xs font-medium">{user.username}</div>
+          <div className="text-[11px] text-muted-foreground mb-2">
+            {DEPARTMENT_LABELS[user.department]}
+          </div>
+          <button
+            onClick={() => {
+              logout();
+              window.location.href = "/login";
+            }}
+            className="flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            Log out
+          </button>
+        </div>
+      )}
+
+      <div className={`rounded-lg border border-border bg-card p-3 ${user ? "" : "mt-auto"}`}>
         <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-1">
           System Status
         </div>
