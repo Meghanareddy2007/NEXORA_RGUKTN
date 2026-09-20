@@ -5,7 +5,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
   GanttChartSquare,
-  Map,
   BarChart3,
   TrainFront,
   Circle,
@@ -13,24 +12,24 @@ import {
   BrainCircuit,
   Plus,
   ClipboardList,
-  House,
   History,
   Zap,
+  Radio,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+
 import { api } from "@/lib/api";
 import { useAuth, logout, DEPARTMENT_LABELS } from "@/lib/auth";
 
-const NAV = [
+/* ============================================================
+   MAIN / COA / ADMIN NAVIGATION
+   ============================================================ */
+
+const MAIN_NAV = [
   {
     href: "/",
     label: "Dashboard",
     icon: LayoutDashboard,
-  },
-  {
-    href: "/map",
-    label: "RailOps Command Map",
-    icon: Map,
   },
   {
     href: "/blocks",
@@ -49,15 +48,11 @@ const NAV = [
   },
 ];
 
-/*
- * TDMS navigation
- *
- * These are NOT separate pages.
- * They are different views/sections of the existing /tdms page.
- *
- * The reference image is only being used for the style/idea.
- * We are NOT copying all of its menu items.
- */
+/* ============================================================
+   TDMS NAVIGATION
+   These are views inside the existing /tdms page
+   ============================================================ */
+
 const TDMS_NAV = [
   {
     href: "/tdms",
@@ -91,6 +86,39 @@ const TDMS_NAV = [
   },
 ];
 
+/* ============================================================
+   SMMS NAVIGATION
+   Existing SMMS page is kept.
+   These links only navigate to its views.
+   ============================================================ */
+
+const SMMS_NAV = [
+  {
+    href: "/smms",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    href: "/smms?view=maintenance",
+    label: "Maintenance Tasks",
+    icon: ClipboardList,
+  },
+  {
+    href: "/smms?view=assets",
+    label: "Signal & Telecom Assets",
+    icon: Radio,
+  },
+  {
+    href: "/smms?view=history",
+    label: "Maintenance History",
+    icon: History,
+  },
+];
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
 export function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -99,6 +127,10 @@ export function Sidebar() {
 
   const { user } = useAuth();
 
+  /* ----------------------------------------------------------
+     API STATUS
+     ---------------------------------------------------------- */
+
   useEffect(() => {
     api
       .get("/")
@@ -106,38 +138,49 @@ export function Sidebar() {
       .catch(() => setOnline(false));
   }, []);
 
-  if (pathname === "/login") return null;
+  /* ----------------------------------------------------------
+     LOGIN PAGE
+     ---------------------------------------------------------- */
 
-  /*
-   * TDMS / Traction user
-   */
-  const isTDMS = user?.department === "TRACTION";
+  if (pathname === "/login") {
+    return null;
+  }
 
-  /*
-   * COA and ADMIN can access the main operations area
-   * and TDMS-related information.
-   */
-  const isCOA =
-    user?.department === "COA" ||
-    user?.department === "ADMIN";
+  /* ----------------------------------------------------------
+     USER DEPARTMENT
+     ---------------------------------------------------------- */
 
-  /*
-   * Current TDMS view.
-   *
-   * Example:
-   * /tdms
-   * /tdms?view=report-problem
-   * /tdms?view=assets
-   */
+  const department = user?.department;
+
+  const isTMS = department === "TMS";
+  const isTDMS = department === "TRACTION";
+  const isSMMS = department === "SMMS";
+  const isCOA = department === "COA";
+  const isADMIN = department === "ADMIN";
+
+  /* ----------------------------------------------------------
+     TMS HAS ITS OWN SIDEBAR / CONSOLE
+     ---------------------------------------------------------- */
+
+  if (isTMS || pathname.startsWith("/tms")) {
+    return null;
+  }
+
+  /* ----------------------------------------------------------
+     CURRENT VIEW
+     ---------------------------------------------------------- */
+
   const currentView =
     searchParams.get("view") || "dashboard";
+
+  /* ----------------------------------------------------------
+     TDMS ACTIVE MENU
+     ---------------------------------------------------------- */
 
   const tdmsActive = (href: string) => {
     const queryIndex = href.indexOf("?");
 
-    /*
-     * Dashboard
-     */
+    // Dashboard
     if (queryIndex === -1) {
       return (
         pathname === "/tdms" &&
@@ -145,9 +188,6 @@ export function Sidebar() {
       );
     }
 
-    /*
-     * Other TDMS views
-     */
     const query = href.substring(queryIndex + 1);
     const params = new URLSearchParams(query);
     const view = params.get("view");
@@ -158,6 +198,35 @@ export function Sidebar() {
     );
   };
 
+  /* ----------------------------------------------------------
+     SMMS ACTIVE MENU
+     ---------------------------------------------------------- */
+
+  const smmsActive = (href: string) => {
+    const queryIndex = href.indexOf("?");
+
+    // Dashboard
+    if (queryIndex === -1) {
+      return (
+        pathname === "/smms" &&
+        !searchParams.get("view")
+      );
+    }
+
+    const query = href.substring(queryIndex + 1);
+    const params = new URLSearchParams(query);
+    const view = params.get("view");
+
+    return (
+      pathname === "/smms" &&
+      currentView === view
+    );
+  };
+
+  /* ----------------------------------------------------------
+     MAIN NAV ACTIVE MENU
+     ---------------------------------------------------------- */
+
   const mainNavActive = (href: string) => {
     if (href === "/") {
       return pathname === "/";
@@ -166,25 +235,55 @@ export function Sidebar() {
     return pathname.startsWith(href);
   };
 
+  /* ============================================================
+     SIDEBAR UI
+     ============================================================ */
+
   return (
     <aside className="w-60 shrink-0 border-r border-border bg-sidebar p-4 flex flex-col gap-1">
 
-      {/* ============================================================
+      {/* ======================================================
           HEADER
-          ============================================================ */}
+          ====================================================== */}
 
       <div className="flex items-center gap-2 px-2 py-3 mb-4">
+
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15">
           <TrainFront className="h-5 w-5 text-primary" />
         </span>
 
         <span className="font-semibold text-sm leading-tight">
+
           {isTDMS ? (
             <>
               TDMS
               <br />
               <span className="text-muted-foreground font-normal text-xs">
                 Traction Management
+              </span>
+            </>
+          ) : isSMMS ? (
+            <>
+              SMMS
+              <br />
+              <span className="text-muted-foreground font-normal text-xs">
+                Signal & Telecom
+              </span>
+            </>
+          ) : isCOA ? (
+            <>
+              COA
+              <br />
+              <span className="text-muted-foreground font-normal text-xs">
+                Corridor Operations
+              </span>
+            </>
+          ) : isADMIN ? (
+            <>
+              NEXORA
+              <br />
+              <span className="text-muted-foreground font-normal text-xs">
+                Administrator
               </span>
             </>
           ) : (
@@ -196,12 +295,13 @@ export function Sidebar() {
               </span>
             </>
           )}
+
         </span>
       </div>
 
-      {/* ============================================================
+      {/* ======================================================
           TDMS USER
-          ============================================================ */}
+          ====================================================== */}
 
       {isTDMS && (
         <>
@@ -228,17 +328,75 @@ export function Sidebar() {
         </>
       )}
 
-      {/* ============================================================
-          COA / ADMIN
-          ============================================================ */}
+      {/* ======================================================
+          SMMS USER
+          ====================================================== */}
+
+      {isSMMS && (
+        <>
+          <span className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Signal & Telecom
+          </span>
+
+          {SMMS_NAV.map(
+            ({ href, label, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                  smmsActive(href)
+                    ? "bg-primary/15 text-primary font-medium"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </Link>
+            )
+          )}
+        </>
+      )}
+
+      {/* ======================================================
+          COA USER
+          ====================================================== */}
 
       {isCOA && (
+        <>
+          <span className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Corridor Operations
+          </span>
+
+          {MAIN_NAV.map(
+            ({ href, label, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                  mainNavActive(href)
+                    ? "bg-primary/15 text-primary font-medium"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </Link>
+            )
+          )}
+        </>
+      )}
+
+      {/* ======================================================
+          ADMIN USER
+          ====================================================== */}
+
+      {isADMIN && (
         <>
           <span className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
             Main Operations
           </span>
 
-          {NAV.map(
+          {MAIN_NAV.map(
             ({ href, label, icon: Icon }) => (
               <Link
                 key={href}
@@ -254,62 +412,62 @@ export function Sidebar() {
               </Link>
             )
           )}
+
+          {/* Department dashboards */}
 
           <span className="px-3 pb-1 pt-4 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Department Dashboards
+          </span>
+
+          <Link
+            href="/tms"
+            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <TrainFront className="h-4 w-4" />
+            TMS
+          </Link>
+
+          <Link
+            href="/tdms"
+            className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+              pathname.startsWith("/tdms")
+                ? "bg-primary/15 text-primary font-medium"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
+          >
+            <Zap className="h-4 w-4" />
             TDMS
-          </span>
+          </Link>
 
-          {TDMS_NAV.map(
-            ({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
-                  tdmsActive(href)
-                    ? "bg-primary/15 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </Link>
-            )
-          )}
+          <Link
+            href="/smms"
+            className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+              pathname.startsWith("/smms")
+                ? "bg-primary/15 text-primary font-medium"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
+          >
+            <Radio className="h-4 w-4" />
+            SMMS
+          </Link>
+
+          <Link
+            href="/coa"
+            className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+              pathname.startsWith("/coa")
+                ? "bg-primary/15 text-primary font-medium"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
+          >
+            <GanttChartSquare className="h-4 w-4" />
+            COA
+          </Link>
         </>
       )}
 
-      {/* ============================================================
-          TMS / SMMS / OTHER USERS
-          ============================================================ */}
-
-      {!isTDMS && !isCOA && (
-        <>
-          <span className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Menu
-          </span>
-
-          {NAV.map(
-            ({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
-                  mainNavActive(href)
-                    ? "bg-primary/15 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </Link>
-            )
-          )}
-        </>
-      )}
-
-      {/* ============================================================
-          USER
-          ============================================================ */}
+      {/* ======================================================
+          USER DETAILS
+          ====================================================== */}
 
       {user && (
         <div className="mt-auto rounded-lg border border-border bg-card p-3">
@@ -336,20 +494,22 @@ export function Sidebar() {
         </div>
       )}
 
-      {/* ============================================================
+      {/* ======================================================
           SYSTEM STATUS
-          ============================================================ */}
+          ====================================================== */}
 
       <div
         className={`rounded-lg border border-border bg-card p-3 ${
           user ? "" : "mt-auto"
         }`}
       >
+
         <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground mb-1">
           System Status
         </div>
 
         <div className="flex items-center gap-1.5 text-sm">
+
           <Circle
             className={`h-2 w-2 ${
               online === null
@@ -365,6 +525,7 @@ export function Sidebar() {
             : online
             ? "Operational"
             : "API Offline"}
+
         </div>
       </div>
 

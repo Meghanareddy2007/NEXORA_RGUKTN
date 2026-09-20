@@ -163,6 +163,7 @@ class RailNetworkEngine:
                 alt_path = self.find_alternative_route(train["origin"], train["destination"], blocked_routes)
                 if alt_path and not train.get("is_rerouted"):
                     alt_names = [self.stations.get(s, {}).get("name", s) for s in alt_path]
+                    route_separator = " → "
                     alerts.append({
                         "id": f"ALERT-TR-{tid}",
                         "type": "TRAIN_CONFLICT",
@@ -170,7 +171,7 @@ class RailNetworkEngine:
                         "title": f"\u26a0 Train {tid} ({train['name']}) Affected",
                         "message": f"Train {tid} cannot proceed on blocked route. Dynamic re-routing available.",
                         "train_id": tid,
-                        "suggested_action": f"Reroute via: {' \u2192 '.join(alt_names)}",
+                        "suggested_action": f"Reroute via: {route_separator.join(alt_names)}",
                         "alternative_route": alt_path,
                     })
 

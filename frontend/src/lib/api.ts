@@ -1,18 +1,21 @@
 import axios from "axios";
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
 
-export const api = axios.create({ baseURL: API_BASE });
+export const api = axios.create({
+  baseURL: API_BASE,
+});
 
-// Attach the logged-in user's token (if any) to every outgoing request.
-// Reads directly from localStorage (not the auth.ts helper) to avoid a
-// circular import between lib/api.ts and lib/auth.ts.
+// Attach the logged-in user's token to every outgoing request.
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const raw = window.localStorage.getItem("nexora_auth");
+
     if (raw) {
       try {
         const { access_token } = JSON.parse(raw);
+
         if (access_token) {
           config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${access_token}`;
@@ -22,21 +25,29 @@ api.interceptors.request.use((config) => {
       }
     }
   }
+
   return config;
 });
 
-// If the backend ever returns 401 (expired/missing token) on a call that
-// required auth, clear stale auth so the user is prompted to log in again.
+// If the backend returns 401, clear stale authentication.
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err?.response?.status === 401 && typeof window !== "undefined") {
+    if (
+      err?.response?.status === 401 &&
+      typeof window !== "undefined"
+    ) {
       window.localStorage.removeItem("nexora_auth");
       window.dispatchEvent(new Event("nexora-auth-changed"));
     }
+
     return Promise.reject(err);
   }
 );
+
+// ============================================================================
+// CORE DASHBOARD TYPES
+// ============================================================================
 
 export interface KpiSummary {
   avg_availability_target_pct: number;
@@ -134,6 +145,7 @@ export interface Alert {
 
 export interface DashboardSummary {
   today: string;
+
   kpis: {
     active_trains_today: number;
     maintenance_requests_pending: number;
@@ -145,18 +157,22 @@ export interface DashboardSummary {
     delay_avoided_min: number;
     delay_avoided_label: string;
   };
+
   recommended_block: RecommendedBlock | null;
   upcoming_blocks: UpcomingBlock[];
+
   train_impact_summary: Record<string, number>;
-  delay_avoided_chart: { manual_min: number; ai_optimized_min: number };
+
+  delay_avoided_chart: {
+    manual_min: number;
+    ai_optimized_min: number;
+  };
+
   alerts: Alert[];
 }
 
 // ============================================================================
-// ANALYTICS — raw dataset rows (as exposed by GET /api/datasets/{name})
-// These map 1:1 onto the seeded CSVs and back the deeper Analytics
-// visualizations (priority matrix, section pressure, resource utilization)
-// without requiring any new backend endpoints.
+// ANALYTICS DATASET TYPES
 // ============================================================================
 
 export interface RawMaintenanceTask {
@@ -174,7 +190,12 @@ export interface RawMaintenanceTask {
   overdue_days: number;
   estimated_duration_min: number;
   crew_required: number;
-  status: "Pending" | "In Progress" | "Scheduled" | "Completed" | string;
+  status:
+    | "Pending"
+    | "In Progress"
+    | "Scheduled"
+    | "Completed"
+    | string;
 }
 
 export interface MaintenanceTask extends RawMaintenanceTask {
@@ -201,7 +222,11 @@ export interface AssetRecord {
   location_km: number;
   asset_criticality: number;
   availability_target_pct: number;
-  current_status: "Normal" | "Degraded" | "Critical" | string;
+  current_status:
+    | "Normal"
+    | "Degraded"
+    | "Critical"
+    | string;
   last_maintenance_date: string;
   next_due_date: string;
   failure_risk: number;
@@ -213,6 +238,11 @@ export interface CorridorRisk {
   asset_count: number;
   critical_assets: number;
 }
+
+// ============================================================================
+// TDMS
+// ============================================================================
+
 export interface TDMSProblemFormData {
   asset_id: string;
   asset_type: string;
@@ -229,43 +259,121 @@ export interface TDMSProblemFormData {
   time_window?: string;
 }
 
-const TASK_SOURCE_MAP: { name: string; source: MaintenanceTask["source"]; department: MaintenanceTask["department"] }[] = [
-  { name: "tms_maintenance", source: "TMS", department: "Engineering" },
-  { name: "smms_maintenance", source: "SMMS", department: "Signal" },
-  { name: "tdms_maintenance", source: "TDMS", department: "Traction" },
+const TASK_SOURCE_MAP: {
+  name: string;
+  source: MaintenanceTask["source"];
+  department: MaintenanceTask["department"];
+}[] = [
+  {
+    name: "tms_maintenance",
+    source: "TMS",
+    department: "Engineering",
+  },
+  {
+    name: "smms_maintenance",
+    source: "SMMS",
+    department: "Signal",
+  },
+  {
+    name: "tdms_maintenance",
+    source: "TDMS",
+    department: "Traction",
+  },
 ];
 
-export const fetchDataset = <T,>(name: string, corridor_id?: string) =>
-  // /api/datasets/{name} caps `limit` at 2000 server-side; every seeded dataset here is well under that.
-  api.get<T[]>(`/api/datasets/${name}`, { params: { corridor_id, limit: 2000 } }).then((r) => r.data);
+export const fetchDataset = <T,>(
+  name: string,
+  corridor_id?: string
+) =>
+  api
+    .get<T[]>(`/api/datasets/${name}`, {
+      params: {
+        corridor_id,
+        limit: 2000,
+      },
+    })
+    .then((r) => r.data);
 
-/** Unifies TMS + SMMS + TDMS into one task pool, same shape the optimizer uses,
- * sourced entirely from the existing /api/datasets/{name} endpoint. */
+/**
+ * Combines TMS + SMMS + TDMS maintenance tasks
+ * into one common task pool.
+ */
 export const fetchAllTasks = (): Promise<MaintenanceTask[]> =>
   Promise.all(
-    TASK_SOURCE_MAP.map(({ name, source, department }) =>
-      fetchDataset<RawMaintenanceTask>(name).then((rows) => rows.map((r) => ({ ...r, source, department })))
+    TASK_SOURCE_MAP.map(
+      ({ name, source, department }) =>
+        fetchDataset<RawMaintenanceTask>(name).then(
+          (rows) =>
+            rows.map((r) => ({
+              ...r,
+              source,
+              department,
+            }))
+        )
     )
   ).then((groups) => groups.flat());
 
-export const fetchNetworkDataset = () => fetchDataset<NetworkCorridor>("railway_network");
-export const fetchAssetsDataset = () => fetchDataset<AssetRecord>("assets");
+export const fetchNetworkDataset = () =>
+  fetchDataset<NetworkCorridor>("railway_network");
 
-export const fetchDashboard = () => api.get<DashboardSummary>("/api/analytics/dashboard").then((r) => r.data);
-export const approveBlock = (block_id: string) =>
-  api.post<{ block_id: string; status: string }>(`/api/blocks/${block_id}/approve`).then((r) => r.data);
-export const fetchKpis = () => api.get<KpiSummary>("/api/analytics/kpi").then((r) => r.data);
-export const fetchBlocks = (corridor_id?: string) =>
-  api.get<Block[]>("/api/blocks", { params: { corridor_id } }).then((r) => r.data);
-export const fetchNetwork = () => api.get("/api/network").then((r) => r.data);
-export const fetchCorridorRisk = () => api.get<CorridorRisk[]>("/api/analytics/corridor-risk").then((r) => r.data);
-export const runOptimization = (max_tasks = 150, max_blocks = 60) =>
+export const fetchAssetsDataset = () =>
+  fetchDataset<AssetRecord>("assets");
+
+// ============================================================================
+// ANALYTICS / DASHBOARD APIs
+// ============================================================================
+
+export const fetchDashboard = () =>
   api
-    .post<OptimizeResult>("/api/optimize/run", null, { params: { max_tasks, max_blocks } })
+    .get<DashboardSummary>("/api/analytics/dashboard")
+    .then((r) => r.data);
+
+export const approveBlock = (block_id: string) =>
+  api
+    .post<{ block_id: string; status: string }>(
+      `/api/blocks/${block_id}/approve`
+    )
+    .then((r) => r.data);
+
+export const fetchKpis = () =>
+  api
+    .get<KpiSummary>("/api/analytics/kpi")
+    .then((r) => r.data);
+
+export const fetchBlocks = (corridor_id?: string) =>
+  api
+    .get<Block[]>("/api/blocks", {
+      params: { corridor_id },
+    })
+    .then((r) => r.data);
+
+export const fetchNetwork = () =>
+  api.get("/api/network").then((r) => r.data);
+
+export const fetchCorridorRisk = () =>
+  api
+    .get<CorridorRisk[]>("/api/analytics/corridor-risk")
+    .then((r) => r.data);
+
+export const runOptimization = (
+  max_tasks = 150,
+  max_blocks = 60
+) =>
+  api
+    .post<OptimizeResult>(
+      "/api/optimize/run",
+      null,
+      {
+        params: {
+          max_tasks,
+          max_blocks,
+        },
+      }
+    )
     .then((r) => r.data);
 
 // ============================================================================
-// RAILWAY OPERATIONS & MAINTENANCE DASHBOARD TYPES & APIS
+// RAILWAY OPERATIONS
 // ============================================================================
 
 export type RouteStatus =
@@ -304,8 +412,17 @@ export interface Route {
   category: string;
 }
 
-export type TrainType = "Express" | "Passenger" | "Freight";
-export type TrainStatus = "RUNNING" | "SCHEDULED" | "DELAYED" | "REROUTED" | "ARRIVED";
+export type TrainType =
+  | "Express"
+  | "Passenger"
+  | "Freight";
+
+export type TrainStatus =
+  | "RUNNING"
+  | "SCHEDULED"
+  | "DELAYED"
+  | "REROUTED"
+  | "ARRIVED";
 
 export interface Train {
   id: string;
@@ -338,8 +455,16 @@ export interface MaintenanceBlock {
   activity: string;
   start_time: string;
   end_time: string;
-  priority: "High" | "Medium" | "Low" | "Emergency";
-  status: "SCHEDULED" | "IN_PROGRESS" | "UNDER_MAINTENANCE" | "COMPLETED";
+  priority:
+    | "High"
+    | "Medium"
+    | "Low"
+    | "Emergency";
+  status:
+    | "SCHEDULED"
+    | "IN_PROGRESS"
+    | "UNDER_MAINTENANCE"
+    | "COMPLETED";
   estimated_delay_min: number;
   alternative_corridor?: string;
   allowed_tracks?: string;
@@ -348,8 +473,15 @@ export interface MaintenanceBlock {
 
 export interface AlertItem {
   id: string;
-  type: "ROUTE_BLOCKED" | "TRAIN_CONFLICT" | "EMERGENCY_BLOCK";
-  severity: "CRITICAL" | "HIGH" | "MEDIUM" | "INFO";
+  type:
+    | "ROUTE_BLOCKED"
+    | "TRAIN_CONFLICT"
+    | "EMERGENCY_BLOCK";
+  severity:
+    | "CRITICAL"
+    | "HIGH"
+    | "MEDIUM"
+    | "INFO";
   title: string;
   message: string;
   route_id?: string;
@@ -378,35 +510,138 @@ export interface SimulationState {
   alerts: AlertItem[];
 }
 
-export const fetchStations = () => api.get<Station[]>("/api/stations").then((r) => r.data);
-export const fetchRoutes = (date?: string) => api.get<Route[]>("/api/routes", { params: { date } }).then((r) => r.data);
-export const fetchTrains = (date?: string) => api.get<Train[]>("/api/trains", { params: { date } }).then((r) => r.data);
+// ============================================================================
+// RAILWAY OPERATIONS APIs
+// ============================================================================
+
+export const fetchStations = () =>
+  api
+    .get<Station[]>("/api/stations")
+    .then((r) => r.data);
+
+export const fetchRoutes = (date?: string) =>
+  api
+    .get<Route[]>("/api/routes", {
+      params: { date },
+    })
+    .then((r) => r.data);
+
+export const fetchTrains = (date?: string) =>
+  api
+    .get<Train[]>("/api/trains", {
+      params: { date },
+    })
+    .then((r) => r.data);
+
 export const fetchMaintenanceBlocks = (date?: string) =>
-  api.get<MaintenanceBlock[]>("/api/maintenance-blocks", { params: { date } }).then((r) => r.data);
-export const fetchRouteStatus = (date?: string) => api.get<Record<string, any>>("/api/route-status", { params: { date } }).then((r) => r.data);
-export const fetchAlerts = (date?: string) => api.get<AlertItem[]>("/api/alerts", { params: { date } }).then((r) => r.data);
-export const fetchLiveState = (date?: string, time?: string) =>
-  api.get<SimulationState>("/api/live/state", { params: { date, time } }).then((r) => r.data);
-export const fetchSimulationState = (time: string, date?: string) =>
-  api.get<SimulationState>("/api/simulation/state", { params: { time, date } }).then((r) => r.data);
+  api
+    .get<MaintenanceBlock[]>(
+      "/api/maintenance-blocks",
+      {
+        params: { date },
+      }
+    )
+    .then((r) => r.data);
+
+export const fetchRouteStatus = (date?: string) =>
+  api
+    .get<Record<string, any>>(
+      "/api/route-status",
+      {
+        params: { date },
+      }
+    )
+    .then((r) => r.data);
+
+export const fetchAlerts = (date?: string) =>
+  api
+    .get<AlertItem[]>("/api/alerts", {
+      params: { date },
+    })
+    .then((r) => r.data);
+
+export const fetchLiveState = (
+  date?: string,
+  time?: string
+) =>
+  api
+    .get<SimulationState>("/api/live/state", {
+      params: {
+        date,
+        time,
+      },
+    })
+    .then((r) => r.data);
+
+export const fetchSimulationState = (
+  time: string,
+  date?: string
+) =>
+  api
+    .get<SimulationState>("/api/simulation/state", {
+      params: {
+        time,
+        date,
+      },
+    })
+    .then((r) => r.data);
+
+// ============================================================================
+// SIMULATION APIs
+// ============================================================================
 
 export const triggerReroute = (train_id: string) =>
-  api.post<{ success: boolean; train_id: string; new_route: string[]; delay_minutes: number; status: string }>(
-    "/api/simulation/reroute",
-    { train_id }
-  ).then((r) => r.data);
+  api
+    .post<{
+      success: boolean;
+      train_id: string;
+      new_route: string[];
+      delay_minutes: number;
+      status: string;
+    }>(
+      "/api/simulation/reroute",
+      {
+        train_id,
+      }
+    )
+    .then((r) => r.data);
 
-export const triggerEmergencyBlock = (route_id: string, reason: string) =>
-  api.post<{ success: boolean; block: MaintenanceBlock }>("/api/simulation/emergency-block", {
-    route_id,
-    reason,
-  }).then((r) => r.data);
+export const triggerEmergencyBlock = (
+  route_id: string,
+  reason: string
+) =>
+  api
+    .post<{
+      success: boolean;
+      block: MaintenanceBlock;
+    }>(
+      "/api/simulation/emergency-block",
+      {
+        route_id,
+        reason,
+      }
+    )
+    .then((r) => r.data);
 
-export const triggerReoptimize = (train_id?: string) =>
-  api.post("/api/reoptimize", null, { params: { train_id } }).then((r) => r.data);
+export const triggerReoptimize = (
+  train_id?: string
+) =>
+  api
+    .post(
+      "/api/reoptimize",
+      null,
+      {
+        params: {
+          train_id,
+        },
+      }
+    )
+    .then((r) => r.data);
 
 export const triggerScheduleOptimization = () =>
-  api.post("/api/optimize-schedule").then((r) => r.data);
+  api
+    .post("/api/optimize-schedule")
+    .then((r) => r.data);
 
 export const predictAiPriority = (payload: {
   criticality: number;
@@ -416,10 +651,13 @@ export const predictAiPriority = (payload: {
   gross_million_tonnes?: number;
   track_age_years?: number;
   is_peak_hour?: boolean;
-}) => api.post("/api/ai/predict-priority", payload).then((r) => r.data);
+}) =>
+  api
+    .post("/api/ai/predict-priority", payload)
+    .then((r) => r.data);
 
 // ============================================================================
-// BLOCK PLANNER TYPES & APIS
+// BLOCK PLANNER
 // ============================================================================
 
 export interface Asset {
@@ -448,10 +686,13 @@ export interface CandidateOption {
   recommendation: string;
   reasons: string[];
 }
+
 export interface MaintenanceRequest {
   id: number;
+
   asset_id: string;
   asset_label?: string;
+
   corridor_id: string;
   corridor_label?: string;
 
@@ -472,6 +713,7 @@ export interface MaintenanceRequest {
   reported_by?: string;
 
   status: string;
+
   candidates: CandidateOption[];
 
   selected_option_index?: number;
@@ -481,11 +723,11 @@ export interface MaintenanceRequest {
   updated_at: string;
 }
 
-
 export interface PlanVisualization {
   corridor_id: string;
   date: string;
   hours: string[];
+
   block: {
     asset_label: string;
     start_time: string;
@@ -493,6 +735,7 @@ export interface PlanVisualization {
     start_pct: number;
     end_pct: number;
   };
+
   trains: {
     train_id: string;
     train_number: string;
@@ -503,25 +746,44 @@ export interface PlanVisualization {
   }[];
 }
 
+// ============================================================================
+// BLOCK PLANNER APIs
+// ============================================================================
+
 export const fetchAssets = () =>
-  api.get<Asset[]>("/api/plan/assets").then((r) => r.data);
+  api
+    .get<Asset[]>("/api/plan/assets")
+    .then((r) => r.data);
 
 export const fetchMaintenanceTypes = () =>
-  api.get<string[]>("/api/plan/maintenance-types").then((r) => r.data);
-
-export const createMaintenanceRequest = (payload: any) =>
   api
-    .post<MaintenanceRequest>("/api/plan/requests", payload)
+    .get<string[]>("/api/plan/maintenance-types")
+    .then((r) => r.data);
+
+export const createMaintenanceRequest = (
+  payload: any
+) =>
+  api
+    .post<MaintenanceRequest>(
+      "/api/plan/requests",
+      payload
+    )
     .then((r) => r.data);
 
 export const fetchMaintenanceRequests = () =>
   api
-    .get<MaintenanceRequest[]>("/api/plan/requests")
+    .get<MaintenanceRequest[]>(
+      "/api/plan/requests"
+    )
     .then((r) => r.data);
 
-export const fetchMaintenanceRequest = (requestId: number) =>
+export const fetchMaintenanceRequest = (
+  requestId: number
+) =>
   api
-    .get<MaintenanceRequest>(`/api/plan/requests/${requestId}`)
+    .get<MaintenanceRequest>(
+      `/api/plan/requests/${requestId}`
+    )
     .then((r) => r.data);
 
 export const fetchPlanPreview = (
@@ -541,17 +803,30 @@ export const selectPlanOption = (
   api
     .post<MaintenanceRequest>(
       `/api/plan/requests/${requestId}/select`,
-      { option }
+      {
+        option,
+      }
     )
     .then((r) => r.data);
 
 // ============================================================================
-// REINFORCEMENT LEARNING — Adaptive Corridor Block-Release Agent
+// REINFORCEMENT LEARNING
 // ============================================================================
 
-export type RlTrafficLevel = "Low" | "Med" | "High";
-export type RlBacklogLevel = "Low" | "Med" | "High";
-export type RlAction = "DEFER" | "MODERATE_RELEASE" | "AGGRESSIVE_RELEASE";
+export type RlTrafficLevel =
+  | "Low"
+  | "Med"
+  | "High";
+
+export type RlBacklogLevel =
+  | "Low"
+  | "Med"
+  | "High";
+
+export type RlAction =
+  | "DEFER"
+  | "MODERATE_RELEASE"
+  | "AGGRESSIVE_RELEASE";
 
 export interface RlPolicyRow {
   traffic_level: RlTrafficLevel;
@@ -571,20 +846,52 @@ export interface RlSummary {
 }
 
 export interface RlRecommendation {
-  state: { traffic_level: RlTrafficLevel; backlog_level: RlBacklogLevel };
+  state: {
+    traffic_level: RlTrafficLevel;
+    backlog_level: RlBacklogLevel;
+  };
+
   recommended_action: RlAction;
   recommended_action_label: string;
+
   q_values: Record<RlAction, number>;
+
   confidence_gap: number;
   trained_episodes: number;
 }
 
-export const fetchRlSummary = () => api.get<RlSummary>("/api/rl/summary").then((r) => r.data);
-export const trainRlAgent = (episodes = 200) =>
-  api.post<RlSummary>("/api/rl/train", null, { params: { episodes } }).then((r) => r.data);
-export const fetchRlRecommendation = (traffic_level: RlTrafficLevel, backlog_level: RlBacklogLevel) =>
+export const fetchRlSummary = () =>
   api
-    .get<RlRecommendation>("/api/rl/recommend", { params: { traffic_level, backlog_level } })
+    .get<RlSummary>("/api/rl/summary")
     .then((r) => r.data);
 
+export const trainRlAgent = (
+  episodes = 200
+) =>
+  api
+    .post<RlSummary>(
+      "/api/rl/train",
+      null,
+      {
+        params: {
+          episodes,
+        },
+      }
+    )
+    .then((r) => r.data);
 
+export const fetchRlRecommendation = (
+  traffic_level: RlTrafficLevel,
+  backlog_level: RlBacklogLevel
+) =>
+  api
+    .get<RlRecommendation>(
+      "/api/rl/recommend",
+      {
+        params: {
+          traffic_level,
+          backlog_level,
+        },
+      }
+    )
+    .then((r) => r.data);

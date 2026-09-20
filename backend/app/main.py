@@ -11,6 +11,9 @@ Docs:
     http://localhost:8000/docs
 """
 import os
+import json
+import csv
+from threading import Lock
 from datetime import date
 from typing import Optional
 import pandas as pd
@@ -36,6 +39,9 @@ init_db()
 init_auth_db()
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
+TMS_REPORTS_FILE = os.path.join(DATA_DIR, "TMS_REPORTS.csv")
+TMS_REPORTS_LOCK = Lock()
+
 
 app = FastAPI(
     title="AI-Powered Automatic Block Planning API",
@@ -58,6 +64,7 @@ DATASET_FILES = {
     "assets": "ASSETS.csv",
     "trains": "TRAINS.csv",
     "railway_network": "RAILWAY_NETWORK.csv",
+    "tms_reports": "TMS_REPORTS.csv",
 }
 
 
@@ -66,10 +73,8 @@ def root():
     return {"status": "ok", "service": "block-planning-api", "datasets": list(DATASET_FILES.keys())}
 
 
-# ============================================================================
 # AUTH — department login (SMMS / TMS / TRACTION / COA / ADMIN)
 # ============================================================================
-
 @app.post("/api/auth/login")
 def login(payload: dict):
     """
@@ -118,6 +123,60 @@ def get_dataset(name: str, corridor_id: Optional[str] = None, limit: int = Query
     if corridor_id and "corridor_id" in df.columns:
         df = df[df["corridor_id"] == corridor_id]
     return df.head(limit).to_dict("records")
+
+
+# ============================================================================
+# TMS CSV PERSISTENCE
+@app.get("/api/tms/records")
+def get_tms_records(table: str = Query("maintenance_requests")):
+    """Read TMS records persisted in the backend CSV file."""
+    if table not in {"maintenance_requests", "breakdowns"}:
+        raise HTTPException(400, "Unsupported TMS table")
+    if not os.path.exists(TMS_REPORTS_FILE):
+        return []
+    with TMS_REPORTS_LOCK:
+        df = pd.read_csv(TMS_REPORTS_FILE, dtype=str, keep_default_na=False)
+    if df.empty or "table_name" not in df.columns:
+        return []
+    rows = []
+    for row in df[df["table_name"] == table].drop(columns=["table_name"], errors="ignore").to_dict(orient="records"):
+        for key, value in list(row.items()):
+            if key == "equipment" and value:
+                try: row[key] = json.loads(value)
+                except Exception: pass
+            elif value in {"True", "False"}:
+                row[key] = value == "True"
+        rows.append(row)
+    return rows
+
+@app.post("/api/tms/records")
+def save_tms_record(payload: dict):
+    """Append a structured TMS maintenance/breakdown record to CSV."""
+    table = payload.get("table")
+    row = payload.get("row") or {}
+    if table not in {"maintenance_requests", "breakdowns"}:
+        raise HTTPException(400, "Unsupported TMS table")
+    if not isinstance(row, dict) or not row:
+        raise HTTPException(400, "A non-empty row is required")
+    record = {"table_name": table}
+    for key, value in row.items():
+        if isinstance(value, (list, dict)):
+            record[key] = json.dumps(value, ensure_ascii=False)
+        elif value is None:
+            record[key] = ""
+        else:
+            record[key] = str(value)
+    with TMS_REPORTS_LOCK:
+        existing = pd.read_csv(TMS_REPORTS_FILE, dtype=str, keep_default_na=False) if os.path.exists(TMS_REPORTS_FILE) else pd.DataFrame()
+        all_columns = list(dict.fromkeys(list(existing.columns) + list(record.keys())))
+        if not all_columns:
+            all_columns = list(record.keys())
+        new_row = {col: record.get(col, "") for col in all_columns}
+        existing = existing.reindex(columns=all_columns, fill_value="")
+        existing = pd.concat([existing, pd.DataFrame([new_row])], ignore_index=True)
+        existing.to_csv(TMS_REPORTS_FILE, index=False)
+    return {"ok": True, "table": table, "record": row}
+
 
 
 @app.get("/api/network")
@@ -626,5 +685,3 @@ def post_select_option(request_id: int, payload: dict):
     block_id = c["block_id"] if c else ""
     updated = select_option(request_id, option, block_id)
     return updated
-
-
