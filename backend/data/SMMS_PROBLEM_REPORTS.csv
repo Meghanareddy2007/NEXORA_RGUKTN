@@ -1,0 +1,3 @@
+report_id,reported_at,reported_by,asset_id,problem_type,severity,description,immediate_action,status
+SPR-20260926-0001,2026-09-26T05:58:17Z,smms_user,SIG_006,Track Circuit Failure,High,need immediate action,Maintenance team informed,Open
+SPR-20260926-0002,2026-09-26T06:59:22Z,smms_user,SIG_009,Cable / Communication Failure,High,need immediate actions,Maintenance team informed,Open

@@ -34,9 +34,13 @@ from app.csv_data_loader import (
 )
 from app.auth import init_auth_db, login_user, get_current_user, require_department
 from app.rl_agent import agent as rl_agent, TRAFFIC_LEVELS as RL_TRAFFIC_LEVELS, BACKLOG_LEVELS as RL_BACKLOG_LEVELS
+from app.rbac import require_permission
+from app import audit
+from app import smms as smms_module
 
 init_db()
 init_auth_db()
+audit.init_audit_db()
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 TMS_REPORTS_FILE = os.path.join(DATA_DIR, "TMS_REPORTS.csv")
@@ -55,6 +59,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# SMMS (Signalling Maintenance) module. All SMMS routes are permission-gated
+# independently, so the existing TMS/TDMS/COA workflows remain unchanged.
+app.include_router(smms_module.router)
 
 DATASET_FILES = {
     "tms_maintenance": "TMS_MAINTENANCE.csv",
@@ -92,14 +100,35 @@ def login(payload: dict):
     password = payload.get("password") or ""
     result = login_user(username, password)
     if not result:
+        audit.log_action(
+            {"username": username, "role": None, "department": None},
+            "LOGIN", "auth", username, "FAILED", "Invalid username or password",
+        )
         raise HTTPException(401, "Invalid username or password.")
+    audit.log_action(result, "LOGIN", "auth", username, "SUCCESS")
     return result
+
+@app.post("/api/auth/logout")
+def logout(user: dict = Depends(get_current_user)):
+    """Record logout; the stateless frontend token is discarded client-side."""
+    audit.log_action(user, "LOGOUT", "auth", user["username"], "SUCCESS")
+    return {"status": "logged_out"}
 
 
 @app.get("/api/auth/me")
 def me(user: dict = Depends(get_current_user)):
-    """Returns the logged-in user's username + department, from the token."""
+    """Returns the logged-in user's authenticated identity."""
     return user
+
+
+@app.get("/api/audit")
+def get_audit_log(
+    limit: int = Query(200, le=1000),
+    username: Optional[str] = None,
+    action: Optional[str] = None,
+    user: dict = Depends(require_permission("audit.view")),
+):
+    return audit.list_audit(limit=limit, username=username, action=action)
 
 
 @app.get("/api/datasets")

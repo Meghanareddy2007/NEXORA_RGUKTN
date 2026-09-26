@@ -15,6 +15,13 @@ import {
   History,
   Zap,
   Radio,
+  AlertTriangle,
+  Map,
+  Wrench,
+  FileWarning,
+  Sparkles,
+  FileBarChart2,
+  ShieldAlert,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -93,26 +100,17 @@ const TDMS_NAV = [
    ============================================================ */
 
 const SMMS_NAV = [
-  {
-    href: "/smms",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    href: "/smms?view=maintenance",
-    label: "Maintenance Tasks",
-    icon: ClipboardList,
-  },
-  {
-    href: "/smms?view=assets",
-    label: "Signal & Telecom Assets",
-    icon: Radio,
-  },
-  {
-    href: "/smms?view=history",
-    label: "Maintenance History",
-    icon: History,
-  },
+  { href: "/smms", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/smms?view=assets", label: "Signalling Assets", icon: Radio },
+  { href: "/smms?view=failures", label: "Signalling Failures", icon: AlertTriangle },
+  { href: "/smms?view=map", label: "Signalling Map", icon: Map },
+  { href: "/smms?view=maintenance", label: "Maintenance Queue", icon: Wrench },
+  { href: "/smms?view=report-problem", label: "Report Problem", icon: FileWarning },
+  { href: "/smms?view=insights", label: "Command Insights", icon: Sparkles },
+  { href: "/smms?view=reports", label: "Reports", icon: FileBarChart2 },
+  { href: "/smms?view=conflicts", label: "Conflict Radar", icon: ShieldAlert },
+  { href: "/smms?view=analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/smms?view=audit", label: "Audit Trail", icon: History },
 ];
 
 /* ============================================================
@@ -334,10 +332,6 @@ export function Sidebar() {
 
       {isSMMS && (
         <>
-          <span className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Signal & Telecom
-          </span>
-
           {SMMS_NAV.map(
             ({ href, label, icon: Icon }) => (
               <Link

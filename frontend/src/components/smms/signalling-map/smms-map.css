@@ -1,0 +1,285 @@
+/* SMMS Signalling Map — every rule is scoped to .smms-map so no other
+   Leaflet map in the app (COA RailOps etc.) is affected. */
+
+.smms-map .leaflet-container {
+  background: #0a1220;
+  font-family: inherit;
+  outline: none;
+  border-radius: 0;
+}
+
+/* Geographic view: darken the OSM tiles to sit in the dark UI. */
+.smms-map.is-geographic .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(200deg) brightness(0.72) contrast(0.92) saturate(0.5);
+}
+
+.smms-map .smms-icon {
+  background: transparent;
+  border: 0;
+}
+
+/* ---- asset glyph -------------------------------------------------------- */
+.smms-glyph {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #0a1220;
+  box-shadow: 0 0 0 1px rgba(226, 232, 240, 0.28), 0 1px 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.smms-glyph svg {
+  width: 68%;
+  height: 68%;
+  display: block;
+  pointer-events: none;
+}
+.smms-glyph:hover {
+  transform: scale(1.18);
+}
+.smms-glyph-static {
+  display: inline-flex;
+  flex: none;
+  cursor: default;
+  border-width: 1.5px;
+}
+.smms-glyph-static:hover {
+  transform: none;
+}
+.smms-glyph.is-section-level {
+  border-style: dashed;
+  border-color: rgba(226, 232, 240, 0.85);
+}
+.smms-glyph.is-selected {
+  z-index: 5;
+  box-shadow: 0 0 0 3px #fff, 0 0 14px 4px rgba(255, 255, 255, 0.55);
+  transform: scale(1.15);
+}
+
+/* red ring: a failure is open although the asset is not shown red
+   (e.g. repair in progress) */
+.smms-glyph.has-failure-ring::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid #ef4444;
+  pointer-events: none;
+}
+.smms-glyph.is-pulsing::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid #ef4444;
+  opacity: 0;
+  pointer-events: none;
+  animation: smms-pulse 2.2s ease-out infinite;
+}
+@keyframes smms-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .smms-glyph.is-pulsing::before {
+    animation: none;
+    opacity: 0.6;
+  }
+  .smms-glyph {
+    transition: none;
+  }
+}
+
+/* critical-asset mark */
+.smms-crit-mark {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 9px;
+  height: 9px;
+  background: #f8fafc;
+  border: 1.5px solid #0a1220;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+/* ---- stations ----------------------------------------------------------- */
+.smms-stn {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background: #cbd5e1;
+  color: #0a1220;
+  border: 2px solid #0a1220;
+  box-shadow: 0 0 0 1.5px #94a3b8;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: default;
+}
+.smms-stn.is-junction {
+  background: #f8fafc;
+  border-radius: 9px;
+  font-size: 11px;
+  box-shadow: 0 0 0 1.5px #e2e8f0;
+}
+.smms-stn-name {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-top: 3px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #94a3b8;
+  text-shadow: 0 0 3px #0a1220, 0 0 3px #0a1220, 0 0 6px #0a1220;
+  pointer-events: none;
+}
+
+/* ---- section marker ("capsule") ---------------------------------------- */
+.smms-cap {
+  box-sizing: border-box;
+  width: 100%;
+  background: rgba(10, 18, 32, 0.95);
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 3px 6px 4px;
+  color: #e2e8f0;
+  font-size: 10px;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  transition: border-color 0.12s ease;
+}
+.smms-cap:hover {
+  border-color: #94a3b8;
+}
+.smms-cap.is-selected {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+.smms-cap.is-compact {
+  padding: 2px 5px 3px;
+  font-size: 9.5px;
+}
+.smms-cap.is-empty {
+  opacity: 0.55;
+}
+.smms-cap-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  white-space: nowrap;
+}
+.smms-cap-id {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.smms-cap-km {
+  color: #94a3b8;
+}
+.smms-cap-bar {
+  display: flex;
+  height: 4px;
+  margin-top: 3px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: #1e293b;
+}
+.smms-cap-bar > i {
+  display: block;
+  height: 100%;
+}
+
+/* ---- section-level tray ------------------------------------------------- */
+.smms-tray {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 18, 32, 0.96);
+  border: 1px solid #475569;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 10px;
+  line-height: 1.25;
+  color: #94a3b8;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- tooltips ----------------------------------------------------------- */
+.leaflet-tooltip.smms-tt {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 11px;
+  line-height: 1.35;
+  padding: 5px 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+.leaflet-tooltip-top.smms-tt::before {
+  border-top-color: #334155;
+}
+.leaflet-tooltip-bottom.smms-tt::before {
+  border-bottom-color: #334155;
+}
+.leaflet-tooltip-left.smms-tt::before {
+  border-left-color: #334155;
+}
+.leaflet-tooltip-right.smms-tt::before {
+  border-right-color: #334155;
+}
+.smms-tt b {
+  font-weight: 600;
+  color: #f8fafc;
+}
+.smms-tt .muted {
+  color: #94a3b8;
+}
+
+/* zoom control in dark UI */
+.smms-map .leaflet-bar a {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-bottom-color: #334155;
+}
+.smms-map .leaflet-bar a:hover {
+  background: #1e293b;
+}
+.smms-map .leaflet-bar {
+  border: 1px solid #334155;
+  box-shadow: none;
+}
+.smms-map .leaflet-control-attribution {
+  background: rgba(10, 18, 32, 0.75);
+  color: #94a3b8;
+}
+.smms-map .leaflet-control-attribution a {
+  color: #cbd5e1;
+}
+.smms-map .leaflet-marker-icon:focus-visible .smms-glyph,
+.smms-map .leaflet-marker-icon:focus-visible .smms-cap {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}

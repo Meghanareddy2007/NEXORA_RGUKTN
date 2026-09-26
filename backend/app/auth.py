@@ -26,6 +26,13 @@ from typing import Optional
 from fastapi import Header, HTTPException
 
 from app.db import get_conn
+from app.rbac import (
+    ROLE_LABELS,
+    SMMS_USER,
+    STANDARD_USER,
+    SYSTEM_ADMIN,
+    permissions_for_role,
+)
 
 # ---------------------------------------------------------------------------
 # Config
@@ -33,18 +40,25 @@ from app.db import get_conn
 SECRET_KEY = os.environ.get("AUTH_SECRET_KEY", "sih-ps27-dev-secret-change-me")
 TOKEN_TTL_SECONDS = 12 * 60 * 60  # 12 hours
 
-# The four departments you asked for. "ADMIN" is added so one account can
-# see/do everything (useful for you while demoing / debugging).
+# Departments (organizational unit — distinct from `role`, which drives
+# permissions).
 DEPARTMENTS = ["SMMS", "TMS", "TRACTION", "COA", "ADMIN"]
 
-# Seeded demo accounts — one per department. Change/remove these once you
-# have real users; this just gets the login working out of the box.
+# Seeded demo/test accounts — the ORIGINAL five department accounts,
+# unchanged, each now carrying a `role` that drives permissions:
+#   admin          -> SYSTEM_ADMIN    (unchanged: sees/does everything)
+#   smms_user      -> SMMS_USER       (the Signalling Maintenance role — the
+#                                       focus of this build)
+#   coa_user       -> STANDARD_USER   (unchanged NEXORA behaviour; block
+#   tms_user       -> STANDARD_USER    approval for these three stays
+#   traction_user  -> STANDARD_USER    department-gated, same as before —
+#                                       see require_department() below)
 DEFAULT_USERS = [
-    {"username": "smms_user", "password": "smms123", "department": "SMMS", "full_name": "Signal & Telecom (SMMS)"},
-    {"username": "tms_user", "password": "tms123", "department": "TMS", "full_name": "Engineering / Track (TMS)"},
-    {"username": "traction_user", "password": "traction123", "department": "TRACTION", "full_name": "Traction Distribution (TDMS)"},
-    {"username": "coa_user", "password": "coa123", "department": "COA", "full_name": "Corridor Operating Authority (COA)"},
-    {"username": "admin", "password": "admin123", "department": "ADMIN", "full_name": "System Administrator"},
+    {"username": "smms_user", "password": "smms123", "department": "SMMS", "role": SMMS_USER, "full_name": "Signal & Telecom (SMMS)"},
+    {"username": "tms_user", "password": "tms123", "department": "TMS", "role": STANDARD_USER, "full_name": "Engineering / Track (TMS)"},
+    {"username": "traction_user", "password": "traction123", "department": "TRACTION", "role": STANDARD_USER, "full_name": "Traction Distribution (TDMS)"},
+    {"username": "coa_user", "password": "coa123", "department": "COA", "role": STANDARD_USER, "full_name": "Corridor Operating Authority (COA)"},
+    {"username": "admin", "password": "admin123", "department": "ADMIN", "role": SYSTEM_ADMIN, "full_name": "System Administrator"},
 ]
 
 
@@ -72,7 +86,9 @@ def _verify_password(password: str, stored: str) -> bool:
 # DB setup — additive: a new `users` table in the existing app.db
 # ---------------------------------------------------------------------------
 def init_auth_db() -> None:
-    """Create the users table (if missing) and seed default accounts. Safe to call every startup."""
+    """Create the users table (if missing), migrate in the `role` column
+    (if missing) and seed default accounts. Safe to call every startup —
+    never drops or overwrites an existing account."""
     conn = get_conn()
     try:
         conn.execute(
@@ -88,12 +104,35 @@ def init_auth_db() -> None:
             """
         )
         conn.commit()
+
+        # --- migration: add `role` column if this DB predates RBAC -------
+        existing_cols = {row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()}
+        if "role" not in existing_cols:
+            conn.execute("ALTER TABLE users ADD COLUMN role TEXT")
+            conn.commit()
+            # Backfill any pre-existing rows (from before RBAC existed)
+            # using the same department->role mapping as DEFAULT_USERS,
+            # falling back to the read-only viewer role if unknown.
+            dept_default_role = {u["department"]: u["role"] for u in DEFAULT_USERS}
+            for row in conn.execute("SELECT id, username, department FROM users").fetchall():
+                role = dept_default_role.get(row["department"], STANDARD_USER)
+                conn.execute("UPDATE users SET role = ? WHERE id = ? AND (role IS NULL OR role = '')", (role, row["id"]))
+            conn.commit()
+
         existing = {row["username"] for row in conn.execute("SELECT username FROM users").fetchall()}
         for u in DEFAULT_USERS:
             if u["username"] not in existing:
                 conn.execute(
-                    "INSERT INTO users (username, password_hash, department, full_name, created_at) VALUES (?, ?, ?, ?, datetime('now'))",
-                    (u["username"], _hash_password(u["password"]), u["department"], u["full_name"]),
+                    "INSERT INTO users (username, password_hash, department, role, full_name, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))",
+                    (u["username"], _hash_password(u["password"]), u["department"], u["role"], u["full_name"]),
+                )
+            else:
+                # Keep role in sync for the original seed accounts even if
+                # this DB was created before RBAC existed (role would be
+                # NULL/blank until this runs).
+                conn.execute(
+                    "UPDATE users SET role = ? WHERE username = ? AND (role IS NULL OR role = '')",
+                    (u["role"], u["username"]),
                 )
         conn.commit()
     finally:
@@ -117,8 +156,17 @@ def _sign(payload_b64: str) -> str:
     return base64.urlsafe_b64encode(sig).decode()
 
 
-def create_token(username: str, department: str) -> str:
-    payload = {"sub": username, "dept": department, "exp": int(time.time()) + TOKEN_TTL_SECONDS}
+def create_token(username: str, department: str, role: str) -> str:
+    # The role is embedded in the signed payload — a tampered/forged role
+    # in a client-modified token fails the HMAC signature check in
+    # _decode_token() below, so a client can never grant itself a role or
+    # permission it wasn't issued at login.
+    payload = {
+        "sub": username,
+        "dept": department,
+        "role": role,
+        "exp": int(time.time()) + TOKEN_TTL_SECONDS,
+    }
     payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode()
     return f"{payload_b64}.{_sign(payload_b64)}"
 
@@ -143,36 +191,54 @@ def login_user(username: str, password: str) -> Optional[dict]:
     user = _get_user(username)
     if not user or not _verify_password(password, user["password_hash"]):
         return None
-    token = create_token(user["username"], user["department"])
+    role = user.get("role") or STANDARD_USER
+    token = create_token(user["username"], user["department"], role)
     return {
         "access_token": token,
         "token_type": "bearer",
         "username": user["username"],
         "department": user["department"],
+        "role": role,
+        "role_label": ROLE_LABELS.get(role, role),
         "full_name": user["full_name"],
+        # Reflected for the UI to build nav/buttons with — NEVER trusted by
+        # the backend itself. Every protected endpoint re-derives this from
+        # the signed token via require_permission(), independent of what a
+        # client sends back.
+        "permissions": permissions_for_role(role),
     }
 
 
 def get_current_user(authorization: Optional[str] = Header(None)) -> dict:
-    """FastAPI dependency: reads the 'Authorization: Bearer <token>' header."""
+    """FastAPI dependency: reads the 'Authorization: Bearer <token>' header,
+    verifies the HMAC signature + expiry, and returns the authenticated
+    identity straight from the signed payload (never from client-supplied
+    body/query data)."""
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(401, "Not authenticated — missing bearer token.")
     token = authorization.removeprefix("Bearer ").strip()
     payload = _decode_token(token)
-    return {"username": payload["sub"], "department": payload["dept"]}
+    role = payload.get("role") or STANDARD_USER
+    return {
+        "username": payload["sub"],
+        "department": payload["dept"],
+        "role": role,
+        "permissions": permissions_for_role(role),
+    }
 
 
 def require_department(*allowed_departments: str):
     """
-    FastAPI dependency factory. Use like:
-        @app.post("/api/blocks/{id}/approve")
-        def approve(..., user: dict = Depends(require_department("COA", "ADMIN"))):
-    ADMIN is always allowed through automatically.
+    LEGACY dependency, kept only for backward compatibility with any code
+    still referencing it. New/updated endpoints should use
+    `app.rbac.require_permission(...)` instead, which is the real,
+    granular authorization mechanism. SYSTEM_ADMIN (and the ADMIN
+    department, for pre-RBAC callers) is always allowed through.
     """
 
     def _dep(authorization: Optional[str] = Header(None)) -> dict:
         user = get_current_user(authorization)
-        if user["department"] != "ADMIN" and user["department"] not in allowed_departments:
+        if user["department"] != "ADMIN" and user["role"] != SYSTEM_ADMIN and user["department"] not in allowed_departments:
             raise HTTPException(
                 403,
                 f"Your department ({user['department']}) doesn't have access to this action. "
