@@ -19,9 +19,7 @@ numbers, names or confidence scores:
     maintenance staff from the "Report Problem" page (append-only; a
     dataset of its own, so the maintenance datasets above are never touched).
 
-All mutating endpoints are permission-gated via app.rbac.require_permission
-and write through to the CSV (same pattern the existing
-`/api/blocks/{id}/approve` endpoint uses) plus an audit-log entry.
+All module endpoints operate directly on the project-local datasets. No authentication or RBAC layer is required.
 """
 import csv
 import os
@@ -31,11 +29,9 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
 
-from app import audit
 from app.csv_data_loader import STATION_METADATA
-from app.rbac import require_permission, role_has_permission
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 
@@ -94,7 +90,7 @@ def _is_failure_row(row) -> bool:
 # Dashboard
 # ---------------------------------------------------------------------------
 @router.get("/dashboard")
-def smms_dashboard(user: dict = Depends(require_permission("signalling.view"))):
+def smms_dashboard():
     assets = _signalling_assets()
     maint = _maintenance()
 
@@ -153,8 +149,7 @@ def list_signalling_assets(
     status: Optional[str] = None,
     asset_type: Optional[str] = None,
     corridor_id: Optional[str] = None,
-    sort_by: str = Query("asset_id"),
-    user: dict = Depends(require_permission("signalling.assets.view")),
+    sort_by: str = Query("asset_id")
 ):
     assets = _signalling_assets()
     if assets.empty:
@@ -198,7 +193,7 @@ def list_signalling_assets(
 
 
 @router.get("/assets/{asset_id}")
-def get_signalling_asset(asset_id: str, user: dict = Depends(require_permission("signalling.assets.view"))):
+def get_signalling_asset(asset_id: str):
     assets = _signalling_assets()
     row = assets[assets["asset_id"] == asset_id]
     if row.empty:
@@ -229,8 +224,7 @@ def get_signalling_asset(asset_id: str, user: dict = Depends(require_permission(
 @router.get("/failures")
 def list_failures(
     severity: Optional[str] = None,
-    corridor_id: Optional[str] = None,
-    user: dict = Depends(require_permission("signalling.failures.view")),
+    corridor_id: Optional[str] = None
 ):
     maint = _maintenance()
     if maint.empty:
@@ -267,8 +261,7 @@ def list_failures(
 @router.post("/failures/{failure_id}/status")
 def update_failure_status(
     failure_id: str,
-    payload: Dict[str, Any],
-    user: dict = Depends(require_permission("signalling.failures.update")),
+    payload: Dict[str, Any]
 ):
     new_status = payload.get("status")
     if new_status not in ("Pending", "Scheduled", "In Progress", "Completed"):
@@ -281,7 +274,7 @@ def update_failure_status(
     if new_status != "Completed":
         pass  # overdue_days left as-is; a real system would recompute against "today"
     df.to_csv(path, index=False)
-    audit.log_action(user, "SIGNALLING_FAILURE_UPDATED", "signalling.failure", failure_id, "SUCCESS", f"status -> {new_status}")
+    
     return {"failure_id": failure_id, "status": new_status}
 
 
@@ -291,8 +284,7 @@ def update_failure_status(
 @router.get("/maintenance")
 def maintenance_queue(
     status: Optional[str] = None,
-    corridor_id: Optional[str] = None,
-    user: dict = Depends(require_permission("signalling.maintenance.view")),
+    corridor_id: Optional[str] = None
 ):
     maint = _maintenance()
     if maint.empty:
@@ -334,8 +326,7 @@ def maintenance_queue(
 @router.post("/maintenance/{task_id}/status")
 def update_maintenance_status(
     task_id: str,
-    payload: Dict[str, Any],
-    user: dict = Depends(require_permission("signalling.maintenance.edit")),
+    payload: Dict[str, Any]
 ):
     new_status = payload.get("status")
     if new_status not in ("Pending", "Scheduled", "In Progress", "Completed"):
@@ -346,12 +337,12 @@ def update_maintenance_status(
         raise HTTPException(404, f"Maintenance task '{task_id}' not found")
     df.loc[df["task_id"] == task_id, "status"] = new_status
     df.to_csv(path, index=False)
-    audit.log_action(user, "SIGNALLING_MAINTENANCE_UPDATED", "signalling.maintenance", task_id, "SUCCESS", f"status -> {new_status}")
+    
     return {"maintenance_id": task_id, "status": new_status}
 
 
 @router.post("/maintenance/{task_id}/complete")
-def complete_maintenance(task_id: str, user: dict = Depends(require_permission("signalling.maintenance.complete"))):
+def complete_maintenance(task_id: str):
     path = _maint_path()
     df = pd.read_csv(path)
     if task_id not in df["task_id"].values:
@@ -359,15 +350,14 @@ def complete_maintenance(task_id: str, user: dict = Depends(require_permission("
     df.loc[df["task_id"] == task_id, "status"] = "Completed"
     df.loc[df["task_id"] == task_id, "overdue_days"] = 0
     df.to_csv(path, index=False)
-    audit.log_action(user, "SIGNALLING_MAINTENANCE_COMPLETED", "signalling.maintenance", task_id, "SUCCESS")
+    
     return {"maintenance_id": task_id, "status": "Completed"}
 
 
 @router.post("/maintenance/{task_id}/assign")
 def assign_maintenance(
     task_id: str,
-    payload: Dict[str, Any],
-    user: dict = Depends(require_permission("signalling.maintenance.edit")),
+    payload: Dict[str, Any]
 ):
     crew = payload.get("crew_required")
     path = _maint_path()
@@ -379,7 +369,7 @@ def assign_maintenance(
     if df.loc[df["task_id"] == task_id, "status"].iloc[0] == "Pending":
         df.loc[df["task_id"] == task_id, "status"] = "Scheduled"
     df.to_csv(path, index=False)
-    audit.log_action(user, "SIGNALLING_MAINTENANCE_ASSIGNED", "signalling.maintenance", task_id, "SUCCESS", str(payload))
+    
     return {"maintenance_id": task_id, "status": "assigned"}
 
 
@@ -413,7 +403,7 @@ def _interpolate_position(corridor_id: str, location_km: float, network: pd.Data
 
 
 @router.get("/asset-map")
-def signalling_asset_map(user: dict = Depends(require_permission("signalling.assets.view"))):
+def signalling_asset_map():
     assets = _signalling_assets()
     if assets.empty:
         return []
@@ -761,7 +751,7 @@ def build_signalling_map() -> Dict[str, Any]:
 
 
 @router.get("/signalling-map")
-def signalling_map(user: dict = Depends(require_permission("signalling.assets.view"))):
+def signalling_map():
     """Sections, stations, assets (with maintenance + failure information) and
     dataset coverage for the SMMS Signalling Map. Read-only."""
     return build_signalling_map()
@@ -771,7 +761,7 @@ def signalling_map(user: dict = Depends(require_permission("signalling.assets.vi
 # Maintenance vs. block conflict detection
 # ---------------------------------------------------------------------------
 @router.get("/conflicts")
-def maintenance_block_conflicts(user: dict = Depends(require_permission("signalling.maintenance.view"))):
+def maintenance_block_conflicts():
     """Flags signalling maintenance tasks whose due_date falls on the same
     corridor+date as a planned COA block — a genuine cross-dataset check,
     not a simulated result."""
@@ -806,7 +796,7 @@ def maintenance_block_conflicts(user: dict = Depends(require_permission("signall
 # unsupported questions say so instead of guessing.
 # ---------------------------------------------------------------------------
 @router.post("/copilot")
-def smms_copilot(payload: Dict[str, Any], user: dict = Depends(require_permission("ai.copilot"))):
+def smms_copilot(payload: Dict[str, Any]):
     question = (payload.get("question") or "").strip().lower()
     if not question:
         raise HTTPException(400, "question is required")
@@ -845,7 +835,7 @@ def smms_copilot(payload: Dict[str, Any], user: dict = Depends(require_permissio
         data = sections
         answer = f"{len(sections)} railway section(s) currently have an open signalling failure." if sections else "No railway sections currently affected."
     elif "conflict" in question:
-        conflicts = maintenance_block_conflicts(user=user)
+        conflicts = maintenance_block_conflicts()
         data = conflicts
         answer = f"{len(conflicts)} maintenance task(s) currently conflict with a planned block on the same date/corridor." if conflicts else "No maintenance-vs-block conflicts detected."
     else:
@@ -856,7 +846,7 @@ def smms_copilot(payload: Dict[str, Any], user: dict = Depends(require_permissio
             "answer that specific question yet."
         )
 
-    audit.log_action(user, "AI_COPILOT_QUERY", "smms.copilot", None, "SUCCESS", question[:200])
+    
     return {"question": payload.get("question"), "answer": answer, "data": data}
 
 
@@ -868,7 +858,7 @@ def smms_copilot(payload: Dict[str, Any], user: dict = Depends(require_permissio
 # opaque "AI" number.
 # ---------------------------------------------------------------------------
 @router.get("/watchlist")
-def critical_asset_watchlist(limit: int = 10, user: dict = Depends(require_permission("signalling.assets.view"))):
+def critical_asset_watchlist(limit: int = 10):
     """Ranks signalling assets by their own `failure_risk` field (already
     present in ASSETS.csv) — the assets most likely to fail next, so SMMS
     staff know what to check before it becomes an incident."""
@@ -891,7 +881,7 @@ def critical_asset_watchlist(limit: int = 10, user: dict = Depends(require_permi
 
 
 @router.get("/corridor-health")
-def corridor_health_leaderboard(user: dict = Depends(require_permission("signalling.view"))):
+def corridor_health_leaderboard():
     """
     A composite, fully-documented Corridor Signal Health Score (0-100) per
     corridor, so SMMS staff can see which SECTION of the network needs
@@ -932,7 +922,7 @@ def corridor_health_leaderboard(user: dict = Depends(require_permission("signall
 
 
 @router.get("/repeated-failures")
-def repeated_failure_detector(user: dict = Depends(require_permission("signalling.failures.view"))):
+def repeated_failure_detector():
     """Assets with more than one currently-open failure record — a real
     signal that an asset may need root-cause investigation rather than
     another one-off repair."""
@@ -962,7 +952,7 @@ def repeated_failure_detector(user: dict = Depends(require_permission("signallin
 
 
 @router.get("/timeline")
-def maintenance_due_timeline(user: dict = Depends(require_permission("signalling.maintenance.view"))):
+def maintenance_due_timeline():
     """Every non-completed signalling maintenance task, in chronological
     due-date order — a real timeline of what's coming up, not a mocked one."""
     maint = _maintenance()
@@ -1142,7 +1132,7 @@ def _validate_problem_report(payload: Dict[str, Any]) -> Tuple[Dict[str, str], D
 
 
 @router.get("/problem-reports/options")
-def problem_report_options(user: dict = Depends(require_permission("signalling.problem_reports.create"))):
+def problem_report_options():
     """The dropdown choices and limits for the Report Problem form — served
     from the same constants the POST endpoint validates against, so the form
     and the server can never disagree."""
@@ -1157,8 +1147,7 @@ def problem_report_options(user: dict = Depends(require_permission("signalling.p
 
 @router.post("/problem-reports", status_code=201)
 def create_problem_report(
-    payload: Dict[str, Any],
-    user: dict = Depends(require_permission("signalling.problem_reports.create")),
+    payload: Dict[str, Any]
 ):
     clean, errors = _validate_problem_report(payload)
     if errors:
@@ -1170,9 +1159,9 @@ def create_problem_report(
             report_id = _next_problem_report_id(_read_problem_reports(), now)
             record = {
                 "report_id": report_id,
-                "reported_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),  # UTC, same format as the audit trail
-                # Always the authenticated user from the signed token — never a client-supplied name.
-                "reported_by": user["username"],
+                "reported_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),  # UTC
+                # Authentication is intentionally disabled; use a neutral operator label.
+                "reported_by": "Control Room Operator",
                 "asset_id": clean["asset_id"],
                 "problem_type": clean["problem_type"],
                 "severity": clean["severity"],
@@ -1182,17 +1171,10 @@ def create_problem_report(
             }
             _append_problem_report(record)
     except OSError:
-        audit.log_action(
-            user, "SIGNALLING_PROBLEM_REPORTED", "signalling.problem_report", None, "FAILED",
-            f"storage error; asset={clean['asset_id']}; severity={clean['severity']}",
-        )
+        
         raise HTTPException(500, "The problem report could not be stored. Please try again.")
 
-    audit.log_action(
-        user, "SIGNALLING_PROBLEM_REPORTED", "signalling.problem_report", report_id, "SUCCESS",
-        f"asset={record['asset_id']}; problem_type={record['problem_type']}; "
-        f"severity={record['severity']}; immediate_action={record['immediate_action']}",
-    )
+    
     return record
 
 
@@ -1201,8 +1183,7 @@ def list_problem_reports(
     status: Optional[str] = None,
     severity: Optional[str] = None,
     asset_id: Optional[str] = None,
-    limit: int = Query(50, ge=1, le=500),
-    user: dict = Depends(require_permission("signalling.problem_reports.view")),
+    limit: int = Query(50, ge=1, le=500)
 ):
     """Submitted problem reports, newest first."""
     with _problem_reports_lock:
@@ -1329,9 +1310,7 @@ def _twin_health(entity: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _twin_problem_reports(entity: Dict[str, Any], user: Dict[str, Any]) -> Dict[str, Any]:
-    if not role_has_permission(user.get("role"), "signalling.problem_reports.view"):
-        return {"available": False, "reason": "Your role cannot view submitted problem reports.", "note": None, "items": []}
+def _twin_problem_reports(entity: Dict[str, Any]) -> Dict[str, Any]:
     if entity["source"] != "register":
         # Reports are validated against the signalling register, so none can
         # belong to an asset that only appears in maintenance records (even if
@@ -1475,7 +1454,7 @@ def _twin_timeline(
     return events
 
 
-def build_digital_twin(twin_id: str, user: Dict[str, Any]) -> Dict[str, Any]:
+def build_digital_twin(twin_id: str) -> Dict[str, Any]:
     model = build_signalling_map()
     assets = model["assets"]
     entity = next((a for a in assets if a["map_id"] == twin_id), None)
@@ -1493,7 +1472,7 @@ def build_digital_twin(twin_id: str, user: Dict[str, Any]) -> Dict[str, Any]:
     )
     open_records = [r for r in records if r["is_open"]]
     failure_records = [r for r in records if r["is_failure_type"]]
-    reports = _twin_problem_reports(entity, user)
+    reports = _twin_problem_reports(entity)
 
     # ---- maintenance dates ------------------------------------------------
     last_date = _twin_clean(entity.get("last_maintenance_date"))
@@ -1540,8 +1519,6 @@ def build_digital_twin(twin_id: str, user: Dict[str, Any]) -> Dict[str, Any]:
     report_reason: Optional[str] = None
     if entity["source"] != "register":
         report_reason = "Problem reports can only be raised against assets in the signalling register."
-    elif not role_has_permission(user.get("role"), "signalling.problem_reports.create"):
-        report_reason = "Your role cannot submit problem reports."
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -1620,8 +1597,8 @@ def build_digital_twin(twin_id: str, user: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @router.get("/digital-twin/{twin_id}")
-def get_digital_twin(twin_id: str, user: dict = Depends(require_permission("signalling.digital_twin.view"))):
+def get_digital_twin(twin_id: str):
     """Operational Digital Twin of one signalling asset: identity, location,
     condition (status / health / risk), maintenance and failure history,
     problem reports, alerts and a lifecycle timeline. Read-only."""
-    return build_digital_twin(twin_id, user)
+    return build_digital_twin(twin_id)

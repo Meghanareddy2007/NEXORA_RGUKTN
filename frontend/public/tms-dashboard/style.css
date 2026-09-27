@@ -122,7 +122,7 @@ button{font-family:inherit;}
 #shell{display:flex;min-height:100vh;}
 
 /* Sidebar */
-#sidebar{
+.tms-embedded-shell #sidebar{
   width:236px;flex:0 0 236px;
   background:var(--surface);
   border-right:1px solid var(--border);
@@ -484,9 +484,9 @@ textarea.input{width:100%;resize:vertical;min-height:64px;font-family:inherit;}
 .pill-mini{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--surface-alt);border:1px solid var(--border-soft);color:var(--text-soft);}
 
 @media(max-width:900px){
-  #sidebar{position:fixed;left:-240px;z-index:110;transition:left .2s ease;}
-  #sidebar.open{left:0;}
-  .kpi-grid{grid-template-columns:1fr 1fr;}
+ .tms-embedded-shell #sidebar{position:fixed;left:-240px;z-index:110;transition:left .2s ease;}
+ .tms-embedded-shell #sidebar.open{left:0;}
+ .kpi-grid{grid-template-columns:1fr 1fr;}
 }
 
 /* ===================== LIVE / CONNECTION CHROME ===================== */
@@ -752,4 +752,38 @@ textarea.input{width:100%;resize:vertical;min-height:64px;font-family:inherit;}
   font-size: 16px;
   color: #c8103c;
   margin-right: 4px;
+}
+/* NEXORA embedded TMS mode */
+.tms-embedded-shell {
+  width: 100%;
+  height: 100%;
+  min-height: calc(100vh - 0px);
+  position: relative;
+  overflow: hidden;
+}
+
+.tms-embedded-shell #main {
+  width: 100%;
+  min-width: 0;
+}
+
+.tms-embedded-shell #viewport {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+/* Keep the original TMS sidebar visible inside the NEXORA route. */
+.tms-embedded-shell > #sidebar {
+  display: flex !important;
+  width: 236px !important;
+  flex: 0 0 236px !important;
+  position: sticky !important;
+  left: auto !important;
+  height: 100vh !important;
+}
+
+.tms-embedded-shell > #main {
+  width: auto !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
 }

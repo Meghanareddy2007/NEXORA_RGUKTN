@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import BackToCOA from "@/components/BackToCOA";
 import { BrainCircuit, Zap, Loader2, PlayCircle } from "lucide-react";
 import {
   fetchRlSummary,
@@ -60,6 +61,7 @@ export default function RlAgentPage() {
 
   return (
     <div className="flex flex-col gap-6 p-6">
+      <div><BackToCOA /></div>
       <header className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
@@ -74,6 +76,22 @@ export default function RlAgentPage() {
           error against a simulated environment, using the same traffic-penalty weights as the optimizer.
         </p>
       </header>
+
+      <div className="grid gap-2 md:grid-cols-5">
+        {[
+          ["STATE", "Traffic + backlog"],
+          ["ACTION", "Release policy"],
+          ["REWARD", "Priority gain − disruption"],
+          ["LEARNING", summary ? `${summary.trained_episodes} episodes · ε ${summary.epsilon}` : "Loading learned state"],
+          ["NEXT DECISION", recommendation?.recommended_action_label || "Select conditions"],
+        ].map(([label, value], i) => (
+          <div key={label} className="relative rounded-lg border border-border bg-card p-3">
+            <div className="text-[10px] font-semibold tracking-wider text-primary">{label}</div>
+            <div className="mt-1 text-xs text-muted-foreground">{value}</div>
+            {i < 4 && <span className="absolute -right-2 top-1/2 hidden text-muted-foreground md:block">→</span>}
+          </div>
+        ))}
+      </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="rounded-lg border border-border bg-card p-4">

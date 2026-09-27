@@ -17,7 +17,7 @@ from threading import Lock
 from datetime import date
 from typing import Optional
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query, Depends
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.optimizer import run_optimization
@@ -32,15 +32,13 @@ from app.csv_data_loader import (
     load_maintenance_blocks_from_csv,
     get_live_operations_state,
 )
-from app.auth import init_auth_db, login_user, get_current_user, require_department
 from app.rl_agent import agent as rl_agent, TRAFFIC_LEVELS as RL_TRAFFIC_LEVELS, BACKLOG_LEVELS as RL_BACKLOG_LEVELS
-from app.rbac import require_permission
-from app import audit
 from app import smms as smms_module
+from app import coa as coa_module
+from app.auth import init_auth_db, login_user, get_current_user
 
 init_db()
 init_auth_db()
-audit.init_audit_db()
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 TMS_REPORTS_FILE = os.path.join(DATA_DIR, "TMS_REPORTS.csv")
@@ -63,6 +61,7 @@ app.add_middleware(
 # SMMS (Signalling Maintenance) module. All SMMS routes are permission-gated
 # independently, so the existing TMS/TDMS/COA workflows remain unchanged.
 app.include_router(smms_module.router)
+app.include_router(coa_module.router)
 
 DATASET_FILES = {
     "tms_maintenance": "TMS_MAINTENANCE.csv",
@@ -76,59 +75,24 @@ DATASET_FILES = {
 }
 
 
+@app.post("/api/auth/login")
+def auth_login(payload: dict):
+    username = str(payload.get("username", "")).strip()
+    password = str(payload.get("password", ""))
+    if not username or not password:
+        raise HTTPException(400, "Username and password are required.")
+    result = login_user(username, password)
+    if not result:
+        raise HTTPException(401, "Invalid username or password.")
+    return result
+
+@app.get("/api/auth/me")
+def auth_me(user: dict = Depends(get_current_user)):
+    return user
+
 @app.get("/")
 def root():
     return {"status": "ok", "service": "block-planning-api", "datasets": list(DATASET_FILES.keys())}
-
-
-# AUTH — department login (SMMS / TMS / TRACTION / COA / ADMIN)
-# ============================================================================
-@app.post("/api/auth/login")
-def login(payload: dict):
-    """
-    Body: {"username": "...", "password": "..."}
-    Returns an access_token plus the user's department, which the frontend
-    stores and sends back as 'Authorization: Bearer <token>' on later calls.
-    Demo accounts (see backend/app/auth.py DEFAULT_USERS to change these):
-      smms_user / smms123        -> SMMS
-      tms_user / tms123          -> TMS
-      traction_user / traction123 -> TRACTION
-      coa_user / coa123          -> COA
-      admin / admin123           -> ADMIN (sees/does everything)
-    """
-    username = (payload.get("username") or "").strip()
-    password = payload.get("password") or ""
-    result = login_user(username, password)
-    if not result:
-        audit.log_action(
-            {"username": username, "role": None, "department": None},
-            "LOGIN", "auth", username, "FAILED", "Invalid username or password",
-        )
-        raise HTTPException(401, "Invalid username or password.")
-    audit.log_action(result, "LOGIN", "auth", username, "SUCCESS")
-    return result
-
-@app.post("/api/auth/logout")
-def logout(user: dict = Depends(get_current_user)):
-    """Record logout; the stateless frontend token is discarded client-side."""
-    audit.log_action(user, "LOGOUT", "auth", user["username"], "SUCCESS")
-    return {"status": "logged_out"}
-
-
-@app.get("/api/auth/me")
-def me(user: dict = Depends(get_current_user)):
-    """Returns the logged-in user's authenticated identity."""
-    return user
-
-
-@app.get("/api/audit")
-def get_audit_log(
-    limit: int = Query(200, le=1000),
-    username: Optional[str] = None,
-    action: Optional[str] = None,
-    user: dict = Depends(require_permission("audit.view")),
-):
-    return audit.list_audit(limit=limit, username=username, action=action)
 
 
 @app.get("/api/datasets")
@@ -227,7 +191,7 @@ def get_blocks(corridor_id: Optional[str] = None, status: Optional[str] = None):
 
 
 @app.post("/api/blocks/{block_id}/approve")
-def approve_block(block_id: str, user: dict = Depends(require_department("COA"))):
+def approve_block(block_id: str):
     """Approve a proposed block: flips its status Available -> Booked in the CSV.
     Restricted to the COA department — they're the ones who own block approval."""
     path = os.path.join(DATA_DIR, "COA_BLOCK_AVAILABILITY.csv")
@@ -243,7 +207,7 @@ def approve_block(block_id: str, user: dict = Depends(require_department("COA"))
 
 
 @app.post("/api/optimize/run")
-def optimize(max_tasks: int = 150, max_blocks: int = 60, time_limit_sec: int = 15, user: dict = Depends(get_current_user)):
+def optimize(max_tasks: int = 150, max_blocks: int = 60, time_limit_sec: int = 15):
     """
     Trigger the AI optimization engine (OR-Tools CP-SAT):
     unifies TMS+SMMS+TDMS tasks, scores priority, assigns to COA blocks
@@ -265,7 +229,7 @@ def optimize(max_tasks: int = 150, max_blocks: int = 60, time_limit_sec: int = 1
 # that a one-shot optimizer can't make on its own.
 
 @app.post("/api/rl/train")
-def rl_train(episodes: int = Query(200, ge=1, le=2000), user: dict = Depends(get_current_user)):
+def rl_train(episodes: int = Query(200, ge=1, le=2000)):
     """Run more Q-learning training episodes against the simulated
     block-release environment and return the updated policy + reward curve."""
     return rl_agent.train(episodes=episodes)
@@ -547,7 +511,7 @@ def get_simulation_state(time: str = Query("10:30", description="Operational tim
 
 
 @app.post("/api/optimize-schedule")
-def optimize_schedule(time_limit_sec: int = 15, user: dict = Depends(require_department("COA"))):
+def optimize_schedule(time_limit_sec: int = 15):
     """
     Triggers OR-Tools CP-SAT block schedule optimization to schedule pending tasks
     while minimizing traffic conflict penalty.
@@ -558,7 +522,7 @@ def optimize_schedule(time_limit_sec: int = 15, user: dict = Depends(require_dep
 
 
 @app.post("/api/reoptimize")
-def reoptimize_routes(train_id: Optional[str] = None, user: dict = Depends(require_department("COA"))):
+def reoptimize_routes(train_id: Optional[str] = None):
     """
     Dynamic conflict resolution: reroutes affected trains around blocked/maintenance corridors.
     If train_id is provided, reroutes that specific train; otherwise reroutes all conflicted trains.
@@ -592,7 +556,7 @@ def trigger_reroute(payload: dict):
 
 
 @app.post("/api/simulation/emergency-block")
-def trigger_emergency_block(payload: dict, user: dict = Depends(require_department("COA"))):
+def trigger_emergency_block(payload: dict):
     """Trigger an emergency block for live hackathon demonstration."""
     route_id = payload.get("route_id", "R_SA_ED")
     reason = payload.get("reason", "Urgent Track Geometric Twist Detected")

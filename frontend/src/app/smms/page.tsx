@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AnalyticsPage from "@/app/analytics/page";
 import SMMSMapView from "@/components/smms/SMMSMapView";
 import { DigitalTwinDrawer } from "@/components/smms/digital-twin/DigitalTwinDrawer";
@@ -15,7 +15,7 @@ import {
 
 type ViewId =
   | "dashboard" | "assets" | "failures" | "map" | "maintenance" | "report-problem"
-  | "insights" | "reports" | "conflicts" | "analytics" | "audit";
+  | "insights" | "reports" | "conflicts" | "analytics";
 
 type Severity = "Low" | "Medium" | "High" | "Critical";
 type Status = "Pending" | "Scheduled" | "In Progress" | "Completed";
@@ -96,17 +96,9 @@ interface TwinData {
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
-
-function token() {
-  if (typeof window === "undefined") return "";
-  try { return JSON.parse(localStorage.getItem("nexora_auth") || "{}").access_token || ""; }
-  catch { return ""; }
-}
 async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   headers.set("Content-Type", "application/json");
-  const t = token();
-  if (t) headers.set("Authorization", `Bearer ${t}`);
   const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
   if (!res.ok) {
     let msg = `Request failed (${res.status})`;
@@ -115,6 +107,8 @@ async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
   return res.status === 204 ? (undefined as T) : res.json();
 }
+
+
 const severityClass = (s: string) =>
   s === "Critical" ? "border-danger/30 bg-danger/10 text-danger" :
   s === "High" ? "border-warning/30 bg-warning/10 text-warning" :
@@ -283,7 +277,7 @@ function MaintenanceView() {
   const advance=async(t:MaintenanceTask)=>{const n=t.status==="Pending"?"Scheduled":t.status==="Scheduled"?"In Progress":"";if(!n)return;setBusy(t.maintenance_id);try{await apiFetch(`/api/smms/maintenance/${encodeURIComponent(t.maintenance_id)}/status`,{method:"POST",body:JSON.stringify({status:n})});await load();}catch(e){setError(e instanceof Error?e.message:"Update failed");}finally{setBusy("");}};
   const complete=async(t:MaintenanceTask)=>{setBusy(t.maintenance_id);try{await apiFetch(`/api/smms/maintenance/${encodeURIComponent(t.maintenance_id)}/complete`,{method:"POST"});await load();}catch(e){setError(e instanceof Error?e.message:"Update failed");}finally{setBusy("");}};
   const cols:[keyof MaintenanceQueue,string][]=[["pending","Pending"],["scheduled","Scheduled"],["in_progress","In Progress"],["completed","Completed"]];
-  return <div><PageHeader title="Maintenance Queue" subtitle="Signalling maintenance work by lifecycle state" onRefresh={load}/><div className="grid gap-3 p-4 xl:grid-cols-4">{cols.map(([key,label])=><Card key={key}><div className="flex items-center justify-between border-b border-border px-3 py-2.5"><span className="text-xs font-semibold">{label}</span><span className="rounded-full bg-muted px-2 py-0.5 text-[10px]">{queue?.[key].length??0}</span></div><div className="flex min-h-[120px] flex-col gap-2 p-2">{queue?.[key].map(t=><div key={t.maintenance_id} className="rounded-lg border border-border bg-background p-2.5 text-[11px]"><div className="flex justify-between gap-2"><b>{t.maintenance_id}</b><Badge label={t.priority}/></div><div className="mt-1">{t.asset_id} · {t.defect_type}</div><div className="mt-0.5 text-muted-foreground">{t.corridor_id} · {t.due_date}</div><div className="mt-1 text-muted-foreground">{t.estimated_duration_min} min · crew {t.crew_required}</div>{t.overdue_days>0&&<div className="mt-1 text-danger">{t.overdue_days} day(s) overdue</div>}<div className="mt-2 flex gap-1">{t.status!=="Completed"&&t.status!=="In Progress"&&<button disabled={!!busy} onClick={()=>advance(t)} className="rounded border border-border px-2 py-1 text-[10px] hover:bg-muted">Advance</button>}{t.status==="In Progress"&&<button disabled={!!busy} onClick={()=>complete(t)} className="rounded bg-success/15 px-2 py-1 text-[10px] text-success">Complete</button>}</div></div>)}</div></Card>)}</div>{error&&<div className="px-4"><ErrorBox message={error}/></div>}</div>;
+  return <div><PageHeader title="Maintenance Queue" subtitle="Signalling maintenance work by lifecycle state" onRefresh={load}/><div className="grid gap-3 p-4 xl:grid-cols-4">{cols.map(([key,label])=><Card><div className="flex items-center justify-between border-b border-border px-3 py-2.5"><span className="text-xs font-semibold">{label}</span><span className="rounded-full bg-muted px-2 py-0.5 text-[10px]">{queue?.[key].length??0}</span></div><div className="flex min-h-[120px] flex-col gap-2 p-2">{queue?.[key].map(t=><div key={t.maintenance_id} className="rounded-lg border border-border bg-background p-2.5 text-[11px]"><div className="flex justify-between gap-2"><b>{t.maintenance_id}</b><Badge label={t.priority}/></div><div className="mt-1">{t.asset_id} · {t.defect_type}</div><div className="mt-0.5 text-muted-foreground">{t.corridor_id} · {t.due_date}</div><div className="mt-1 text-muted-foreground">{t.estimated_duration_min} min · crew {t.crew_required}</div>{t.overdue_days>0&&<div className="mt-1 text-danger">{t.overdue_days} day(s) overdue</div>}<div className="mt-2 flex gap-1">{t.status!=="Completed"&&t.status!=="In Progress"&&<button disabled={!!busy} onClick={()=>advance(t)} className="rounded border border-border px-2 py-1 text-[10px] hover:bg-muted">Advance</button>}{t.status==="In Progress"&&<button disabled={!!busy} onClick={()=>complete(t)} className="rounded bg-success/15 px-2 py-1 text-[10px] text-success">Complete</button>}</div></div>)}</div></Card>)}</div>{error&&<div className="px-4"><ErrorBox message={error}/></div>}</div>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -377,22 +371,17 @@ function AnalyticsView() {
   return <AnalyticsPage />;
 }
 
-function AuditView() {
-  const [rows,setRows]=useState<any[]>([]); const [error,setError]=useState("");
-  useEffect(()=>{apiFetch<any[]>("/api/audit?limit=300").then(setRows).catch(e=>setError(e.message))},[]);
-  return <div><PageHeader title="Audit Trail" subtitle="Logins, authorization events and SMMS operational actions"/><div className="p-4">{error&&<ErrorBox message={error}/>}<Card>{rows.length?<div className="overflow-auto max-h-[680px]"><table className="w-full text-[11px]"><thead className="sticky top-0 bg-card"><tr className="border-b border-border text-left text-muted-foreground">{["timestamp","username","role","action","resource","result","detail"].map(x=><th key={x} className="whitespace-nowrap px-3 py-2">{x}</th>)}</tr></thead><tbody>{rows.map(r=><tr key={r.id} className="border-b border-border/50"><td className="whitespace-nowrap px-3 py-2">{r.timestamp}</td><td className="px-3">{r.username||"—"}</td><td className="px-3">{r.role||"—"}</td><td className="px-3 font-mono">{r.action}</td><td className="px-3">{r.resource||"—"}{r.resource_id?` (${r.resource_id})`:""}</td><td className={`px-3 font-medium ${r.result==="SUCCESS"?"text-success":"text-danger"}`}>{r.result}</td><td className="px-3 text-muted-foreground">{r.detail||""}</td></tr>)}</tbody></table></div>:<Empty text="No audit entries recorded yet."/>}</Card></div></div>;
-}
 
 /* -------------------------------------------------------------------------- */
 /* Root page                                                                  */
 /* -------------------------------------------------------------------------- */
 export default function SMMSPage() {
-  const params=useSearchParams(); const router=useRouter();
+  const params=useSearchParams(); const router=useRouter(); const pathname=usePathname();
   const raw=params.get("view")||"dashboard";
-  const view=(["assets","failures","map","maintenance","report-problem","insights","reports","conflicts","analytics","audit"].includes(raw)?raw:"dashboard") as ViewId;
+  const view=(["assets","failures","map","maintenance","report-problem","insights","reports","conflicts","analytics"].includes(raw)?raw:"dashboard") as ViewId;
   const [twin,setTwin]=useState<string|null>(null); const [reportAsset,setReportAsset]=useState<string|undefined>();
   const [reportNonce,setReportNonce]=useState(0);
-  const report=useCallback((asset?:string)=>{setReportAsset(asset);router.push(`/smms?view=report-problem`);setReportNonce(n=>n+1)},[router]);
+  const report=useCallback((asset?:string)=>{setReportAsset(asset);const embeddedInCOA=pathname==="/coa"&&params.get("module")==="smms";router.push(embeddedInCOA?"/coa?module=smms&view=report-problem":"/smms?view=report-problem");setReportNonce(n=>n+1)},[router,pathname,params]);
   const closeTwin=()=>setTwin(null);
   return <div className="min-h-screen">
     {view==="dashboard"&&<DashboardView/>}
@@ -400,12 +389,11 @@ export default function SMMSPage() {
     {view==="failures"&&<FailuresView/>}
     {view==="map"&&<SignallingMapView onTwin={setTwin}/>}
     {view==="maintenance"&&<MaintenanceView/>}
-    {view==="report-problem"&&<ReportProblemView key={reportNonce} initialAsset={reportAsset} onDone={()=>{}}/>}
+    {view==="report-problem"&&<ReportProblemView initialAsset={reportAsset} onDone={()=>{}}/>}
     {view==="insights"&&<InsightsView/>}
     {view==="reports"&&<ReportsView/>}
     {view==="conflicts"&&<ConflictsView/>}
     {view==="analytics"&&<AnalyticsView/>}
-    {view==="audit"&&<AuditView/>}
     {twin&&<DigitalTwinDrawer twinId={twin} onClose={closeTwin}/>}
   </div>;
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import {
   Activity,
@@ -42,7 +42,6 @@ import {
   createMaintenanceRequest,
 } from "@/lib/api";
 
-import { useAuth, Department, DEPARTMENT_LABELS } from "@/lib/auth";
 
 /* ========================================================================== */
 /* TYPES                                                                      */
@@ -104,8 +103,6 @@ type WizardStep = { id: number; label: string };
  * COA/ADMIN -> oversight. Can see every departmental dashboard, TDMS included.
  * TMS/SMMS  -> no access. They have their own departmental modules.
  */
-const TDMS_OWNER: Department = "TRACTION";
-const TDMS_OVERSIGHT: Department[] = ["COA", "ADMIN"];
 
 /** How many rows each table shows before "Show all". */
 const PREVIEW_ROWS = 5;
@@ -334,9 +331,9 @@ function sortQueue(items: QueueItem[], key: SortKey, dir: "asc" | "desc") {
 
 export default function TDMSPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const { user, ready } = useAuth();
 
   const rawView = searchParams.get("view") || "dashboard";
 
@@ -403,17 +400,17 @@ export default function TDMSPage() {
   /* ACCESS                                                                  */
   /* ---------------------------------------------------------------------- */
 
-  const isOwner = user?.department === TDMS_OWNER;
-  const isOversight = !!user && TDMS_OVERSIGHT.includes(user.department);
-  const canView = isOwner || isOversight;
-  const canWrite = isOwner || user?.department === "ADMIN";
+  const isOwner = true;
+  const isOversight = false;
+  const canView = true;
+  const canWrite = true;
 
   /* ---------------------------------------------------------------------- */
   /* DATA                                                                    */
   /* ---------------------------------------------------------------------- */
 
   useEffect(() => {
-    if (!ready || !canView) return;
+    if (!canView) return;
 
     let cancelled = false;
 
@@ -467,7 +464,7 @@ export default function TDMSPage() {
     return () => {
       cancelled = true;
     };
-  }, [ready, canView]);
+  }, [canView]);
 
   /* ---------------------------------------------------------------------- */
   /* DERIVED                                                                 */
@@ -817,7 +814,12 @@ export default function TDMSPage() {
   /* ---------------------------------------------------------------------- */
 
   function go(next: ViewId) {
-    router.push(next === "dashboard" ? "/tdms" : `/tdms?view=${next}`);
+    const embeddedInCOA = pathname === "/coa" && searchParams.get("module") === "tdms";
+    if (embeddedInCOA) {
+      router.push(next === "dashboard" ? "/coa?module=tdms" : `/coa?module=tdms&view=${next}`);
+    } else {
+      router.push(next === "dashboard" ? "/tdms" : `/tdms?view=${next}`);
+    }
   }
 
   function selectAsset(asset: AssetRecord) {
@@ -895,7 +897,7 @@ export default function TDMSPage() {
         priority,
         preferred_date: undefined,
         time_window: "Anytime (00:00-23:59)",
-        reported_by: user?.username || "traction_user",
+        reported_by: "Control Room Operator",
       });
 
       setRequests((previous) => [request, ...previous]);
@@ -945,7 +947,7 @@ export default function TDMSPage() {
           required_duration_hrs: Math.max(item.durationMin / 60, 0.5),
           priority: label === "CRITICAL" ? "HIGH" : label,
           time_window: "Anytime (00:00-23:59)",
-          reported_by: user?.username || "traction_user",
+          reported_by: "Control Room Operator",
         });
 
         requestId = request.id;
@@ -969,19 +971,6 @@ export default function TDMSPage() {
   /* ---------------------------------------------------------------------- */
   /* GUARDS (after every hook, so hook order never changes)                  */
   /* ---------------------------------------------------------------------- */
-
-  if (!ready) {
-    return <ShellMessage title="TDMS" text="Checking your session…" />;
-  }
-
-  if (!canView) {
-    return (
-      <AccessDenied
-        department={user?.department}
-        onBack={() => router.push("/")}
-      />
-    );
-  }
 
   if (loading) {
     return (
@@ -1031,13 +1020,6 @@ export default function TDMSPage() {
           </Banner>
         )}
 
-        {isOversight && !isOwner && (
-          <Banner tone="info">
-            Oversight view — you are seeing the Traction department&apos;s module
-            as {DEPARTMENT_LABELS[user!.department]}. Reporting new traction
-            defects is done by the Traction department.
-          </Banner>
-        )}
 
         {/* PAGE HEADER --------------------------------------------------- */}
         <header className="mb-5 flex flex-col gap-3 rounded-xl border border-border bg-card p-5 md:flex-row md:items-center md:justify-between">
@@ -2863,7 +2845,7 @@ function AccessDenied({
   department,
   onBack,
 }: {
-  department?: Department;
+  department?: string;
   onBack: () => void;
 }) {
   return (
@@ -2883,7 +2865,7 @@ function AccessDenied({
           <p className="mt-2 text-sm text-muted-foreground">
             TDMS is the Traction Distribution department&apos;s workspace.
             {department
-              ? ` You are signed in as ${DEPARTMENT_LABELS[department]}, which has its own module.`
+              ? ` You are signed in as ${department}, which has its own module.`
               : ""}{" "}
             Only the Corridor Operating Authority has cross-department visibility.
           </p>

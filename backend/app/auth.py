@@ -1,20 +1,4 @@
-"""
-Department-based login for the Block Planning app.
-
-NEW FILE — does not modify any existing file's logic. Only main.py gets a
-few additive lines (imports + new endpoints + Depends() on a couple of
-write actions) to wire this in.
-
-Design notes:
-- Stdlib only (hashlib/hmac/json/base64) so nothing new needs to go in
-  requirements.txt and nothing can fail to `pip install`.
-- Uses the SAME sqlite file as db.py (backend/data/app.db) via db.get_conn(),
-  just a new `users` table — the existing `maintenance_requests` table is
-  untouched.
-- Tokens are signed (HMAC-SHA256) and carry an expiry, so they're tamper-proof
-  without needing a sessions table. Good enough for a hackathon prototype;
-  swap SECRET_KEY via an env var before any real deployment.
-"""
+"""Small, self-contained authentication layer for the SIH prototype."""
 import base64
 import hashlib
 import hmac
@@ -26,50 +10,23 @@ from typing import Optional
 from fastapi import Header, HTTPException
 
 from app.db import get_conn
-from app.rbac import (
-    ROLE_LABELS,
-    SMMS_USER,
-    STANDARD_USER,
-    SYSTEM_ADMIN,
-    permissions_for_role,
-)
+from app.rbac import ROLE_LABELS, SMMS_USER, STANDARD_USER, COA_ADMIN, permissions_for_role
 
-# ---------------------------------------------------------------------------
-# Config
-# ---------------------------------------------------------------------------
 SECRET_KEY = os.environ.get("AUTH_SECRET_KEY", "sih-ps27-dev-secret-change-me")
-TOKEN_TTL_SECONDS = 12 * 60 * 60  # 12 hours
+TOKEN_TTL_SECONDS = 12 * 60 * 60
 
-# Departments (organizational unit — distinct from `role`, which drives
-# permissions).
-DEPARTMENTS = ["SMMS", "TMS", "TRACTION", "COA", "ADMIN"]
-
-# Seeded demo/test accounts — the ORIGINAL five department accounts,
-# unchanged, each now carrying a `role` that drives permissions:
-#   admin          -> SYSTEM_ADMIN    (unchanged: sees/does everything)
-#   smms_user      -> SMMS_USER       (the Signalling Maintenance role — the
-#                                       focus of this build)
-#   coa_user       -> STANDARD_USER   (unchanged NEXORA behaviour; block
-#   tms_user       -> STANDARD_USER    approval for these three stays
-#   traction_user  -> STANDARD_USER    department-gated, same as before —
-#                                       see require_department() below)
 DEFAULT_USERS = [
     {"username": "smms_user", "password": "smms123", "department": "SMMS", "role": SMMS_USER, "full_name": "Signal & Telecom (SMMS)"},
     {"username": "tms_user", "password": "tms123", "department": "TMS", "role": STANDARD_USER, "full_name": "Engineering / Track (TMS)"},
     {"username": "traction_user", "password": "traction123", "department": "TRACTION", "role": STANDARD_USER, "full_name": "Traction Distribution (TDMS)"},
-    {"username": "coa_user", "password": "coa123", "department": "COA", "role": STANDARD_USER, "full_name": "Corridor Operating Authority (COA)"},
-    {"username": "admin", "password": "admin123", "department": "ADMIN", "role": SYSTEM_ADMIN, "full_name": "System Administrator"},
+    # COA is the main operations/admin account in the merged prototype.
+    {"username": "coa_user", "password": "coa123", "department": "COA", "role": COA_ADMIN, "full_name": "Corridor Operating Authority (COA)"},
 ]
 
-
-# ---------------------------------------------------------------------------
-# Password hashing (PBKDF2, stdlib only — no bcrypt/passlib dependency)
-# ---------------------------------------------------------------------------
 def _hash_password(password: str, salt: Optional[bytes] = None) -> str:
     salt = salt or os.urandom(16)
     digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
     return base64.b64encode(salt).decode() + "$" + base64.b64encode(digest).decode()
-
 
 def _verify_password(password: str, stored: str) -> bool:
     try:
@@ -81,169 +38,94 @@ def _verify_password(password: str, stored: str) -> bool:
     actual = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
     return hmac.compare_digest(actual, expected)
 
-
-# ---------------------------------------------------------------------------
-# DB setup — additive: a new `users` table in the existing app.db
-# ---------------------------------------------------------------------------
 def init_auth_db() -> None:
-    """Create the users table (if missing), migrate in the `role` column
-    (if missing) and seed default accounts. Safe to call every startup —
-    never drops or overwrites an existing account."""
     conn = get_conn()
     try:
-        conn.execute(
-            """
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
                 department TEXT NOT NULL,
+                role TEXT NOT NULL,
                 full_name TEXT,
                 created_at TEXT NOT NULL
             )
-            """
-        )
-        conn.commit()
-
-        # --- migration: add `role` column if this DB predates RBAC -------
-        existing_cols = {row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()}
-        if "role" not in existing_cols:
+        """)
+        cols = {row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()}
+        if "role" not in cols:
             conn.execute("ALTER TABLE users ADD COLUMN role TEXT")
-            conn.commit()
-            # Backfill any pre-existing rows (from before RBAC existed)
-            # using the same department->role mapping as DEFAULT_USERS,
-            # falling back to the read-only viewer role if unknown.
-            dept_default_role = {u["department"]: u["role"] for u in DEFAULT_USERS}
-            for row in conn.execute("SELECT id, username, department FROM users").fetchall():
-                role = dept_default_role.get(row["department"], STANDARD_USER)
-                conn.execute("UPDATE users SET role = ? WHERE id = ? AND (role IS NULL OR role = '')", (role, row["id"]))
-            conn.commit()
-
+        if "full_name" not in cols:
+            conn.execute("ALTER TABLE users ADD COLUMN full_name TEXT")
+        conn.commit()
+        # COA is the single main operations/admin account in this prototype.
+        # Remove any legacy standalone ADMIN account from older database versions.
+        conn.execute("DELETE FROM users WHERE username=? OR department=?", ("admin", "ADMIN"))
+        conn.execute("UPDATE users SET role=? WHERE role=?", (COA_ADMIN, "SYSTEM_ADMIN"))
+        conn.commit()
         existing = {row["username"] for row in conn.execute("SELECT username FROM users").fetchall()}
-        for u in DEFAULT_USERS:
-            if u["username"] not in existing:
+        for user in DEFAULT_USERS:
+            if user["username"] not in existing:
                 conn.execute(
-                    "INSERT INTO users (username, password_hash, department, role, full_name, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))",
-                    (u["username"], _hash_password(u["password"]), u["department"], u["role"], u["full_name"]),
+                    "INSERT INTO users (username,password_hash,department,role,full_name,created_at) VALUES (?,?,?,?,?,datetime('now'))",
+                    (user["username"], _hash_password(user["password"]), user["department"], user["role"], user["full_name"]),
                 )
             else:
-                # Keep role in sync for the original seed accounts even if
-                # this DB was created before RBAC existed (role would be
-                # NULL/blank until this runs).
                 conn.execute(
-                    "UPDATE users SET role = ? WHERE username = ? AND (role IS NULL OR role = '')",
-                    (u["role"], u["username"]),
+                    "UPDATE users SET role=?, department=?, full_name=? WHERE username=?",
+                    (user["role"], user["department"], user["full_name"], user["username"]),
                 )
         conn.commit()
     finally:
         conn.close()
-
 
 def _get_user(username: str):
     conn = get_conn()
     try:
-        row = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        row = conn.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
         return dict(row) if row else None
     finally:
         conn.close()
 
-
-# ---------------------------------------------------------------------------
-# Token: base64(json payload) + "." + hmac signature — no external JWT lib
-# ---------------------------------------------------------------------------
 def _sign(payload_b64: str) -> str:
-    sig = hmac.new(SECRET_KEY.encode(), payload_b64.encode(), hashlib.sha256).digest()
-    return base64.urlsafe_b64encode(sig).decode()
-
+    return base64.urlsafe_b64encode(hmac.new(SECRET_KEY.encode(), payload_b64.encode(), hashlib.sha256).digest()).decode()
 
 def create_token(username: str, department: str, role: str) -> str:
-    # The role is embedded in the signed payload — a tampered/forged role
-    # in a client-modified token fails the HMAC signature check in
-    # _decode_token() below, so a client can never grant itself a role or
-    # permission it wasn't issued at login.
-    payload = {
-        "sub": username,
-        "dept": department,
-        "role": role,
-        "exp": int(time.time()) + TOKEN_TTL_SECONDS,
-    }
-    payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode()
-    return f"{payload_b64}.{_sign(payload_b64)}"
-
+    payload = {"sub": username, "dept": department, "role": role, "exp": int(time.time()) + TOKEN_TTL_SECONDS}
+    raw = base64.urlsafe_b64encode(json.dumps(payload, separators=(",", ":")).encode()).decode()
+    return f"{raw}.{_sign(raw)}"
 
 def _decode_token(token: str) -> dict:
     try:
-        payload_b64, sig = token.split(".")
-        if not hmac.compare_digest(_sign(payload_b64), sig):
+        payload_b64, signature = token.split(".", 1)
+        if not hmac.compare_digest(_sign(payload_b64), signature):
             raise ValueError("bad signature")
-        payload = json.loads(base64.urlsafe_b64decode(payload_b64.encode()))
-        if payload["exp"] < time.time():
+        payload = json.loads(base64.urlsafe_b64decode(payload_b64.encode()).decode())
+        if int(payload["exp"]) < int(time.time()):
             raise ValueError("expired")
         return payload
-    except Exception:
-        raise HTTPException(401, "Invalid or expired session — please log in again.")
+    except Exception as exc:
+        raise HTTPException(401, "Invalid or expired session — please log in again.") from exc
 
-
-# ---------------------------------------------------------------------------
-# Public functions used by main.py
-# ---------------------------------------------------------------------------
 def login_user(username: str, password: str) -> Optional[dict]:
     user = _get_user(username)
     if not user or not _verify_password(password, user["password_hash"]):
         return None
     role = user.get("role") or STANDARD_USER
-    token = create_token(user["username"], user["department"], role)
     return {
-        "access_token": token,
+        "access_token": create_token(user["username"], user["department"], role),
         "token_type": "bearer",
         "username": user["username"],
         "department": user["department"],
         "role": role,
         "role_label": ROLE_LABELS.get(role, role),
-        "full_name": user["full_name"],
-        # Reflected for the UI to build nav/buttons with — NEVER trusted by
-        # the backend itself. Every protected endpoint re-derives this from
-        # the signed token via require_permission(), independent of what a
-        # client sends back.
+        "full_name": user.get("full_name") or user["username"],
         "permissions": permissions_for_role(role),
     }
-
 
 def get_current_user(authorization: Optional[str] = Header(None)) -> dict:
-    """FastAPI dependency: reads the 'Authorization: Bearer <token>' header,
-    verifies the HMAC signature + expiry, and returns the authenticated
-    identity straight from the signed payload (never from client-supplied
-    body/query data)."""
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(401, "Not authenticated — missing bearer token.")
-    token = authorization.removeprefix("Bearer ").strip()
-    payload = _decode_token(token)
+    payload = _decode_token(authorization.removeprefix("Bearer ").strip())
     role = payload.get("role") or STANDARD_USER
-    return {
-        "username": payload["sub"],
-        "department": payload["dept"],
-        "role": role,
-        "permissions": permissions_for_role(role),
-    }
-
-
-def require_department(*allowed_departments: str):
-    """
-    LEGACY dependency, kept only for backward compatibility with any code
-    still referencing it. New/updated endpoints should use
-    `app.rbac.require_permission(...)` instead, which is the real,
-    granular authorization mechanism. SYSTEM_ADMIN (and the ADMIN
-    department, for pre-RBAC callers) is always allowed through.
-    """
-
-    def _dep(authorization: Optional[str] = Header(None)) -> dict:
-        user = get_current_user(authorization)
-        if user["department"] != "ADMIN" and user["role"] != SYSTEM_ADMIN and user["department"] not in allowed_departments:
-            raise HTTPException(
-                403,
-                f"Your department ({user['department']}) doesn't have access to this action. "
-                f"Allowed: {', '.join(allowed_departments)}.",
-            )
-        return user
-
-    return _dep
+    return {"username": payload["sub"], "department": payload["dept"], "role": role, "permissions": permissions_for_role(role)}

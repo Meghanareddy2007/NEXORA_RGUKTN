@@ -33,8 +33,7 @@ export interface DigitalTwin {
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
-function authToken(){ if(typeof window === "undefined") return ""; try{return JSON.parse(localStorage.getItem("nexora_auth")||"{}").access_token||"";}catch{return "";} }
-async function request<T>(path:string, init:RequestInit={}){ const h=new Headers(init.headers); h.set("Content-Type","application/json"); const t=authToken(); if(t) h.set("Authorization",`Bearer ${t}`); const r=await fetch(`${API_BASE}${path}`,{...init,headers:h}); if(!r.ok){let msg=`Request failed (${r.status})`; try{const b=await r.json(); msg=typeof b?.detail==="string"?b.detail:(b?.detail?.message||msg);}catch{} throw new Error(msg);} return r.status===204?undefined as T:r.json() as Promise<T>; }
+async function request<T>(path:string, init:RequestInit={}){ const h=new Headers(init.headers); h.set("Content-Type","application/json"); const r=await fetch(`${API_BASE}${path}`,{...init,headers:h}); if(!r.ok){let msg=`Request failed (${r.status})`; try{const b=await r.json(); msg=typeof b?.detail==="string"?b.detail:(b?.detail?.message||msg);}catch{} throw new Error(msg);} return r.status===204?undefined as T:r.json() as Promise<T>; }
 
 export const fetchSignallingMap=()=>request<SignallingMapData>("/api/smms/signalling-map");
 export const fetchProblemReports=(params?:{status?:string;severity?:string;asset_id?:string;limit?:number})=>{const q=new URLSearchParams(); Object.entries(params||{}).forEach(([k,v])=>v!=null&&q.set(k,String(v))); return request<ProblemReport[]>(`/api/smms/problem-reports${q.toString()?`?${q}`:""}`);};

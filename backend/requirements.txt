@@ -5,3 +5,4 @@ numpy>=1.24
 ortools==9.15.6755
 python-multipart
 httpx
+scikit-learn>=1.4

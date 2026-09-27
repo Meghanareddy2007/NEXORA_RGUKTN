@@ -31,14 +31,10 @@
    (see public/tms-dashboard/runtime.js, the DB module) instead of
    being written to a Supabase table.
 
-   Auth: this reads the same session @/lib/auth already keeps in
-   localStorage (nexora_auth) via useAuth(), so the "reported by"
-   name on new maintenance rows matches whoever is actually logged
-   in, and "Sign out" uses the app's own logout() — same as Sidebar.
+   Authentication is intentionally disabled. Maintenance rows use a neutral control-room operator label.
    ================================================================== */
 
 import { useEffect } from "react";
-import { useAuth, logout } from "@/lib/auth";
 
 export interface TmsDashboardProps {
   /** Override the "reported by" name. Defaults to the logged-in user. */
@@ -51,8 +47,7 @@ export default function TmsDashboard({
   reporterName,
   division,
 }: TmsDashboardProps) {
-  const { user } = useAuth();
-  const effectiveReporter = reporterName ?? user?.full_name ?? user?.username;
+  const effectiveReporter = reporterName ?? "Control Room Operator";
 
   useEffect(() => {
     let cancelled = false;
@@ -86,10 +81,7 @@ export default function TmsDashboard({
     };
   }, [effectiveReporter, division]);
 
-  function handleSignOut() {
-    logout();
-    window.location.href = "/login";
-  }
+
 
   return (
     <>
@@ -107,7 +99,7 @@ export default function TmsDashboard({
       <link rel="stylesheet" href="/tms-dashboard/style.css" />
 
 
-      <div id="shell">
+      <div id="shell" className="tms-embedded-shell">
         <aside id="sidebar" />
         <div id="main">
           <div id="topbar" />

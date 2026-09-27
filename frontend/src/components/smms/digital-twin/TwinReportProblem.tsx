@@ -5,7 +5,7 @@
  * system: it reads the same dropdown options (GET /api/smms/problem-reports/options)
  * and submits to the same endpoint (POST /api/smms/problem-reports) as the
  * existing Report Problem page, so the server applies the same validation,
- * numbering, audit entry and storage. The asset is fixed to the twin's asset.
+ * numbering and storage. The asset is fixed to the twin's asset.
  */
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";

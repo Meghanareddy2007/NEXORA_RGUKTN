@@ -7,44 +7,6 @@ export const api = axios.create({
   baseURL: API_BASE,
 });
 
-// Attach the logged-in user's token to every outgoing request.
-api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const raw = window.localStorage.getItem("nexora_auth");
-
-    if (raw) {
-      try {
-        const { access_token } = JSON.parse(raw);
-
-        if (access_token) {
-          config.headers = config.headers || {};
-          config.headers.Authorization = `Bearer ${access_token}`;
-        }
-      } catch {
-        /* ignore malformed storage */
-      }
-    }
-  }
-
-  return config;
-});
-
-// If the backend returns 401, clear stale authentication.
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (
-      err?.response?.status === 401 &&
-      typeof window !== "undefined"
-    ) {
-      window.localStorage.removeItem("nexora_auth");
-      window.dispatchEvent(new Event("nexora-auth-changed"));
-    }
-
-    return Promise.reject(err);
-  }
-);
-
 // ============================================================================
 // CORE DASHBOARD TYPES
 // ============================================================================
@@ -895,3 +857,16 @@ export const fetchRlRecommendation = (
       }
     )
     .then((r) => r.data);
+if (typeof window !== "undefined") {
+  api.interceptors.request.use((config) => {
+    try {
+      const raw = localStorage.getItem("nexora_auth");
+      const auth = raw ? JSON.parse(raw) : null;
+      const token = auth?.access_token;
+      if (token) config.headers.Authorization = `Bearer ${token}`;
+    } catch {
+      // Keep existing API behaviour if local storage is unavailable/corrupt.
+    }
+    return config;
+  });
+}

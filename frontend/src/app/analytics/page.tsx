@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import BackToCOA from "@/components/BackToCOA";
 import {
   fetchKpis,
   fetchBlocks,
@@ -125,6 +126,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="flex flex-col gap-6 p-6">
+      <div><BackToCOA /></div>
       <header>
         <div className="flex items-center gap-2">
           <Radar className="h-5 w-5 text-primary" />

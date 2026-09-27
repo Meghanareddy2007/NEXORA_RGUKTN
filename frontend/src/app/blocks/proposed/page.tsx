@@ -7,6 +7,7 @@ import {
   MaintenanceRequest,
 } from "@/lib/api";
 import { TopBar } from "@/components/TopBar";
+import BackToCOA from "@/components/BackToCOA";
 import { Loader2, CheckCircle2, Clock, ChevronDown, ChevronUp } from "lucide-react";
 
 const PRIORITY_STYLE: Record<string, string> = {
@@ -55,6 +56,7 @@ export default function ProposedBlocksPage() {
 
   return (
     <div className="flex flex-col h-full">
+      <div className="flex items-center justify-end border-b border-border px-6 py-2"><BackToCOA /></div>
       <TopBar title="Block Planning" subtitle="Proposed Blocks" />
 
       <div className="flex flex-col gap-4 p-6">

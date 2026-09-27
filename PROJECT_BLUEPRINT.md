@@ -153,7 +153,6 @@ optimized_blocks(id, block_request_id, final_start_time, final_end_time,
 conflicts(id, block_request_id_1, block_request_id_2, type, resolution_status)
 historical_delays(id, section_id, date, delay_minutes, cause, block_id_ref)
 notifications(id, user_id, message, type, read_status, created_at)
-audit_log(id, user_id, action, entity, timestamp, remarks)
 ```
 
 ---
@@ -161,7 +160,6 @@ audit_log(id, user_id, action, entity, timestamp, remarks)
 ## 7. Key REST API Endpoints (sample)
 
 ```
-POST   /api/auth/login
 GET    /api/sections
 GET    /api/sections/{id}/map-data          # for Leaflet
 POST   /api/blocks/request                  # submit new block request
@@ -221,7 +219,7 @@ Historical Data (delays, blocks, traffic)
 
 | Phase | Duration (hackathon-scale) | Deliverable |
 |---|---|---|
-| Phase 1 | Day 1 | DB schema, auth, block request module |
+| Phase 1 | Day 1 | DB schema, block request module |
 | Phase 2 | Day 1–2 | Optimization engine (OR-Tools) with sample/synthetic Railway data |
 | Phase 3 | Day 2 | ML predictors trained on synthetic historical delay dataset |
 | Phase 4 | Day 2–3 | Gantt + Leaflet + Recharts dashboards wired to APIs |

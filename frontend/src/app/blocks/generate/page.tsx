@@ -7,7 +7,6 @@ import {
   fetchMaintenanceTypes,
   createMaintenanceRequest,
   fetchPlanPreview,
-  selectPlanOption,
   fetchDataset,
   Asset,
   CandidateOption,
@@ -15,7 +14,9 @@ import {
   PlanVisualization,
   RawMaintenanceTask,
 } from "@/lib/api";
+import { api } from "@/lib/api";
 import { TopBar } from "@/components/TopBar";
+import BackToCOA from "@/components/BackToCOA";
 import { PlanVisualizationPanel } from "@/components/PlanVisualizationPanel";
 import {
   Loader2,
@@ -26,6 +27,7 @@ import {
   Zap,
   AlertTriangle,
   Info,
+  XCircle,
 } from "lucide-react";
 
 const TIME_WINDOWS = [
@@ -103,6 +105,8 @@ export default function GeneratePlanPage() {
 
   const [approving, setApproving] = useState(false);
   const [approved, setApproved] = useState(false);
+  const [disapproved, setDisapproved] = useState(false);
+  const [feedbackLoading, setFeedbackLoading] = useState<"approve" | "disapprove" | null>(null);
 
   const [fromTdms, setFromTdms] = useState(false);
   const [selectedTdmsTask, setSelectedTdmsTask] =
@@ -275,6 +279,7 @@ export default function GeneratePlanPage() {
     setSubmitting(true);
     setError(null);
     setApproved(false);
+    setDisapproved(false);
     setViz(null);
 
     try {
@@ -318,31 +323,39 @@ export default function GeneratePlanPage() {
   /*
    * Approve the selected block.
    */
-  const handleApprove = async () => {
-    if (!request || !selectedOption) return;
-
-    setApproving(true);
+  const handleDecision = async (decision: "approve" | "disapprove") => {
+    if (!request || !selectedOption || feedbackLoading) return;
+    setFeedbackLoading(decision);
+    setApproving(decision === "approve");
     setError(null);
-
     try {
-      const updated = await selectPlanOption(
-        request.id,
-        selectedOption
-      );
-
-      setRequest(updated);
-      setApproved(true);
-    } catch {
-      setError(
-        "Could not approve this block plan. It may already be booked."
-      );
+      const response = await api.post("/api/coa/plan-feedback", {
+        request_id: request.id,
+        option: selectedOption,
+        decision,
+      });
+      setRequest(response.data.request);
+      if (decision === "approve") {
+        setApproved(true);
+        setDisapproved(false);
+      } else {
+        setDisapproved(true);
+        setApproved(false);
+      }
+    } catch (e: any) {
+      setError(e?.response?.data?.detail || `Could not ${decision} this block plan.`);
     } finally {
+      setFeedbackLoading(null);
       setApproving(false);
     }
   };
 
+  const handleApprove = () => handleDecision("approve");
+  const handleDisapprove = () => handleDecision("disapprove");
+
   return (
     <div className="flex flex-col h-full">
+      <div className="flex items-center justify-end border-b border-border px-6 py-2"><BackToCOA /></div>
       <TopBar
         title="Block Planning"
         subtitle="Generate Plan"
@@ -848,27 +861,31 @@ export default function GeneratePlanPage() {
                       </div>
                     )}
 
-                  <button
-                    onClick={handleApprove}
-                    disabled={
-                      approving ||
-                      !selectedOption ||
-                      approved
-                    }
-                    className="mt-1 flex items-center justify-center gap-2 rounded-md bg-success text-white px-4 py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
-                  >
-                    {approving ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <CheckCircle2 className="h-4 w-4" />
-                    )}
-
-                    {approved
-                      ? "Block Plan Approved"
-                      : `Approve Option ${
-                          selectedOption ?? ""
-                        }`}
-                  </button>
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <button
+                      onClick={handleApprove}
+                      disabled={!!feedbackLoading || !selectedOption || approved || disapproved}
+                      className="flex items-center justify-center gap-2 rounded-md bg-success text-white px-4 py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                    >
+                      {feedbackLoading === "approve" ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                      {approved ? "Plan Approved" : "Approve"}
+                    </button>
+                    <button
+                      onClick={handleDisapprove}
+                      disabled={!!feedbackLoading || !selectedOption || approved || disapproved}
+                      className="flex items-center justify-center gap-2 rounded-md border border-danger/40 bg-danger/10 text-danger px-4 py-2.5 text-sm font-medium hover:bg-danger/15 disabled:opacity-50"
+                    >
+                      {feedbackLoading === "disapprove" ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+                      {disapproved ? "Plan Disapproved" : "Disapprove"}
+                    </button>
+                  </div>
+                  {(approved || disapproved) && (
+                    <div className={`rounded-md px-3 py-2 text-[11px] ${approved ? "bg-success/10 text-success" : "bg-danger/10 text-danger"}`}>
+                      {approved
+                        ? "COA approval recorded. The selected block is booked and the RL feedback signal was +10."
+                        : "COA disapproval recorded. The RL feedback signal was -10; the block remains available."}
+                    </div>
+                  )}
 
                   {approved && (
                     <button

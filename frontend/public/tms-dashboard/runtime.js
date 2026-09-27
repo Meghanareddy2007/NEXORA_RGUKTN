@@ -1334,9 +1334,15 @@ function navItem(key,icon,label,badgeVal,badgeColor){
   const b = badgeVal ? `<span class="nav-badge ${badgeColor||''}">${badgeVal}</span>`:"";
   return `<div class="nav-item ${active}" onclick="setView('${key}')">${icon}<span>${label}</span>${b}</div>`;
 }
-function tmsSignOut() {
-  localStorage.removeItem("nexora_auth");
-  window.location.href = "/login";
+
+
+function tmsLogout(){
+  try{
+    localStorage.removeItem("nexora_auth");
+    ["token","access_token","refresh_token","user","auth","session"].forEach(k=>localStorage.removeItem(k));
+    sessionStorage.clear();
+  }catch(e){}
+  window.location.assign("/login");
 }
 
 function renderSidebar(){
@@ -1382,12 +1388,11 @@ function renderSidebar(){
     </div>
   </div>
 
-  <button
-    class="sidebar-logout"
-    onclick="tmsSignOut()"
-  >
-    ${ICN.logout}
-    <span>Log out</span>
+  <button type="button" class="sidebar-logout" onclick="tmsLogout()" title="Log out of NEXORA">
+    <span aria-hidden="true" style="width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M13 4h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/></svg>
+    </span>
+    <span>Logout</span>
   </button>
 
   <div class="system-status-card">
@@ -1482,100 +1487,144 @@ function updateThemeIcon(){
    VIEW: DASHBOARD
    ============================================================ */
 function renderDashboard(){
-  const active = TASKS.filter(t=>t.status!=='Completed');
-  const critical = active.filter(t=>t.criticality==='Critical').length;
-  const overdue = active.filter(t=>t.overdueDays>0).length;
-  const pending = active.filter(t=>t.status==='Pending').length;
-  const dueSoon = active.filter(t=>t.dueSoon).length;
-  const blockReqs = BLOCK_REQUESTS.filter(b=>!['Completed','Rejected'].includes(b.status)).length;
-  const emergencies = BREAKDOWNS.filter(b=>b.status==='Active').length;
-  const crewAvail = CREW_AVAILABLE.reduce((s,c)=>s+c.count,0);
-  const readyCount = active.filter(t=>blockReadinessFor(t).pct===100).length;
-  const readiness = active.length ? Math.round(readyCount/active.length*100) : 0;
+  const viewport = document.getElementById("viewport");
 
-  const kpis = [
-    {label:"Critical Problems",val:critical,color:"red",note:"require immediate attention"},
-    {label:"Overdue",val:overdue,color:"amber",note:"maintenance past due date"},
-    {label:"Pending Maintenance",val:pending,color:"neutral",note:"awaiting action"},
-    {label:"Due Soon",val:dueSoon,color:"blue",note:"within 3 days"},
-    {label:"Block Requests",val:blockReqs,color:"blue",note:"active TMS requests"},
-    {label:"Emergency Breakdowns",val:emergencies,color:"red",note:"current / recent"},
-    {label:"Available Crew",val:crewAvail,color:"green",note:"across 4 teams"},
-    {label:"Block Readiness",val:readiness+"%",color:"green",note:"of active tasks ready"},
-  ];
+  if (!viewport) {
+    console.error("TMS Dashboard: #viewport element not found.");
+    return;
+  }
 
-  const topProblems = [...active].sort((a,b)=>b.aiPriority-a.aiPriority).slice(0,6);
-  const recentBlocks = BLOCK_REQUESTS.slice(0,4);
-
-  document.getElementById("viewport").innerHTML = `
-    <div class="view-title-row">
-      <div>
-        <div class="view-title">Track Overview</div>
-        <div class="view-sub">From track problem to block-ready maintenance decision.</div>
-      </div>
-      <button class="btn btn-primary" onclick="setView('report')">${ICN.plus} Report Problem</button>
-    </div>
-
-    <div class="kpi-grid">
-      ${kpis.map(k=>`
-        <div class="kpi">
-          <div class="kpi-bar" style="background:var(--${k.color})"></div>
-          <div class="kpi-label">${k.label}</div>
-          <div class="kpi-value">${k.val}</div>
-          <div class="kpi-note">${k.note}</div>
-        </div>`).join("")}
-    </div>
-
-    <div class="two-col">
-      <div class="card card-pad">
-        <div class="section-heading">${ICN.trend} Highest Priority Problems</div>
-        <div class="table-wrap" style="border:none;">
-          <table>
-            <thead><tr><th>Task</th><th>Asset</th><th>Defect</th><th>Criticality</th><th>Due</th><th>AI Priority</th></tr></thead>
-            <tbody>
-              ${topProblems.map(t=>`
-                <tr onclick="openTaskDrawer('${t.id}')">
-                  <td class="cell-id">${t.id}</td>
-                  <td>${t.assetId}</td>
-                  <td>${t.defect}</td>
-                  <td>${badge(t.criticality, critColor(t.criticality))}</td>
-                  <td class="cell-faint">${fmtDate(t.due)}${t.overdueDays>0?` <span style="color:var(--red);font-weight:600;">(+${t.overdueDays}d)</span>`:''}</td>
-                  <td class="cell-strong">${t.aiPriority}</td>
-                </tr>`).join("")}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div class="card card-pad">
-          <div class="section-heading">${ICN.emergency} Active Breakdowns</div>
-          ${BREAKDOWNS.filter(b=>b.status==='Active').map(b=>`
-            <div style="border:1px solid var(--border);border-radius:8px;padding:11px;margin-bottom:8px;cursor:pointer;" onclick="setView('breakdown')">
-              <div style="display:flex;justify-content:space-between;">
-                <span class="cell-id">${b.asset}</span>${badge('ACTIVE','red')}
-              </div>
-              <div class="subtle" style="margin-top:4px;">KM ${b.km} · ${b.trains} trains affected</div>
-            </div>`).join("") || `<div class="subtle">No active breakdowns.</div>`}
-        </div>
-
-        <div class="card card-pad">
-          <div class="section-heading">${ICN.block} Recent Block Requests</div>
-          ${recentBlocks.map(b=>`
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-soft);cursor:pointer;" onclick="openBlockDetail('${b.id}')">
-              <div>
-                <div style="font-weight:600;font-size:12.5px;">${b.title}</div>
-                <div class="subtle">${b.asset} · KM ${b.km}</div>
-              </div>
-              ${badge(b.status, statusColor(b.status))}
-            </div>`).join("")}
-          <div style="margin-top:10px;text-align:right;"><a onclick="setView('blocks')" style="font-size:11.5px;color:var(--copper);cursor:pointer;font-weight:600;">View all block requests →</a></div>
-        </div>
-      </div>
-    </div>
-  `;
+  const active = TASKS.filter(t=>t.status!=='Completed'); 
+  const critical = active.filter(t=>t.criticality==='Critical').length; 
+  const overdue = active.filter(t=>t.overdueDays>0).length; 
+  const pending = active.filter(t=>t.status==='Pending').length; 
+  const dueSoon = active.filter(t=>t.dueSoon).length; 
+  const blockReqs = BLOCK_REQUESTS.filter(b=>!['Completed','Rejected'].includes(b.status)).length; 
+  const emergencies = BREAKDOWNS.filter(b=>b.status==='Active').length; 
+  const crewAvail = CREW_AVAILABLE.reduce((s,c)=>s+c.count,0); 
+  const readyCount = active.filter(t=>blockReadinessFor(t).pct===100).length; 
+  const readiness = active.length ? Math.round(readyCount/active.length*100) : 0; 
+ 
+  const kpis = [ 
+    {label:"Critical Problems",val:critical,color:"red",note:"require immediate attention"}, 
+    {label:"Overdue",val:overdue,color:"amber",note:"maintenance past due date"}, 
+    {label:"Pending Maintenance",val:pending,color:"neutral",note:"awaiting action"}, 
+    {label:"Due Soon",val:dueSoon,color:"blue",note:"within 3 days"}, 
+    {label:"Block Requests",val:blockReqs,color:"blue",note:"active TMS requests"}, 
+    {label:"Emergency Breakdowns",val:emergencies,color:"red",note:"current / recent"}, 
+    {label:"Available Crew",val:crewAvail,color:"green",note:"across 4 teams"}, 
+    {label:"Block Readiness",val:readiness+"%",color:"green",note:"of active tasks ready"}, 
+  ]; 
+ 
+  const topProblems = [...active].sort((a,b)=>b.aiPriority-a.aiPriority).slice(0,6); 
+  const recentBlocks = BLOCK_REQUESTS.slice(0,4); 
+ 
+  viewport.innerHTML = ` 
+    <div class="view-title-row"> 
+      <div> 
+        <div class="view-title">Track Overview</div> 
+        <div class="view-sub">From track problem to block-ready maintenance decision.</div> 
+      </div> 
+      <button class="btn btn-primary" onclick="setView('report')">${ICN.plus} Report Problem</button> 
+    </div> 
+ 
+    <div class="kpi-grid"> 
+      ${kpis.map(k=>` 
+        <div class="kpi"> 
+          <div class="kpi-bar" style="background:var(--${k.color})"></div> 
+          <div class="kpi-label">${k.label}</div> 
+          <div class="kpi-value">${k.val}</div> 
+          <div class="kpi-note">${k.note}</div> 
+        </div>`).join("")} 
+    </div> 
+ 
+    <div class="two-col"> 
+      <div class="card card-pad"> 
+        <div class="section-heading">${ICN.trend} Highest Priority Problems</div> 
+        <div class="table-wrap" style="border:none;"> 
+          <table> 
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Asset</th>
+                <th>Defect</th>
+                <th>Criticality</th>
+                <th>Due</th>
+                <th>AI Priority</th>
+              </tr>
+            </thead> 
+            <tbody> 
+              ${topProblems.map(t=>` 
+                <tr onclick="openTaskDrawer('${t.id}')"> 
+                  <td class="cell-id">${t.id}</td> 
+                  <td>${t.assetId}</td> 
+                  <td>${t.defect}</td> 
+                  <td>${badge(t.criticality, critColor(t.criticality))}</td> 
+                  <td class="cell-faint">
+                    ${fmtDate(t.due)}
+                    ${t.overdueDays>0
+                      ? ` <span style="color:var(--red);font-weight:600;">(+${t.overdueDays}d)</span>`
+                      : ''}
+                  </td> 
+                  <td class="cell-strong">${t.aiPriority}</td> 
+                </tr>`).join("")} 
+            </tbody> 
+          </table> 
+        </div> 
+      </div> 
+ 
+      <div style="display:flex;flex-direction:column;gap:14px;"> 
+        <div class="card card-pad"> 
+          <div class="section-heading">${ICN.emergency} Active Breakdowns</div> 
+          ${
+            BREAKDOWNS
+              .filter(b=>b.status==='Active')
+              .map(b=>` 
+                <div
+                  style="border:1px solid var(--border);border-radius:8px;padding:11px;margin-bottom:8px;cursor:pointer;"
+                  onclick="setView('breakdown')"
+                > 
+                  <div style="display:flex;justify-content:space-between;"> 
+                    <span class="cell-id">${b.asset}</span>
+                    ${badge('ACTIVE','red')} 
+                  </div> 
+                  <div class="subtle" style="margin-top:4px;">
+                    KM ${b.km} · ${b.trains} trains affected
+                  </div> 
+                </div>`
+              ).join("")
+              || `<div class="subtle">No active breakdowns.</div>`
+          } 
+        </div> 
+ 
+        <div class="card card-pad"> 
+          <div class="section-heading">${ICN.block} Recent Block Requests</div> 
+          ${recentBlocks.map(b=>` 
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-soft);cursor:pointer;"
+              onclick="openBlockDetail('${b.id}')"
+            > 
+              <div> 
+                <div style="font-weight:600;font-size:12.5px;">${b.title}</div> 
+                <div class="subtle">${b.asset} · KM ${b.km}</div> 
+              </div> 
+              ${badge(b.status, statusColor(b.status))} 
+            </div>`
+          ).join("")} 
+          
+          <div style="margin-top:10px;text-align:right;">
+            <a
+              onclick="setView('blocks')"
+              style="font-size:11.5px;color:var(--copper);cursor:pointer;font-weight:600;"
+            >
+              View all block requests →
+            </a>
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+  `; 
 }
-
 /* ============================================================
    VIEW: MAINTENANCE TASKS (Problem overview table)
    ============================================================ */
