@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   fetchAssets,
@@ -65,7 +65,7 @@ function getPriorityFromTask(
   return "LOW";
 }
 
-export default function GeneratePlanPage() {
+function GeneratePlanPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -935,5 +935,13 @@ export default function GeneratePlanPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function GeneratePlanPage() {
+  return (
+    <Suspense fallback={null}>
+      <GeneratePlanPageContent />
+    </Suspense>
   );
 }

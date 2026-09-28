@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
+import { Suspense } from "react";
 import { AIAssistantWidget } from "@/components/ai/AIAssistantWidget";
 
 export const metadata: Metadata = {
@@ -13,7 +14,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <div className="flex min-h-screen">
+          <Suspense fallback={null}>
           <Sidebar />
+        </Suspense>
           <main className="flex-1 overflow-x-hidden">{children}</main>
           <AIAssistantWidget />
         </div>

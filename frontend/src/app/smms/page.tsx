@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AnalyticsPage from "@/app/analytics/page";
 import SMMSMapView from "@/components/smms/SMMSMapView";
@@ -341,7 +341,7 @@ function ReportsView() {
   }catch(e){setError(e instanceof Error?e.message:"Could not generate report.");}finally{setLoading(false)}},[type,asset,section,from,to]);
   useEffect(()=>{load()},[load]);
   const columns=useMemo(()=>rows.length?Object.keys(rows[0]).slice(0,12):[],[rows]);
-  const downloadCSV=()=>{const esc=(v:any)=>`"${String(v??"").replace(/"/g,'""')}"`;const csv=[columns.map(esc).join(","),...rows.map(r=>columns.map(c=>esc(r[c])).join(","))].join("\r\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv"}));a.download=`smms-${type}.csv`;a.click();URL.revokeObjectURL(a.href);};
+  const downloadCSV=()=>{if(typeof window==="undefined")return;const esc=(v:any)=>`"${String(v??"").replace(/"/g,'""')}"`;const csv=[columns.map(esc).join(","),...rows.map(r=>columns.map(c=>esc(r[c])).join(","))].join("\r\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv"}));a.download=`smms-${type}.csv`;a.click();URL.revokeObjectURL(a.href);};
   const downloadXlsx=async()=>{try{const XLSX:any=await import("xlsx");const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"SMMS Report");XLSX.writeFile(wb,`smms-${type}.xlsx`)}catch(e){setError("Excel export requires the xlsx package. Run npm install after merging.")}};
   const downloadPdf=async()=>{try{const {jsPDF}:any=await import("jspdf");const autoTable:any=(await import("jspdf-autotable")).default;const doc=new jsPDF({orientation:columns.length>6?"landscape":"portrait"});doc.text(`SMMS ${type.replaceAll("_"," ")} Report`,14,16);autoTable(doc,{startY:24,head:[columns],body:rows.map(r=>columns.map(c=>String(r[c]??""))),styles:{fontSize:7}});doc.save(`smms-${type}.pdf`)}catch(e){setError("PDF export requires jspdf and jspdf-autotable. Run npm install after merging.")}};
   const assets=[...new Set(rows.map(r=>r.asset_id).filter(Boolean))]; const sections=[...new Set(rows.map(r=>(r.corridor_id||r.corridor_label)).filter(Boolean))];
@@ -375,7 +375,7 @@ function AnalyticsView() {
 /* -------------------------------------------------------------------------- */
 /* Root page                                                                  */
 /* -------------------------------------------------------------------------- */
-export default function SMMSPage() {
+function SMMSPageContent() {
   const params=useSearchParams(); const router=useRouter(); const pathname=usePathname();
   const raw=params.get("view")||"dashboard";
   const view=(["assets","failures","map","maintenance","report-problem","insights","reports","conflicts","analytics"].includes(raw)?raw:"dashboard") as ViewId;
@@ -396,4 +396,12 @@ export default function SMMSPage() {
     {view==="analytics"&&<AnalyticsView/>}
     {twin&&<DigitalTwinDrawer twinId={twin} onClose={closeTwin}/>}
   </div>;
+}
+
+export default function SMMSPage() {
+  return (
+    <Suspense fallback={null}>
+      <SMMSPageContent />
+    </Suspense>
+  );
 }

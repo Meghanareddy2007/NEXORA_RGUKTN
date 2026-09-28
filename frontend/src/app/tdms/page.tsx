@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -329,7 +329,7 @@ function sortQueue(items: QueueItem[], key: SortKey, dir: "asc" | "desc") {
 /* PAGE                                                                       */
 /* ========================================================================== */
 
-export default function TDMSPage() {
+function TDMSPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -3759,5 +3759,13 @@ function NumberSelect({
         ))}
       </select>
     </label>
+  );
+}
+
+export default function TDMSPage() {
+  return (
+    <Suspense fallback={null}>
+      <TDMSPageContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import WhatIfModal from "@/components/whatif/whatif";
@@ -228,7 +228,7 @@ function ModuleLoading({
    COA PAGE
 ========================================================= */
 
-export default function CoaPage() {
+function CoaPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -1693,5 +1693,13 @@ function Badge({
     >
       {value}
     </span>
+  );
+}
+
+export default function CoaPage() {
+  return (
+    <Suspense fallback={null}>
+      <CoaPageContent />
+    </Suspense>
   );
 }

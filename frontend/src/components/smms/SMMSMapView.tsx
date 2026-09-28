@@ -1,10 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2, RefreshCw } from "lucide-react";
 import { TopBar } from "@/components/TopBar";
 import { fetchProblemReports, fetchSignallingMap, type ProblemReport, type SignallingMapData } from "@/lib/smmsApi";
-import SignallingAssetHealthMap, { type FocusRequest, type MapMode } from "@/components/smms/SignallingAssetHealthMap";
+import type { FocusRequest, MapMode } from "@/components/smms/SignallingAssetHealthMap";
+
+const SignallingAssetHealthMap = dynamic(
+  () => import("@/components/smms/SignallingAssetHealthMap"),
+  { ssr: false }
+);
 import { FilterBar, StatusStrip } from "@/components/smms/signalling-map/FilterBar";
 import { SMMSInfoPanel } from "@/components/smms/signalling-map/AssetPanel";
 import { DEFAULT_FILTERS, MapFilters, STATUS_META, STATUS_ORDER, applyFilters } from "@/components/smms/signalling-map/model";
